@@ -86,6 +86,7 @@ Code-level checks are still useful, but they should be secondary. A strong model
 
 - [README.md](README.md): project overview
 - [docs/benchmark-spec.md](docs/benchmark-spec.md): deeper benchmark and implementation spec
+- [docs/research-landscape.md](docs/research-landscape.md): related work, positioning, and usefulness assessment
 - [AGENTS.md](AGENTS.md): working guidance for agents contributing to the project
 
 ## Current Status
