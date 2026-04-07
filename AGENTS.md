@@ -48,11 +48,26 @@ Unless explicitly updated elsewhere in the repository, assume the following:
 - Canvas size is fixed at `512x512`.
 - V1 primitives are `circle`, `filled_circle`, `square`, and `filled_square`.
 - The initial palette is black shapes on a white background.
-- Draw order matters and rendering must be deterministic.
+- Rendering must be deterministic.
+- Program order is preserved, but under the black-on-white V1 palette overlapping shapes are effectively order-invariant in the final raster.
 - The benchmark should use a project-owned DSL rather than an external drawing framework.
 - The syntax may look Python-like, but the evaluator must parse a restricted subset instead of executing arbitrary Python.
 - Primary scoring is render-based, not exact code-string match.
 - V1 should ship with `easy`, `medium`, and `hard` difficulty tiers.
+- The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`, `numpy`, `pytest`, and `ruff`.
+
+## Current Repository Structure
+
+The current implementation lives in:
+
+- `src/ui_bench/dsl.py` for parsing and canonical serialization
+- `src/ui_bench/renderer.py` for deterministic raster rendering
+- `src/ui_bench/generator.py` for seeded scene generation and sample metadata
+- `src/ui_bench/evaluator.py` for render-based scoring
+- `src/ui_bench/cli.py` for `generate`, `render`, and `eval`
+- `tests/` for parser, renderer, generator, evaluator, and CLI coverage
+
+Generated outputs should go under `data/generated/<split>/<difficulty>/`.
 
 ## Agent Working Principles
 
@@ -95,13 +110,12 @@ Update `AGENTS.md` whenever any of the following changes:
 
 ## Near-Term Build Order
 
-The current recommended implementation order is:
+The benchmark core is implemented. The current recommended next order is:
 
-1. Define the exact DSL surface and canonical format.
-2. Build the deterministic renderer.
-3. Build the dataset generator for easy, medium, and hard scenes.
-4. Build the evaluator that parses predictions and re-renders them.
-5. Add model adapters and reporting.
+1. Add model adapters on top of the existing evaluator.
+2. Add reporting and aggregate benchmark summaries.
+3. Validate the current difficulty tiers empirically.
+4. Expand the DSL only after the V1 core is stable and benchmarked.
 
 ## Freshness Check For Agents
 

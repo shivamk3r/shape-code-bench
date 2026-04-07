@@ -2,82 +2,115 @@
 
 ## 1. Vision
 
-`ui-bench` measures how well a model can reverse-engineer a simple visual scene into executable drawing code.
+`ui-bench` measures how well a model can reverse-engineer a simple rendered scene into executable drawing code.
 
-The benchmark is designed to answer a focused question:
+The benchmark question is:
 
 > Given a rendered synthetic image, can a model infer the program that generated it well enough to recreate the same image?
 
-This is not a general image-generation benchmark. It is a controlled perception-to-program benchmark.
+This is a controlled perception-to-program benchmark, not a general image-generation benchmark.
 
-## 2. Task Definition
+## 2. Implemented V1 Stack
 
-Each benchmark example contains:
+The current V1 implementation uses:
 
-- A target image rendered at `512x512`
-- The hidden ground-truth program that produced the image
-- Metadata such as difficulty, seed, and scene attributes
+- Python `3.12`
+- `uv` for dependency management and `.venv` creation
+- A benchmark-owned Python-like DSL
+- `Pillow` for deterministic raster rendering
+- `numpy` for evaluation metrics
 
-At evaluation time:
+The current package lives under `src/ui_bench/` and is covered by `pytest` tests in `tests/`.
 
-1. The model receives the target image.
-2. The model also receives the benchmark DSL description and output-format instructions.
-3. The model returns code in the benchmark DSL.
-4. The benchmark runner executes the predicted code in a sandboxed renderer.
-5. The resulting image is compared with the original target image.
+## 3. V1 Representation
 
-The benchmark score reflects how closely the prediction reproduces the target.
-
-## 3. Recommended V1 Representation
-
-For V1, the benchmark should use a tiny Python-based DSL rather than a full external graphics library.
+V1 uses a tiny project-owned DSL rather than a full external graphics API.
 
 Why this is the right starting point:
 
 - It keeps the task focused on visual reasoning instead of library trivia.
 - It makes execution deterministic.
-- It reduces syntax noise.
-- It gives us full control over allowed operations and canonical formatting.
+- It reduces syntax noise for models.
+- It lets the benchmark enforce a safe restricted parser.
 
-Even if the syntax is Python-like, the evaluator should not execute arbitrary Python. It should parse a restricted AST or a narrow function-call format and then dispatch only approved drawing operations.
+The evaluator does not execute arbitrary Python. It parses a narrow whitelist of top-level function calls and dispatches only approved drawing operations.
 
-Recommended primitive API:
+### Primitive API
 
 ```python
 filled_circle(cx=128, cy=128, radius=40)
 circle(cx=300, cy=220, radius=60, stroke=4)
-filled_square(cx=220, cy=360, size=80)
-square(cx=380, cy=120, size=50, stroke=3)
+filled_square(cx=220, cy=360, size=81)
+square(cx=380, cy=120, size=80, stroke=3)
 ```
 
-Recommended V1 rules:
+### Canonical Serialization Rules
 
-- Coordinate system uses integer pixel positions.
-- `cx` and `cy` refer to center coordinates.
-- `radius` is used for circles.
-- `size` is the side length for squares.
-- Hollow shapes require a `stroke` width.
-- Shapes are drawn in program order.
-- Shapes that extend beyond the canvas are clipped deterministically.
-- Initial palette is binary: white background, black foreground.
-- The evaluator accepts only a restricted subset of the DSL, not general Python.
+- One function call per line.
+- Fixed keyword order per primitive.
+- Integer parameters only.
+- Normalized whitespace.
+- No imports or boilerplate.
 
-## 4. Dataset Generation
+### Parser Restrictions
 
-Each sample should be generated from a latent scene specification, then converted into canonical code.
+- Only top-level expression statements are allowed.
+- Each expression must be a function call to one of the four approved primitives.
+- Keyword arguments only; positional arguments are rejected.
+- Argument values must be integer literals.
+- Imports, variables, loops, comprehensions, attribute access, and arbitrary Python are rejected.
 
-Suggested generation pipeline:
+### Parameter Validation Rules
+
+- `cx` and `cy` must be integers in `[0, 511]`.
+- `radius` and `size` must be integers in `[1, 512]`.
+- `circle.stroke` must be in `[1, radius]`.
+- `square.stroke` must be in `[1, ceil(size / 2)]`.
+- Shapes may extend beyond the canvas and are clipped deterministically by the renderer.
+
+## 4. Renderer Semantics
+
+The renderer produces `512x512` grayscale images with:
+
+- white background `255`
+- black foreground `0`
+- deterministic Pillow drawing semantics
+
+Exact bounds are:
+
+- Circle bounds: `left = cx - radius`, `top = cy - radius`, `right = cx + radius`, `bottom = cy + radius`
+- Square bounds: `left = cx - size // 2`, `top = cy - size // 2`, `right = left + size - 1`, `bottom = top + size - 1`
+
+The renderer implementation plus the renderer snapshot tests are the normative V1 raster semantics.
+
+### Draw Order Nuance
+
+Program order is preserved in the AST, serializer, and renderer loop.
+
+However, because V1 uses only black shapes on a white background, the final raster is effectively the union of black pixels touched by any shape. In practice, that makes overlapping scenes order-invariant in V1 even though the system preserves draw order structurally.
+
+True draw-order-sensitive evaluation is deferred until a future version adds richer layering semantics.
+
+## 5. Dataset Generation
+
+Each sample is generated from a latent scene, then serialized into canonical DSL, then rendered into a PNG.
+
+Generation rules:
 
 1. Choose a difficulty tier.
-2. Sample the number of shapes and scene constraints for that tier.
-3. Sample shape types, positions, sizes, fill mode, and draw order.
-4. Convert the scene into a canonical DSL program.
-5. Render the image from that program.
-6. Save image, program, and metadata.
+2. Sample the number of shapes and parameter ranges for that tier.
+3. Sample primitive types, positions, sizes, and stroke widths from a seeded RNG.
+4. Apply tier-specific placement constraints such as low overlap or optional clipping.
+5. Serialize the latent scene into canonical DSL.
+6. Render and save the PNG plus JSON metadata.
 
-One major benefit of this setup is that the dataset can be regenerated continuously. The benchmark does not need to rely on a single frozen corpus of images. Fresh samples can be created on demand for new evaluation runs.
+Implementation rule:
 
-Suggested metadata fields:
+- Use only `random.Random(seed)` for determinism.
+
+### Sample Metadata
+
+Each JSON metadata file includes:
 
 - `sample_id`
 - `split`
@@ -89,205 +122,135 @@ Suggested metadata fields:
 - `ground_truth_program`
 - `render_config`
 
-## 5. Difficulty Tiers
+Generated samples are stored under `data/generated/<split>/<difficulty>/`.
 
-The benchmark should support at least three initial tiers.
+## 6. Difficulty Tiers
+
+Difficulty comes from visual complexity, not from changing the DSL itself.
 
 ### Easy
 
 - `1-3` shapes
-- Large shapes
-- Minimal or no overlap
-- Shapes away from canvas boundaries
-- Limited variation in stroke width
+- size or radius in `[64, 160]`
+- stroke in `[2, 6]`
+- no clipping
+- minimal bounding-box overlap via rejection sampling
 
 ### Medium
 
 - `3-6` shapes
-- Moderate size variation
-- Some overlap
-- Mixed filled and hollow shapes
-- More varied placements across the canvas
+- size or radius in `[32, 128]`
+- stroke in `[2, 8]`
+- moderate overlap allowed
+- limited clipping via mixed interior and full-range placement
 
 ### Hard
 
 - `6-10` shapes
-- Heavy overlap or nesting
-- Small and large shapes mixed together
-- Shapes near edges or partially clipped
-- Ambiguous layouts where draw order matters
+- size or radius in `[16, 128]`
+- stroke in `[1, 10]`
+- overlap encouraged
+- partial clipping allowed
 
-Difficulty should come from compositional visual complexity, not from changing the DSL itself.
+Hard scenes preserve program order, but they are still raster order-invariant under the current black-only palette.
 
-## 6. Evaluation
+## 7. Evaluation
+
+The primary score is render-based.
 
 ### Primary Metrics
 
-The primary score should be render-based.
+- exact pixel match
+- pixel accuracy
+- foreground IoU
+- aggregate reporting by difficulty tier
 
-Recommended metrics:
+### Secondary Signals
 
-- Exact pixel match rate
-- Pixel accuracy
-- Foreground IoU
-- Mean score by difficulty tier
+- parse success rate
+- execution success rate
+- canonical format compliance
 
-For this benchmark family, simple render-based metrics are more useful than generic perceptual scores because the images are synthetic and geometrically crisp.
+### Failure Handling
 
-### Secondary Metrics
+Predictions fail closed on:
 
-- Program execution success rate
-- Parse success rate
-- Canonical format compliance
-- Optional parameter-level recovery accuracy if scene metadata is exposed internally
+- invalid syntax
+- unsupported function names
+- missing or duplicate arguments
+- unexpected arguments
+- out-of-range values
+- invalid stroke settings
 
-### Important Principle
+If parsing or execution fails, the prediction receives a scored failure with zero similarity metrics and a populated `error_type`.
 
-Source-code exact match should not be the main score.
+## 8. CLI
 
-Reason:
+The package exposes these commands:
 
-- Multiple programs may be visually equivalent.
-- Small formatting differences should not matter.
-- The benchmark is intended to measure scene understanding, not memorization of one textual form.
+- `ui-bench generate`
+- `ui-bench render`
+- `ui-bench eval`
 
-## 7. Prompting Protocol
+Typical usage:
 
-To compare models fairly, the harness should standardize the evaluation prompt.
+```bash
+uv run ui-bench generate --split train --difficulty easy --count 4 --seed 0
+uv run ui-bench render --program-file sample.dsl --output-file sample.png
+uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
+```
 
-Each model should receive:
+## 9. Repository Shape
 
-- The target image
-- A short description of the allowed DSL
-- A strict instruction to return code only
-- The same formatting template across models
-
-Recommended prompt constraints:
-
-- No chain-of-thought requested
-- No explanation in output
-- Temperature fixed or standardized
-- A max output length that covers the DSL comfortably
-
-## 8. Splits And Benchmark Hygiene
-
-Suggested splits:
-
-- `train`
-- `validation`
-- `test_public`
-- `test_hidden`
-
-Good benchmark hygiene matters:
-
-- Use fixed seeds for released datasets.
-- Keep hidden test programs private if public leaderboards are added.
-- Version the dataset generator so benchmark updates are traceable.
-- Log renderer and prompt versions for every evaluation run.
-- Support generating fresh held-out evaluation sets from new seeds when contamination is suspected.
-
-## 8.1 Contamination Resistance
-
-Synthetic generation is one of the benchmark's strongest differentiators.
-
-If a fixed set of benchmark images becomes overexposed, we can generate a new evaluation set from unseen seeds and continue measuring on fresh examples. This is a meaningful advantage over static benchmarks, where leaked or memorized examples can permanently damage the usefulness of the test set.
-
-Important nuance:
-
-- This reduces contamination of exact instances.
-- It does not fully prevent models from learning the generator's overall distribution.
-- Hidden evaluation seeds and periodic refreshes will still be important for maintaining benchmark quality.
-
-## 9. Canonicalization
-
-Canonicalization will make both generation and evaluation cleaner.
-
-Suggested rules:
-
-- Use one function call per line.
-- Use a fixed argument order.
-- Use integer parameters only in V1.
-- Use normalized whitespace.
-- Keep imports and boilerplate minimal or fully fixed.
-
-Canonicalization helps reduce parsing errors and makes it easier to inspect predictions manually.
-
-## 10. Failure Cases To Handle
-
-The benchmark runner should explicitly handle:
-
-- Invalid syntax
-- Unsupported function names
-- Missing required arguments
-- Out-of-range values
-- Non-terminating or unsafe code
-
-If execution fails, the example should be marked as invalid prediction and scored accordingly.
-
-## 11. Initial Milestones
-
-Suggested build order:
-
-1. Implement the minimal drawing DSL and deterministic renderer.
-2. Implement canonical program serialization.
-3. Implement dataset generation for `easy`, `medium`, and `hard`.
-4. Implement evaluation by re-rendering predicted code.
-5. Add one or two model adapters for end-to-end testing.
-6. Add reporting scripts for aggregate benchmark tables.
-
-## 12. Proposed Repository Shape
-
-One reasonable layout for the implementation phase:
+The implemented repository shape is:
 
 ```text
 ui-bench/
   README.md
+  AGENTS.md
+  pyproject.toml
+  uv.lock
+  src/
+    ui_bench/
+      cli.py
+      dsl.py
+      evaluator.py
+      generator.py
+      renderer.py
+      types.py
+  tests/
+    test_cli.py
+    test_dsl.py
+    test_evaluator.py
+    test_generator.py
+    test_renderer.py
   docs/
     benchmark-spec.md
-  src/
-    renderer/
-    dsl/
-    generator/
-    evaluator/
-    adapters/
+    research-landscape.md
   data/
-    samples/
     generated/
-  scripts/
 ```
 
-## 13. Expansion Paths
+## 10. Prompting Protocol
 
-Once V1 is stable, the benchmark can expand to include:
+Each evaluated model should receive:
 
-- Additional shapes such as triangles or rectangles
-- Multiple colors
-- Rotation
-- Layering-heavy scenes
-- Symmetry and repetition patterns
-- Text or labels
-- Natural-language scene descriptions paired with code
+- the target image
+- a concise DSL description
+- an instruction to return code only
+- a standardized formatting template
 
-Those should come after the simple-shape benchmark is reliable.
+Recommended prompt constraints:
 
-## 14. Recommended Product Framing
+- no chain-of-thought request
+- no explanation in output
+- fixed or standardized temperature
+- output length capped high enough for the DSL
 
-A concise way to describe the project:
+## 11. Next Steps
 
-`ui-bench` is a synthetic multimodal benchmark for measuring how accurately models can infer executable drawing programs from rendered geometric scenes.
+The benchmark core now exists. The next recommended steps are:
 
-## 15. Decision Summary For V1
-
-These are the recommended default decisions unless we intentionally change them:
-
-- Use a benchmark-owned Python DSL
-- Fix image size at `512x512`
-- Start with circles and squares only
-- Use filled and hollow variants
-- Use black shapes on white background
-- Score primarily by rendered image similarity
-- Provide `easy`, `medium`, and `hard` difficulty tiers
-
-## 16. Immediate Next Step
-
-The next implementation step should be to define the exact DSL API and build the renderer around it. Once that exists, dataset generation and evaluation become straightforward.
+1. Add model adapters on top of the current evaluator.
+2. Add reporting utilities for aggregate tables and per-slice diagnostics.
+3. Expand the DSL only after the current V1 baseline is stable.

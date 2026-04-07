@@ -13,6 +13,13 @@ Short answer:
 - The strongest version of `ui-bench` is not "the first image-to-program idea."
 - The strongest version of `ui-bench` is "a clean, renewable, benchmark-first testbed for perception-to-program reconstruction with deterministic execution and render-based scoring."
 
+The implemented V1 stack follows that framing:
+
+- a benchmark-owned Python-like DSL,
+- a deterministic Pillow raster backend,
+- a safe restricted parser instead of arbitrary Python execution,
+- and `uv`-managed Python packaging around that core.
+
 That distinction matters. Prior work already exists on visual program induction, inverse graphics, turtle-graphics code generation, screenshot-to-code, and structure extraction from images. The opportunity for `ui-bench` is to combine the best benchmark-design ideas from those lines into a more controlled evaluation artifact.
 
 ## Executive Verdict
@@ -194,7 +201,7 @@ The project can systematically vary:
 - overlap,
 - clipping,
 - hollow vs filled ambiguity,
-- draw order sensitivity,
+- and later draw-order sensitivity once the benchmark expands beyond the current binary black-on-white palette,
 - positional near-misses,
 - and eventually symmetry or repetition.
 
