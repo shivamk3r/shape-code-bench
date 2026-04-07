@@ -16,11 +16,13 @@ The current V1 implementation uses:
 
 - Python `3.12`
 - `uv` for dependency management and `.venv` creation
-- A benchmark-owned Python-like DSL
+- a benchmark-owned Python-like DSL
 - `Pillow` for deterministic raster rendering
 - `numpy` for evaluation metrics
+- the OpenAI Python SDK for the first live multimodal adapter
+- `python-dotenv` for local `.env` loading
 
-The current package lives under `src/ui_bench/` and is covered by `pytest` tests in `tests/`.
+The package lives under `src/ui_bench/` and is covered by `pytest` tests in `tests/`.
 
 ## 3. V1 Representation
 
@@ -124,6 +126,15 @@ Each JSON metadata file includes:
 
 Generated samples are stored under `data/generated/<split>/<difficulty>/`.
 
+### Smoke-Test Dataset Rule
+
+The reusable live smoke-test dataset contains exactly:
+
+- 1 `easy` sample with a fixed seed
+- 1 `medium` sample with a fixed seed
+
+This rule exists specifically to keep first-run OpenAI validation cheap.
+
 ## 6. Difficulty Tiers
 
 Difficulty comes from visual complexity, not from changing the DSL itself.
@@ -184,23 +195,97 @@ Predictions fail closed on:
 
 If parsing or execution fails, the prediction receives a scored failure with zero similarity metrics and a populated `error_type`.
 
-## 8. CLI
+## 8. Adapter Layer
 
-The package exposes these commands:
+The current end-to-end runner uses a provider-agnostic adapter interface with one live OpenAI implementation.
+
+### Adapter Interface
+
+- `PredictionRequest`: sample id, image path, system instruction, user prompt text
+- `PredictionResult`: raw text, normalized text, model id, request id, usage, latency, adapter error fields
+- `ModelAdapter.predict(...) -> PredictionResult`
+
+### Current OpenAI Implementation
+
+- provider: `openai`
+- API: Responses API
+- image input: Base64 `data:image/png;base64,...`
+- default model: `gpt-5.4-nano-2026-03-17`
+- default `reasoning_effort`: `low`
+- default image `detail`: `low`
+- default `max_output_tokens`: `256`
+- retry policy: none
+
+Local development loads `OPENAI_API_KEY` from process env, with `.env` auto-load as a convenience fallback.
+
+## 9. Prompting Protocol
+
+The first runner uses a fixed zero-shot prompt only.
+
+Each evaluated model receives:
+
+- a system instruction to return DSL code only
+- a short textual DSL description
+- the target image
+
+Prompt constraints:
+
+- no chain-of-thought request
+- no explanation in output
+- no markdown fences requested
+- no few-shot examples yet
+
+## 10. Runner And Artifacts
+
+The package exposes:
 
 - `ui-bench generate`
 - `ui-bench render`
 - `ui-bench eval`
+- `ui-bench run`
 
-Typical usage:
+Typical model run:
 
 ```bash
-uv run ui-bench generate --split train --difficulty easy --count 4 --seed 0
-uv run ui-bench render --program-file sample.dsl --output-file sample.png
-uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
+uv run ui-bench run \
+  --dataset-dir data/generated/train \
+  --provider openai \
+  --model gpt-5.4-nano-2026-03-17 \
+  --reasoning-effort low \
+  --image-detail low \
+  --max-output-tokens 256 \
+  --limit 2
 ```
 
-## 9. Repository Shape
+Run artifacts are written under `data/runs/<run_id>/`:
+
+- `run_config.json`
+- `summary.json`
+- `samples/<sample_id>.json`
+
+Each per-sample file includes image path, metadata path, raw prediction, normalized prediction, metrics, and adapter metadata.
+
+## 11. Testing Strategy
+
+Default `pytest` runs stay fully offline.
+
+Coverage includes:
+
+- parser and serializer tests
+- renderer snapshot tests
+- generator reproducibility and difficulty-bound tests
+- evaluator tests
+- adapter tests with mocked OpenAI client behavior
+- runner tests with a fake adapter
+- CLI tests for `generate`, `render`, `eval`, and `run`
+
+The live OpenAI smoke test is:
+
+- opt-in only
+- skipped by default
+- capped at 2 local examples
+
+## 12. Repository Shape
 
 The implemented repository shape is:
 
@@ -212,45 +297,37 @@ ui-bench/
   uv.lock
   src/
     ui_bench/
+      adapters/
       cli.py
       dsl.py
       evaluator.py
       generator.py
+      normalization.py
+      prompts.py
       renderer.py
+      runner.py
       types.py
   tests/
+    test_adapters.py
     test_cli.py
     test_dsl.py
     test_evaluator.py
     test_generator.py
+    test_live_openai_smoke.py
     test_renderer.py
+    test_runner.py
   docs/
     benchmark-spec.md
     research-landscape.md
   data/
     generated/
+    runs/
 ```
 
-## 10. Prompting Protocol
+## 13. Next Steps
 
-Each evaluated model should receive:
+The benchmark core and first live runner now exist. The next recommended steps are:
 
-- the target image
-- a concise DSL description
-- an instruction to return code only
-- a standardized formatting template
-
-Recommended prompt constraints:
-
-- no chain-of-thought request
-- no explanation in output
-- fixed or standardized temperature
-- output length capped high enough for the DSL
-
-## 11. Next Steps
-
-The benchmark core now exists. The next recommended steps are:
-
-1. Add model adapters on top of the current evaluator.
-2. Add reporting utilities for aggregate tables and per-slice diagnostics.
-3. Expand the DSL only after the current V1 baseline is stable.
+1. Add richer aggregate reporting and per-slice diagnostics.
+2. Characterize the current baseline on small pilot runs before expanding scope.
+3. Add additional providers or prompt regimes only after the current zero-shot OpenAI baseline is stable.

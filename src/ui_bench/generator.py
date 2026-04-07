@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import json
 import random
 from dataclasses import dataclass
+from pathlib import Path
 
+from ui_bench.dsl import serialize_scene
+from ui_bench.renderer import render_scene
 from ui_bench.types import (
     CANVAS_SIZE,
     Circle,
@@ -71,6 +75,7 @@ DIFFICULTY_SETTINGS: dict[DifficultyName, DifficultySettings] = {
 }
 
 SHAPE_TYPES = ("filled_circle", "circle", "filled_square", "square")
+SMOKE_TEST_SAMPLE_SPECS: tuple[tuple[str, int], ...] = (("easy", 101), ("medium", 202))
 
 
 def generate_scene(difficulty: str, seed: int) -> Scene:
@@ -104,6 +109,36 @@ def build_sample_metadata(split: str, difficulty: str, seed: int, scene: Scene, 
         "ground_truth_program": program,
         "render_config": render_config(),
     }
+
+
+def write_generated_sample(split: str, difficulty: str, seed: int, output_dir: str) -> dict[str, str]:
+    scene = generate_scene(difficulty, seed)
+    program = serialize_scene(scene)
+    image = render_scene(scene)
+    current_sample_id = sample_id(split, difficulty, seed)
+
+    output_root = Path(output_dir) / split / difficulty
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    image_path = output_root / f"{current_sample_id}.png"
+    metadata_path = output_root / f"{current_sample_id}.json"
+
+    image.save(image_path)
+    metadata = build_sample_metadata(split, difficulty, seed, scene, program)
+    metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    return {
+        "sample_id": current_sample_id,
+        "image_path": str(image_path),
+        "metadata_path": str(metadata_path),
+    }
+
+
+def write_smoke_test_dataset(output_dir: str, split: str = "smoke") -> list[dict[str, str]]:
+    return [
+        write_generated_sample(split=split, difficulty=difficulty, seed=seed, output_dir=output_dir)
+        for difficulty, seed in SMOKE_TEST_SAMPLE_SPECS
+    ]
 
 
 def _generate_candidate_scene(rng: random.Random, settings: DifficultySettings) -> Scene:

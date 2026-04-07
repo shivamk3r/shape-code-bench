@@ -54,7 +54,10 @@ Unless explicitly updated elsewhere in the repository, assume the following:
 - The syntax may look Python-like, but the evaluator must parse a restricted subset instead of executing arbitrary Python.
 - Primary scoring is render-based, not exact code-string match.
 - V1 should ship with `easy`, `medium`, and `hard` difficulty tiers.
-- The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`, `numpy`, `pytest`, and `ruff`.
+- The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`, `numpy`, the OpenAI Python SDK, `python-dotenv`, `pytest`, and `ruff`.
+- The first end-to-end model runner uses a provider-agnostic adapter interface with an OpenAI Responses API implementation.
+- The default low-cost OpenAI smoke-test settings are `gpt-5.4-nano-2026-03-17`, `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and no retry.
+- Live API testing should remain opt-in and capped at 2 examples unless the user explicitly requests a larger run.
 
 ## Current Repository Structure
 
@@ -62,12 +65,17 @@ The current implementation lives in:
 
 - `src/ui_bench/dsl.py` for parsing and canonical serialization
 - `src/ui_bench/renderer.py` for deterministic raster rendering
-- `src/ui_bench/generator.py` for seeded scene generation and sample metadata
+- `src/ui_bench/generator.py` for seeded scene generation, sample metadata, and smoke-test dataset creation
+- `src/ui_bench/adapters/` for the provider-agnostic adapter layer and OpenAI implementation
 - `src/ui_bench/evaluator.py` for render-based scoring
-- `src/ui_bench/cli.py` for `generate`, `render`, and `eval`
-- `tests/` for parser, renderer, generator, evaluator, and CLI coverage
+- `src/ui_bench/prompts.py` for the fixed zero-shot benchmark prompt
+- `src/ui_bench/normalization.py` for minimal output normalization
+- `src/ui_bench/runner.py` for dataset loading, model execution, aggregation, and run artifacts
+- `src/ui_bench/cli.py` for `generate`, `render`, `eval`, and `run`
+- `tests/` for parser, renderer, generator, evaluator, adapters, runner, CLI, and the opt-in live smoke test
 
 Generated outputs should go under `data/generated/<split>/<difficulty>/`.
+Benchmark run outputs should go under `data/runs/<run_id>/`.
 
 ## Agent Working Principles
 
@@ -110,11 +118,11 @@ Update `AGENTS.md` whenever any of the following changes:
 
 ## Near-Term Build Order
 
-The benchmark core is implemented. The current recommended next order is:
+The benchmark core and first live runner are implemented. The current recommended next order is:
 
-1. Add model adapters on top of the existing evaluator.
-2. Add reporting and aggregate benchmark summaries.
-3. Validate the current difficulty tiers empirically.
+1. Add richer reporting and per-slice benchmark diagnostics.
+2. Validate the current zero-shot baseline empirically on small pilot runs.
+3. Add more providers or prompt regimes only after the baseline is characterized.
 4. Expand the DSL only after the V1 core is stable and benchmarked.
 
 ## Freshness Check For Agents

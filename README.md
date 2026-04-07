@@ -23,6 +23,8 @@ The implemented V1 core uses:
 - A benchmark-owned Python-like DSL
 - [`Pillow`](https://pillow.readthedocs.io/) for deterministic raster rendering
 - `numpy` for metric computation
+- the OpenAI Python SDK for the first live multimodal adapter
+- `python-dotenv` for local `.env` loading
 
 The benchmark target stays intentionally small in V1:
 
@@ -48,10 +50,20 @@ uv sync --dev
 uv run pytest
 ```
 
-Generate a sample:
+For local OpenAI runs, add your key to `.env`:
 
 ```bash
-uv run ui-bench generate --split train --difficulty easy --count 1 --seed 21
+OPENAI_API_KEY=...
+```
+
+The key is loaded automatically for local development and is never written to benchmark artifacts.
+
+## Commands
+
+Generate a sample set:
+
+```bash
+uv run ui-bench generate --split train --difficulty easy --count 2 --seed 21
 ```
 
 Render a DSL program:
@@ -60,11 +72,39 @@ Render a DSL program:
 uv run ui-bench render --program-file sample.dsl --output-file sample.png
 ```
 
-Evaluate a prediction:
+Evaluate a predicted program directly:
 
 ```bash
 uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
 ```
+
+Run a model over a generated dataset:
+
+```bash
+uv run ui-bench run \
+  --dataset-dir data/generated/train \
+  --provider openai \
+  --model gpt-5.4-nano-2026-03-17 \
+  --reasoning-effort low \
+  --image-detail low \
+  --max-output-tokens 256 \
+  --limit 2
+```
+
+## OpenAI Runner Defaults
+
+The first end-to-end adapter is intentionally conservative on cost:
+
+- provider: `openai`
+- API: Responses API
+- default model: `gpt-5.4-nano-2026-03-17`
+- `reasoning_effort`: `low`
+- image `detail`: `low`
+- `max_output_tokens`: `256`
+- retry policy: none
+- prompt mode: zero-shot only
+
+This is designed for small personal-account smoke tests, not large sponsored benchmark sweeps.
 
 ## DSL Example
 
@@ -86,12 +126,30 @@ The evaluator accepts only a restricted subset of Python syntax:
 
 - `src/ui_bench/dsl.py`: safe parser and canonical serializer
 - `src/ui_bench/renderer.py`: deterministic Pillow renderer
-- `src/ui_bench/generator.py`: seeded scene generator for `easy`, `medium`, and `hard`
-- `src/ui_bench/evaluator.py`: render-based scoring with exact match, pixel accuracy, and foreground IoU
-- `src/ui_bench/cli.py`: `generate`, `render`, and `eval` commands
-- `tests/`: parser, renderer, generator, evaluator, and CLI coverage
+- `src/ui_bench/generator.py`: seeded scene generation, sample writing, and a 2-sample smoke-test dataset helper
+- `src/ui_bench/adapters/`: provider-agnostic adapter interface plus the OpenAI Responses API implementation
+- `src/ui_bench/prompts.py`: fixed zero-shot benchmark prompt
+- `src/ui_bench/normalization.py`: minimal response normalization
+- `src/ui_bench/runner.py`: dataset loader, model runner, aggregation, and artifact writing
+- `src/ui_bench/cli.py`: `generate`, `render`, `eval`, and `run` commands
+- `tests/`: offline unit coverage plus an opt-in live OpenAI smoke test
 
-Generated samples are written under `data/generated/<split>/<difficulty>/` as paired PNG and JSON files.
+Generated benchmark samples are written under `data/generated/<split>/<difficulty>/`.
+
+Benchmark runs are written under `data/runs/<run_id>/` with:
+
+- `run_config.json`
+- `summary.json`
+- `samples/<sample_id>.json`
+
+## Cost-Safe Smoke Testing
+
+Live API testing is explicit and intentionally tiny.
+
+- Default `pytest` stays fully offline.
+- The live smoke test is skipped unless `UI_BENCH_RUN_LIVE_OPENAI=1` is set.
+- The live smoke path generates exactly 2 local examples: 1 `easy` and 1 `medium`.
+- This is the recommended validation path while credits are limited.
 
 ## Why This Benchmark Is Useful
 
@@ -110,6 +168,6 @@ Generated samples are written under `data/generated/<split>/<difficulty>/` as pa
 
 ## Current Status
 
-The V1 benchmark core is implemented: environment setup, DSL parsing and serialization, renderer, generator, evaluator, CLI, and tests are in place.
+The V1 benchmark core and first end-to-end runner are implemented: environment setup, DSL parsing and serialization, renderer, generator, evaluator, provider-agnostic adapter layer, OpenAI Responses API adapter, CLI, and tests are in place.
 
-The next recommended layer is model adapters and reporting on top of the current benchmark core.
+The next recommended layer is richer reporting, more benchmark slices, and additional adapters only after the current baseline is characterized.

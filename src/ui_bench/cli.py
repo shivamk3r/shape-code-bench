@@ -5,10 +5,18 @@ import json
 import sys
 from pathlib import Path
 
+from ui_bench.adapters import (
+    DEFAULT_IMAGE_DETAIL,
+    DEFAULT_MAX_OUTPUT_TOKENS,
+    DEFAULT_OPENAI_MODEL,
+    DEFAULT_REASONING_EFFORT,
+    OpenAIResponsesAdapter,
+)
 from ui_bench.dsl import DSLValidationError, parse_program, serialize_scene
 from ui_bench.evaluator import evaluate_program
-from ui_bench.generator import build_sample_metadata, generate_scene, sample_id
+from ui_bench.generator import write_generated_sample
 from ui_bench.renderer import render_scene
+from ui_bench.runner import run_benchmark
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -48,6 +56,25 @@ def _build_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--output-file")
     eval_parser.set_defaults(handler=_handle_eval)
 
+    run_parser = subparsers.add_parser("run", help="Run a model adapter on a generated dataset.")
+    run_parser.add_argument("--dataset-dir", required=True)
+    run_parser.add_argument("--provider", choices=("openai",), required=True)
+    run_parser.add_argument("--model", default=DEFAULT_OPENAI_MODEL)
+    run_parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "high"),
+        default=DEFAULT_REASONING_EFFORT,
+    )
+    run_parser.add_argument(
+        "--image-detail",
+        choices=("low", "high", "auto", "original"),
+        default=DEFAULT_IMAGE_DETAIL,
+    )
+    run_parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS)
+    run_parser.add_argument("--limit", type=int)
+    run_parser.add_argument("--output-dir", default="data/runs")
+    run_parser.set_defaults(handler=_handle_run)
+
     return parser
 
 
@@ -55,30 +82,16 @@ def _handle_generate(args: argparse.Namespace) -> int:
     if args.count < 1:
         raise ValueError("--count must be at least 1.")
 
-    output_root = Path(args.output_dir) / args.split / args.difficulty
-    output_root.mkdir(parents=True, exist_ok=True)
-
     results: list[dict[str, object]] = []
     for offset in range(args.count):
         current_seed = args.seed + offset
-        scene = generate_scene(args.difficulty, current_seed)
-        program = serialize_scene(scene)
-        image = render_scene(scene)
-        current_sample_id = sample_id(args.split, args.difficulty, current_seed)
-
-        image_path = output_root / f"{current_sample_id}.png"
-        metadata_path = output_root / f"{current_sample_id}.json"
-
-        image.save(image_path)
-        metadata = build_sample_metadata(args.split, args.difficulty, current_seed, scene, program)
-        metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
         results.append(
-            {
-                "sample_id": current_sample_id,
-                "image_path": str(image_path),
-                "metadata_path": str(metadata_path),
-            }
+            write_generated_sample(
+                split=args.split,
+                difficulty=args.difficulty,
+                seed=current_seed,
+                output_dir=args.output_dir,
+            )
         )
 
     print(json.dumps({"generated": results}, indent=2))
@@ -119,6 +132,40 @@ def _handle_eval(args: argparse.Namespace) -> int:
 
     print(json.dumps(payload, indent=2))
     return 0
+
+
+def _handle_run(args: argparse.Namespace) -> int:
+    if args.limit is not None and args.limit < 1:
+        raise ValueError("--limit must be at least 1 when provided.")
+
+    adapter = _build_adapter_from_args(args)
+    result = run_benchmark(
+        dataset_dir=args.dataset_dir,
+        adapter=adapter,
+        limit=args.limit,
+        output_dir=args.output_dir,
+    )
+    payload = {
+        "run_id": result.run_id,
+        "output_dir": str(result.output_dir),
+        "run_config_path": str(result.run_config_path),
+        "summary_path": str(result.summary_path),
+        "summary": result.summary,
+    }
+    print(json.dumps(payload, indent=2))
+    return 0
+
+
+def _build_adapter_from_args(args: argparse.Namespace) -> OpenAIResponsesAdapter:
+    if args.provider != "openai":
+        raise ValueError(f"Unsupported provider '{args.provider}'.")
+
+    return OpenAIResponsesAdapter(
+        model=args.model,
+        reasoning_effort=args.reasoning_effort,
+        image_detail=args.image_detail,
+        max_output_tokens=args.max_output_tokens,
+    )
 
 
 if __name__ == "__main__":
