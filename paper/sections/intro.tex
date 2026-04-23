@@ -1,0 +1,62 @@
+\section{Introduction}
+\label{sec:intro}
+
+Modern multimodal models are increasingly evaluated on their ability to turn
+images into code. Work on screenshot-to-HTML~\cite{beltramelli2017pix2code,si2024design2code},
+structure extraction from webpages, LaTeX, and music
+scores~\cite{roberts2024image2struct}, and symbolic vector
+generation~\cite{lin2025vcode,zhou2026omni} all ask the same underlying question
+in different clothes: \emph{can a model look at a picture and produce the program
+that generated it?} Earlier work on visual program
+induction~\cite{sharma2018csgnet,liu2019scenes,li2020perspective,li2020multiplane,duan2022parametric,grand2024lilo}
+framed this problem as inverse graphics over a small symbolic DSL, and more
+recently \textsc{TurtleBench}~\cite{rismanchian2025turtlebench} has revived it
+as a benchmark-first target for large vision-language models.
+
+Across these lines of work, three design pressures keep recurring: (1) deterministic
+execution so that scoring is principled; (2) render-based scoring so that
+semantically equivalent programs are not penalized for textual
+differences~\cite{roberts2024image2struct}; and (3) controlled generation so that
+failure modes can be attributed to specific visual factors, in the tradition of
+\textsc{CLEVR}~\cite{johnson2017clevr,bahdanau2019closure}. Most existing
+benchmarks satisfy one or two of these, but few satisfy all three while remaining
+\emph{renewable} -- that is, cheap enough to regenerate when an existing split
+becomes contaminated.
+
+We present \textsc{ui-bench}, a perception-to-program benchmark that attempts to
+hit the intersection of these pressures. The task is narrow by design: the DSL
+has exactly four primitives (\texttt{filled\_circle}, \texttt{circle},
+\texttt{filled\_square}, \texttt{square}) and the canvas is fixed at
+$512{\times}512$ grayscale with a black foreground on a white background. Every
+sample is generated from a seeded RNG with explicit difficulty controls on shape
+count, size, stroke width, overlap, and canvas clipping. The evaluator parses
+predictions with a safe restricted Python parser, re-renders them through the
+same deterministic Pillow pipeline used to produce the target, and compares
+rasters.
+
+\paragraph{Contributions.} We make the following contributions:
+\begin{enumerate}
+  \item We release the \textsc{ui-bench} benchmark: a four-primitive drawing DSL,
+    a safe restricted parser, a seeded scene generator with three difficulty
+    tiers, and a render-based evaluator with five primary metrics.
+  \item We freeze an evaluation split, \textsc{eval\_v1}, of 150 samples with
+    deterministic seeds, and publish per-sample raster hashes to make the exact
+    evaluation instances reproducible across platforms.
+  \item We show how to run frontier multimodal models through the benchmark
+    \emph{without} consuming API tokens by wrapping the OpenAI Codex CLI
+    (\texttt{codex exec}) in the benchmark's provider-agnostic adapter. This
+    lowers the cost floor for independent evaluation while preserving full
+    artifact capture.
+  \item We report baseline results for three Codex-backed multimodal models
+    (\texttt{gpt-5.4}, \texttt{gpt-5.3-codex}, \texttt{gpt-5.4-mini}) and two
+    non-LLM baselines (empty program, classical-CV heuristic). The combined
+    results confirm that \textsc{ui-bench} is not saturated, and expose a
+    difficulty-dependent gap between symbolic and multimodal approaches.
+\end{enumerate}
+
+The rest of the paper is organized as follows. Section~\ref{sec:related} places
+\textsc{ui-bench} against prior work. Section~\ref{sec:benchmark} describes the
+DSL, generator, renderer, and evaluator. Section~\ref{sec:experiments} details
+the experimental setup and headline results. Section~\ref{sec:analysis} analyzes
+failure modes, the heuristic-vs-LLM gap, and difficulty validity.
+Section~\ref{sec:limitations} discusses limitations and future work.

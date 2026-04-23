@@ -1,0 +1,26 @@
+{
+  "difficulty": "easy",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": true,
+    "execution_success": true,
+    "foreground_iou": 1.0,
+    "parse_success": true,
+    "pixel_accuracy": 1.0
+  },
+  "image_path": "data/eval_v1/eval/easy/eval-easy-00000001.png",
+  "metadata_path": "data/eval_v1/eval/easy/eval-easy-00000001.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 3,
+    "model": "heuristic-cv-v1",
+    "normalized_text": "filled_circle(cx=326, cy=337, radius=96)",
+    "raw_text": "filled_circle(cx=326, cy=337, radius=96)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-easy-00000001",
+  "seed": 1,
+  "split": "eval"
+}

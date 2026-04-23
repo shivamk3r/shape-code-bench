@@ -1,0 +1,26 @@
+{
+  "difficulty": "easy",
+  "evaluation": {
+    "error_type": "empty_program",
+    "exact_match": false,
+    "execution_success": false,
+    "foreground_iou": 0.0,
+    "parse_success": false,
+    "pixel_accuracy": 0.0
+  },
+  "image_path": "data/eval_v1/eval/easy/eval-easy-00000032.png",
+  "metadata_path": "data/eval_v1/eval/easy/eval-easy-00000032.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 0,
+    "model": "empty-program",
+    "normalized_text": "",
+    "raw_text": "",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-easy-00000032",
+  "seed": 32,
+  "split": "eval"
+}

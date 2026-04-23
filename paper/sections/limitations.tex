@@ -1,0 +1,63 @@
+\section{Limitations and Future Work}
+\label{sec:limitations}
+
+\textsc{ui-bench} makes deliberate scoping choices in its v1 incarnation, each
+of which is a direction for future work.
+
+\paragraph{Monochrome palette.}
+V1 is black-on-white. This collapses draw-order sensitivity: later shapes can
+paint foreground pixels but cannot erase or overwrite earlier ones. A richer
+palette (multiple colors or an explicit \texttt{clear} primitive) would make
+draw order first-class and enable sharper compositionality tests.
+
+\paragraph{Four primitives.}
+The DSL currently covers only filled and hollow circles and squares. Extending
+to rectangles, lines, polygons, or parametric curves would stress different
+kinds of visual reasoning and likely move saturation further out.
+
+\paragraph{Zero-shot only.}
+We evaluate without chain-of-thought prompting or few-shot examples. These are
+natural knobs to explore and may change the ordering of models, especially for
+the reasoning-heavy hard tier.
+
+\paragraph{Codex non-determinism.}
+Codex-backed runs are not deterministic at the sampling level: the CLI does not
+expose a seed for the underlying model, and two identical requests can produce
+different predictions. Each run's \texttt{run\_config.json} captures the model
+identifier and the adapter settings (sandbox, timeout, retries) used at
+invocation time, and the Codex CLI versions under which the sweeps ran are
+documented in \texttt{docs/REPRODUCIBILITY.md}. We cannot guarantee bit-exact
+reproduction of reported numbers. The renewable design of \textsc{ui-bench}
+mitigates this: other researchers can regenerate the evaluation split from
+published seeds and re-run the Codex CLI themselves.
+
+\paragraph{No human baseline.}
+We do not report human performance. An informal human baseline on a small
+sample of scenes would make the ``how hard is this really?'' claim concrete,
+and we plan to add it in a subsequent revision.
+
+\paragraph{Model coverage.}
+We evaluate three recent multimodal models that are available via Codex CLI on
+a ChatGPT Pro subscription. Other frontier multimodal systems are not covered
+here but can be added by implementing a new adapter against the same
+\texttt{ModelAdapter} Protocol.
+
+\paragraph{Contamination resistance.}
+The current eval split's seeds are public. We rely on the \emph{renewability}
+of the benchmark rather than on secrecy: to evaluate under a contamination-free
+setting, regenerate \textsc{eval\_vN} from fresh seeds using the published
+generator and manifest. This is intentionally cheap: the entire 150-sample split
+regenerates in under a second.
+
+\paragraph{Reproducibility.}
+We publish the benchmark code, the frozen \textsc{eval\_v1} dataset with
+SHA-256 hashes per image, per-run artifacts, analysis scripts, and paper sources.
+\texttt{docs/REPRODUCIBILITY.md} walks through the end-to-end workflow from a
+clean checkout.
+
+\section*{Acknowledgments}
+
+We thank the authors of the prior benchmarks cited throughout this paper for
+laying the groundwork that \textsc{ui-bench} builds on, and the maintainers of
+\texttt{Pillow}, \texttt{numpy}, and \texttt{scipy} for tools that made the
+evaluator and heuristic baseline straightforward to implement.

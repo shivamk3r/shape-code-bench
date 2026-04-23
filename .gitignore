@@ -205,3 +205,23 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ui-bench run artifacts (kept in data/runs/, per-run configs/summaries; can grow large)
+data/runs/
+
+# Hidden log files from background sweeps
+data/runs/.*
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+paper/sections/*.aux
+paper/arxiv-build/
+paper/main-arxiv.tar.gz

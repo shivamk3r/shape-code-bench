@@ -1,0 +1,26 @@
+{
+  "difficulty": "hard",
+  "evaluation": {
+    "error_type": "empty_program",
+    "exact_match": false,
+    "execution_success": false,
+    "foreground_iou": 0.0,
+    "parse_success": false,
+    "pixel_accuracy": 0.0
+  },
+  "image_path": "data/eval_v1/eval/hard/eval-hard-00000013.png",
+  "metadata_path": "data/eval_v1/eval/hard/eval-hard-00000013.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 0,
+    "model": "empty-program",
+    "normalized_text": "",
+    "raw_text": "",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-hard-00000013",
+  "seed": 13,
+  "split": "eval"
+}

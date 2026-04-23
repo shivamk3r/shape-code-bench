@@ -78,9 +78,11 @@ Evaluate a predicted program directly:
 uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
 ```
 
-Run a model over a generated dataset:
+Run a model over a generated dataset. `--provider` selects one of `openai`,
+`codex`, `heuristic`, or `empty`:
 
 ```bash
+# Via the OpenAI API (burns API tokens)
 uv run ui-bench run \
   --dataset-dir data/generated/train \
   --provider openai \
@@ -89,14 +91,27 @@ uv run ui-bench run \
   --image-detail low \
   --max-output-tokens 256 \
   --limit 2
+
+# Via the Codex CLI (uses the ChatGPT login, no API tokens)
+uv run ui-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider codex \
+  --codex-model gpt-5.4 \
+  --codex-timeout-seconds 240 \
+  --limit 2
+
+# Classical-CV baseline (no LLM, under a second for 150 samples)
+uv run ui-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider heuristic
 ```
 
-## OpenAI Runner Defaults
+## Provider Defaults
 
-The first end-to-end adapter is intentionally conservative on cost:
+Adapter defaults are kept conservative on cost.
 
-- provider: `openai`
-- API: Responses API
+**OpenAI Responses API** (`--provider openai`):
+
 - default model: `gpt-5.4-nano-2026-03-17`
 - `reasoning_effort`: `low`
 - image `detail`: `low`
@@ -104,7 +119,16 @@ The first end-to-end adapter is intentionally conservative on cost:
 - retry policy: none
 - prompt mode: zero-shot only
 
-This is designed for small personal-account smoke tests, not large sponsored benchmark sweeps.
+**Codex CLI** (`--provider codex`):
+
+- default model: `gpt-5.4`
+- sandbox: `read-only`
+- timeout: `180` seconds per sample
+- retries: `2` with exponential backoff
+- uses the ChatGPT login (no API tokens consumed)
+
+Both LLM providers share a zero-shot prompt. The designed cost floor is small
+personal-account smoke tests.
 
 ## DSL Example
 
@@ -162,12 +186,17 @@ Live API testing is explicit and intentionally tiny.
 ## Document Structure
 
 - [README.md](README.md): project overview and implementation snapshot
+- [paper/](paper/): arXiv paper source (LaTeX). Build with `cd paper && make`.
+- [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md): end-to-end reproduction of the paper numbers
 - [docs/benchmark-spec.md](docs/benchmark-spec.md): deeper implementation and benchmark spec
 - [docs/research-landscape.md](docs/research-landscape.md): framework choice, related work, and positioning
 - [AGENTS.md](AGENTS.md): repository guidance and project memory for coding agents
 
 ## Current Status
 
-The V1 benchmark core and first end-to-end runner are implemented: environment setup, DSL parsing and serialization, renderer, generator, evaluator, provider-agnostic adapter layer, OpenAI Responses API adapter, CLI, and tests are in place.
-
-The next recommended layer is richer reporting, more benchmark slices, and additional adapters only after the current baseline is characterized.
+The V1 benchmark core, three provider adapters (OpenAI, Codex, and two non-LLM
+baselines), the frozen `eval_v1` evaluation split, the analysis and figure
+scripts, and the arXiv paper draft are all in place. See
+[paper/main.tex](paper/main.tex) for the writeup and
+[docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the end-to-end
+reproduction workflow.

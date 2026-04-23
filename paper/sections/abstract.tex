@@ -1,0 +1,23 @@
+We introduce \textsc{ui-bench}, a synthetic benchmark for \emph{perception-to-program
+reconstruction}: given a rendered raster image, a model must emit an executable
+drawing program that reproduces it under a controlled, deterministic evaluator. \textsc{ui-bench}
+is intentionally small -- a four-primitive black-on-white DSL over a $512 \times 512$
+canvas -- but renewable: every evaluation instance is generated from a seeded RNG,
+so fresh held-out sets can be minted to mitigate benchmark contamination.
+We release a frozen evaluation split, \textsc{eval\_v1}, of $150$ samples
+($50$ per difficulty tier) and score predictions by render-based metrics (exact
+match, pixel accuracy, foreground IoU) together with parse and execution success.
+To validate that the benchmark is non-trivial, we evaluate three recent
+multimodal models -- \texttt{gpt-5.4}, \texttt{gpt-5.3-codex}, and
+\texttt{gpt-5.4-mini} -- via the OpenAI Codex CLI (no API-token consumption),
+against an empty-program floor and a classical-CV heuristic baseline. Exact-match
+rates are low across the board -- the best multimodal model pixel-matches only
+a handful of easy scenes, and zero medium or hard scenes -- while foreground
+IoU degrades more gracefully. The classical heuristic is a surprisingly strong
+baseline on easy scenes, where its connected-component pipeline can still
+individuate shapes, but collapses on medium and hard scenes where multimodal
+models retain most of the spatial structure. Together these results show that
+\textsc{ui-bench} exposes distinct failure modes of perception and structured
+code emission even in a deliberately small DSL. The benchmark code, frozen
+dataset, and full run artifacts are released to support independent replication
+and extension.

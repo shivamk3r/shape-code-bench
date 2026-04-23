@@ -6,17 +6,27 @@ import sys
 from pathlib import Path
 
 from ui_bench.adapters import (
+    DEFAULT_CODEX_BINARY,
+    DEFAULT_CODEX_MAX_RETRIES,
+    DEFAULT_CODEX_MODEL,
+    DEFAULT_CODEX_SANDBOX,
+    DEFAULT_CODEX_TIMEOUT_SECONDS,
     DEFAULT_IMAGE_DETAIL,
     DEFAULT_MAX_OUTPUT_TOKENS,
     DEFAULT_OPENAI_MODEL,
     DEFAULT_REASONING_EFFORT,
+    CodexAdapter,
+    ModelAdapter,
     OpenAIResponsesAdapter,
 )
+from ui_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
 from ui_bench.dsl import DSLValidationError, parse_program, serialize_scene
 from ui_bench.evaluator import evaluate_program
 from ui_bench.generator import write_generated_sample
 from ui_bench.renderer import render_scene
 from ui_bench.runner import run_benchmark
+
+PROVIDER_CHOICES = ("openai", "codex", "heuristic", "empty")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -58,7 +68,11 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_parser = subparsers.add_parser("run", help="Run a model adapter on a generated dataset.")
     run_parser.add_argument("--dataset-dir", required=True)
-    run_parser.add_argument("--provider", choices=("openai",), required=True)
+    run_parser.add_argument("--provider", choices=PROVIDER_CHOICES, required=True)
+    run_parser.add_argument("--limit", type=int)
+    run_parser.add_argument("--output-dir", default="data/runs")
+
+    # OpenAI-specific flags
     run_parser.add_argument("--model", default=DEFAULT_OPENAI_MODEL)
     run_parser.add_argument(
         "--reasoning-effort",
@@ -71,8 +85,18 @@ def _build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_IMAGE_DETAIL,
     )
     run_parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS)
-    run_parser.add_argument("--limit", type=int)
-    run_parser.add_argument("--output-dir", default="data/runs")
+
+    # Codex-specific flags
+    run_parser.add_argument("--codex-model", default=DEFAULT_CODEX_MODEL)
+    run_parser.add_argument(
+        "--codex-sandbox",
+        choices=("read-only", "workspace-write", "danger-full-access"),
+        default=DEFAULT_CODEX_SANDBOX,
+    )
+    run_parser.add_argument("--codex-timeout-seconds", type=int, default=DEFAULT_CODEX_TIMEOUT_SECONDS)
+    run_parser.add_argument("--codex-binary", default=DEFAULT_CODEX_BINARY)
+    run_parser.add_argument("--codex-max-retries", type=int, default=DEFAULT_CODEX_MAX_RETRIES)
+
     run_parser.set_defaults(handler=_handle_run)
 
     return parser
@@ -156,16 +180,27 @@ def _handle_run(args: argparse.Namespace) -> int:
     return 0
 
 
-def _build_adapter_from_args(args: argparse.Namespace) -> OpenAIResponsesAdapter:
-    if args.provider != "openai":
-        raise ValueError(f"Unsupported provider '{args.provider}'.")
-
-    return OpenAIResponsesAdapter(
-        model=args.model,
-        reasoning_effort=args.reasoning_effort,
-        image_detail=args.image_detail,
-        max_output_tokens=args.max_output_tokens,
-    )
+def _build_adapter_from_args(args: argparse.Namespace) -> ModelAdapter:
+    if args.provider == "openai":
+        return OpenAIResponsesAdapter(
+            model=args.model,
+            reasoning_effort=args.reasoning_effort,
+            image_detail=args.image_detail,
+            max_output_tokens=args.max_output_tokens,
+        )
+    if args.provider == "codex":
+        return CodexAdapter(
+            model=args.codex_model,
+            sandbox=args.codex_sandbox,
+            timeout_seconds=args.codex_timeout_seconds,
+            codex_binary=args.codex_binary,
+            max_retries=args.codex_max_retries,
+        )
+    if args.provider == "heuristic":
+        return HeuristicCVAdapter()
+    if args.provider == "empty":
+        return EmptyProgramAdapter()
+    raise ValueError(f"Unsupported provider '{args.provider}'.")
 
 
 if __name__ == "__main__":

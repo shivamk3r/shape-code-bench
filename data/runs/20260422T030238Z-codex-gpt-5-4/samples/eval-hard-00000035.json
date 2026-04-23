@@ -1,0 +1,26 @@
+{
+  "difficulty": "hard",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.9569956365958353,
+    "parse_success": true,
+    "pixel_accuracy": 0.9815025329589844
+  },
+  "image_path": "data/eval_v1/eval/hard/eval-hard-00000035.png",
+  "metadata_path": "data/eval_v1/eval/hard/eval-hard-00000035.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 17080,
+    "model": "gpt-5.4",
+    "normalized_text": "filled_circle(cx=10, cy=12, radius=61)\ncircle(cx=169, cy=76, radius=56, stroke=7)\nfilled_circle(cx=333, cy=81, radius=46)\nfilled_circle(cx=508, cy=53, radius=59)\nfilled_square(cx=301, cy=164, size=26)\ncircle(cx=443, cy=259, radius=49, stroke=7)\nfilled_square(cx=134, cy=349, size=112)\nfilled_circle(cx=133, cy=451, radius=102)\nfilled_circle(cx=282, cy=376, radius=111)\nfilled_circle(cx=511, cy=384, radius=108)",
+    "raw_text": "filled_circle(cx=10, cy=12, radius=61)\ncircle(cx=169, cy=76, radius=56, stroke=7)\nfilled_circle(cx=333, cy=81, radius=46)\nfilled_circle(cx=508, cy=53, radius=59)\nfilled_square(cx=301, cy=164, size=26)\ncircle(cx=443, cy=259, radius=49, stroke=7)\nfilled_square(cx=134, cy=349, size=112)\nfilled_circle(cx=133, cy=451, radius=102)\nfilled_circle(cx=282, cy=376, radius=111)\nfilled_circle(cx=511, cy=384, radius=108)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-hard-00000035",
+  "seed": 35,
+  "split": "eval"
+}

@@ -1,0 +1,26 @@
+{
+  "difficulty": "hard",
+  "evaluation": {
+    "error_type": "empty_program",
+    "exact_match": false,
+    "execution_success": false,
+    "foreground_iou": 0.0,
+    "parse_success": false,
+    "pixel_accuracy": 0.0
+  },
+  "image_path": "data/eval_v1/eval/hard/eval-hard-00000043.png",
+  "metadata_path": "data/eval_v1/eval/hard/eval-hard-00000043.json",
+  "prediction": {
+    "error_message": "codex exec timed out after 240s: Command '['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '-s', 'read-only', '-m', 'gpt-5.4-mini', '-i', 'data/eval_v1/eval/hard/eval-hard-00000043.png', '-o', '/var/folders/sf/vr2lz0vs62ddgglltngmpgt80000gn/T/ui-bench-codex-ct0zmyi4/last-message.txt', '-C', '/var/folders/sf/vr2lz0vs62ddgglltngmpgt80000gn/T/ui-bench-codex-ct0zmyi4', '--color', 'never', 'Return only valid ui-bench DSL code. Do not include markdown fences, comments, or prose.\\n\\nReconstruct the 512x512 image as ui-bench DSL.\\nAllowed:\\nfilled_circle(cx=<int>, cy=<int>, radius=<int>)\\ncircle(cx=<int>, cy=<int>, radius=<int>, stroke=<int>)\\nfilled_square(cx=<int>, cy=<int>, size=<int>)\\nsquare(cx=<int>, cy=<int>, size=<int>, stroke=<int>)\\nUse only integers.\\nUse one function call per line.\\nDo not output imports, variables, loops, explanations, or markdown.']' timed out after 240 seconds",
+    "error_type": "timeout",
+    "latency_ms": 726107,
+    "model": "gpt-5.4-mini",
+    "normalized_text": "",
+    "raw_text": "",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-hard-00000043",
+  "seed": 43,
+  "split": "eval"
+}

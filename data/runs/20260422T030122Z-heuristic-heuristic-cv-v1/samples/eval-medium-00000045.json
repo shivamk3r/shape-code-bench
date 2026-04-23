@@ -1,0 +1,26 @@
+{
+  "difficulty": "medium",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.3990924239407246,
+    "parse_success": true,
+    "pixel_accuracy": 0.7812728881835938
+  },
+  "image_path": "data/eval_v1/eval/medium/eval-medium-00000045.png",
+  "metadata_path": "data/eval_v1/eval/medium/eval-medium-00000045.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 4,
+    "model": "heuristic-cv-v1",
+    "normalized_text": "filled_circle(cx=332, cy=146, radius=177)\ncircle(cx=93, cy=378, radius=20, stroke=2)",
+    "raw_text": "filled_circle(cx=332, cy=146, radius=177)\ncircle(cx=93, cy=378, radius=20, stroke=2)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-medium-00000045",
+  "seed": 45,
+  "split": "eval"
+}

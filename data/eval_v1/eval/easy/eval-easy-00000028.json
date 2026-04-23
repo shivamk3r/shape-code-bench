@@ -1,0 +1,22 @@
+{
+  "difficulty": "easy",
+  "ground_truth_program": "circle(cx=178, cy=190, radius=133, stroke=3)",
+  "image_size": 512,
+  "num_shapes": 1,
+  "render_config": {
+    "background_color": 255,
+    "canvas_size": 512,
+    "foreground_color": 0,
+    "image_mode": "L",
+    "renderer_semantics": "v1-raster-pillow"
+  },
+  "sample_id": "eval-easy-00000028",
+  "seed": 28,
+  "shape_inventory": {
+    "circle": 1,
+    "filled_circle": 0,
+    "filled_square": 0,
+    "square": 0
+  },
+  "split": "eval"
+}

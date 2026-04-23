@@ -1,0 +1,66 @@
+{
+  "adapter_error_type_counts": {
+    "none": 148,
+    "timeout": 2
+  },
+  "by_difficulty": {
+    "easy": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.12,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.7989980221167495,
+      "mean_pixel_accuracy": 0.9858428192138672,
+      "parse_success_rate": 1.0
+    },
+    "hard": {
+      "adapter_error_type_counts": {
+        "none": 48,
+        "timeout": 2
+      },
+      "error_type_counts": {
+        "empty_program": 2,
+        "none": 46,
+        "out_of_range": 2
+      },
+      "exact_match_rate": 0.0,
+      "execution_success_rate": 0.92,
+      "mean_foreground_iou": 0.7080763818162046,
+      "mean_pixel_accuracy": 0.8829998016357422,
+      "parse_success_rate": 0.92
+    },
+    "medium": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.02,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.7763225508104453,
+      "mean_pixel_accuracy": 0.9736461639404297,
+      "parse_success_rate": 1.0
+    }
+  },
+  "dataset_dir": "/Users/shivamkumar/projects/personal/ui-bench/data/eval_v1/eval",
+  "error_type_counts": {
+    "empty_program": 2,
+    "none": 146,
+    "out_of_range": 2
+  },
+  "exact_match_rate": 0.04666666666666667,
+  "execution_success_rate": 0.9733333333333334,
+  "mean_foreground_iou": 0.7611323182477998,
+  "mean_pixel_accuracy": 0.9474962615966797,
+  "model": "gpt-5.3-codex",
+  "parse_success_rate": 0.9733333333333334,
+  "prompt_mode": "zero-shot",
+  "provider": "codex",
+  "run_id": "20260422T035450Z-codex-gpt-5-3-codex",
+  "total_samples": 150
+}

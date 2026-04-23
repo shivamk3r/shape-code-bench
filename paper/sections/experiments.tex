@@ -1,0 +1,80 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Protocol}
+
+We evaluate five systems on the frozen \textsc{eval\_v1} split:
+\begin{itemize}
+  \item \textbf{Empty-Program} -- a floor baseline that always predicts an empty
+    string; every sample fails parsing.
+  \item \textbf{Heuristic-CV} -- a classical-CV baseline that thresholds the
+    image, labels connected components, classifies each component as a circle or
+    square by bounding-box fill ratio, and as hollow or filled by morphological
+    erosion. Stroke widths are estimated from the ratio of component area to
+    estimated perimeter.
+  \item \textbf{\texttt{gpt-5.4}}, \textbf{\texttt{gpt-5.3-codex}},
+    \textbf{\texttt{gpt-5.4-mini}} -- three recent multimodal models, invoked
+    through the OpenAI Codex CLI (\texttt{codex exec}) in read-only sandbox mode,
+    with ephemeral sessions, default Codex reasoning effort, and a single image
+    attachment per request.
+\end{itemize}
+
+All LLM runs use the same zero-shot prompt: a one-sentence system instruction
+(``Return only valid ui-bench DSL code. Do not include markdown fences, comments,
+or prose.'') and a user block listing the four primitive signatures and
+formatting constraints. We do not use chain-of-thought prompting or few-shot
+examples. Codex outputs are post-processed by a shared normalizer that prefers
+fenced code blocks anywhere in the response, falls back to primitive-signature
+line filtering, and ultimately surfaces the raw response so that parse errors
+are visible rather than masked.
+
+\subsection{Runner and artifacts}
+
+Each run writes a per-run directory under \texttt{data/runs/} containing
+\texttt{run\_config.json}, \texttt{summary.json}, and per-sample JSON files with
+the request, raw and normalized predictions, usage, latency, and the full
+evaluation result. All metrics in this paper are computed from these artifacts by
+\texttt{scripts/analyze.py}; figures are produced by
+\texttt{scripts/make\_figures.py}. We use non-parametric bootstrap with 1000
+resamples for 95\% confidence intervals on per-difficulty means.
+
+\subsection{Headline results}
+
+Table~\ref{tab:main-results} reports the aggregated metrics across all 150
+samples for each system; 95\% bootstrap CIs are shown in brackets.
+Figure~\ref{fig:acc-by-diff} breaks the exact-match rate down by difficulty
+tier, and Figure~\ref{fig:metric-panel} shows the same decomposition for all
+four scored metrics.
+
+\begin{table}[!htbp]
+  \centering
+  \small
+  \input{tables/main_results}
+  \caption{Main results on \textsc{eval\_v1}. ``Exact'' is pixel-exact raster
+  match; ``PixAcc'' is mean pixel accuracy; ``FG-IoU'' is mean foreground IoU;
+  ``Parse'' is parse success rate. Brackets give 95\% bootstrap CIs.}
+  \label{tab:main-results}
+\end{table}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_accuracy_by_difficulty.pdf}
+  \caption{Exact-match rate by difficulty tier. Error bars are 95\% bootstrap
+  CIs over per-sample indicators.}
+  \label{fig:acc-by-diff}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_metric_comparison.pdf}
+  \caption{All four scored metrics by difficulty tier. The four panels are
+  exact-match, pixel accuracy, foreground IoU, and parse success.}
+  \label{fig:metric-panel}
+\end{figure}
+
+The key qualitative pattern -- detailed in Section~\ref{sec:analysis} -- is that
+exact-match collapses on the hard tier for every system, while
+foreground IoU degrades more gracefully; the heuristic baseline is surprisingly
+competitive on easy scenes and is outclassed on hard scenes, where LLMs can
+enumerate and place multiple overlapping shapes that classical connected
+components cannot individuate.

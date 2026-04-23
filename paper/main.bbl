@@ -1,0 +1,87 @@
+\begin{thebibliography}{10}
+
+\bibitem{bahdanau2019closure}
+Dzmitry Bahdanau, Shikhar Murty, Michael Noukhovitch, Thien~Huu Nguyen, Harm
+  de~Vries, and Aaron Courville.
+\newblock Closure: Assessing systematic generalization of clevr models.
+\newblock {\em arXiv preprint arXiv:1912.05783}, 2019.
+
+\bibitem{beltramelli2017pix2code}
+Tony Beltramelli.
+\newblock pix2code: Generating code from a graphical user interface screenshot.
+\newblock {\em arXiv preprint arXiv:1705.07962}, 2017.
+
+\bibitem{duan2022parametric}
+Xuguang Duan, Xin Wang, Pengchuan Zhao, Guangyao Shen, and Wenwu Zhu.
+\newblock Parametric visual program induction with function modularization.
+\newblock In {\em International Conference on Machine Learning (ICML)}, 2022.
+
+\bibitem{grand2024lilo}
+Gabriel Grand, Lionel Wong, Matthew Bowers, Theo~X. Olausson, Muxin Liu,
+  Joshua~B. Tenenbaum, and Jacob Andreas.
+\newblock Lilo: Learning interpretable libraries by compressing and documenting
+  code.
+\newblock {\em arXiv preprint arXiv:2310.19791}, 2024.
+
+\bibitem{johnson2017clevr}
+Justin Johnson, Bharath Hariharan, Laurens van~der Maaten, Li~Fei-Fei,
+  C.~Lawrence Zitnick, and Ross Girshick.
+\newblock Clevr: A diagnostic dataset for compositional language and elementary
+  visual reasoning.
+\newblock In {\em Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, 2017.
+
+\bibitem{li2020multiplane}
+Yikai Li, Jiayuan Mao, Xiuming Zhang, William~T. Freeman, Joshua~B. Tenenbaum,
+  and Jiajun Wu.
+\newblock Multi-plane program induction with 3d box priors.
+\newblock {\em arXiv preprint arXiv:2011.10007}, 2020.
+
+\bibitem{li2020perspective}
+Yikai Li, Jiayuan Mao, Xiuming Zhang, William~T. Freeman, Joshua~B. Tenenbaum,
+  and Jiajun Wu.
+\newblock Perspective plane program induction from a single image.
+\newblock {\em arXiv preprint arXiv:2006.14708}, 2020.
+
+\bibitem{lin2025vcode}
+Lin et~al.
+\newblock Vcode: a multimodal coding benchmark with svg as symbolic visual
+  representation.
+\newblock {\em arXiv preprint arXiv:2511.02778}, 2025.
+
+\bibitem{liu2019scenes}
+Yunchao Liu, Jiajun Wu, Zhijian Wu, Daniel Ritchie, William~T. Freeman, and
+  Joshua~B. Tenenbaum.
+\newblock Learning to describe scenes with programs.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2019.
+
+\bibitem{rismanchian2025turtlebench}
+Sina Rismanchian et~al.
+\newblock Turtlebench: A visual programming benchmark in turtle geometry.
+\newblock {\em arXiv preprint arXiv:2411.00264}, 2025.
+
+\bibitem{roberts2024image2struct}
+Jonathan Roberts et~al.
+\newblock Image2struct: Benchmarking structure extraction for vision-language
+  models.
+\newblock In {\em NeurIPS Datasets and Benchmarks}, 2024.
+
+\bibitem{sharma2018csgnet}
+Gopal Sharma, Rishabh Goyal, Difan Liu, Evangelos Kalogerakis, and Subhransu
+  Maji.
+\newblock Csgnet: Neural shape parser for constructive solid geometry.
+\newblock {\em arXiv preprint arXiv:1712.08290}, 2018.
+
+\bibitem{si2024design2code}
+Chenglei Si, Yanzhe Zhang, Zhengyuan Yang, Ruibo Liu, and Diyi Yang.
+\newblock Design2code: How far are we from automating front-end engineering?
+\newblock In {\em arXiv}, 2024.
+
+\bibitem{zhou2026omni}
+Zhou et~al.
+\newblock Omni-i2c: A holistic benchmark for high-fidelity image-to-code
+  generation.
+\newblock {\em arXiv preprint arXiv:2603.17508}, 2026.
+
+\end{thebibliography}
