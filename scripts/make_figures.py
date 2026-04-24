@@ -316,7 +316,7 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
     wins.sort(key=lambda p: (p["difficulty"], p["sample_id"]))
     losses.sort(key=lambda p: -float(p["evaluation"]["foreground_iou"]))
 
-    k = 4
+    k = 3
     wins = wins[:k]
     losses = losses[:k]
     rows = len(wins) + len(losses)
@@ -324,7 +324,7 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
         Image.new("L", (1, 1), 255).save(output)
         return
 
-    fig, axes = plt.subplots(rows, 3, figsize=(7.5, 2.3 * rows), squeeze=False)
+    fig, axes = plt.subplots(rows, 3, figsize=(7.5, 1.2 * rows), squeeze=False)
     for row_idx, payload in enumerate(wins + losses):
         target_img = _open_target(payload)
         pred_img = _render_prediction(payload)
@@ -346,7 +346,7 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
 
     fig.suptitle(f"{run['label']} — wins (top {len(wins)}) and losses (bottom {len(losses)})", fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.97))
-    fig.savefig(output)
+    fig.savefig(output, bbox_inches="tight")
     plt.close(fig)
 
 
