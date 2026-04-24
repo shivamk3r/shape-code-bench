@@ -34,6 +34,6 @@ arxiv: all
 	@cp $(MAIN).tex references.bib arxiv-build/
 	@cp $(MAIN).bbl arxiv-build/ 2>/dev/null || echo "No .bbl produced; run 'make' first."
 	@cp -r sections figures tables arxiv-build/
-	@tar -czf $(MAIN)-arxiv.tar.gz arxiv-build
+	@tar -czf $(MAIN)-arxiv.tar.gz -C arxiv-build .
 	@rm -rf arxiv-build
 	@echo "Created $(MAIN)-arxiv.tar.gz"
