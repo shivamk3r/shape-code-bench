@@ -225,3 +225,10 @@ paper/*.synctex.gz
 paper/sections/*.aux
 paper/arxiv-build/
 paper/main-arxiv.tar.gz
+
+# macOS
+.DS_Store
+
+# Retired laptop-transfer handoff notes (kept on disk for reference)
+continue_for_claude.md
+resume.md
