@@ -396,17 +396,19 @@ def _plot_sample_grid(*, dataset_dir: Path, output: Path) -> None:
         images = sorted(tier_dir.glob("*.png"))[:3]
         for col in range(3):
             ax = axes[row, col]
-            ax.axis("off")
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_edgecolor("0.6")
+                spine.set_linewidth(0.5)
             if col >= len(images):
                 continue
             image = np.asarray(Image.open(images[col]).convert("L"), dtype=np.uint8)
             ax.imshow(image, cmap="gray", vmin=0, vmax=255)
             if col == 0:
                 ax.set_ylabel(difficulty.capitalize(), fontsize=10)
-                ax.set_frame_on(False)
-    fig.suptitle("eval_v1 examples", fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.97))
-    fig.savefig(output)
+    fig.tight_layout()
+    fig.savefig(output, bbox_inches="tight")
     plt.close(fig)
 
 
