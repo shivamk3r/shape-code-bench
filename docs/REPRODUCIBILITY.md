@@ -144,10 +144,14 @@ You may override the model used for the smoke test by setting
   the underlying model, so two identical requests can produce different
   predictions. We cannot guarantee bit-exact reproduction of reported numbers.
 - **Codex CLI versions used.** The sweeps reported in the paper ran on Codex
-  CLI versions in the range `0.121.0` to `0.122.0`; a minor version bump
-  happened on the author's machine between the `gpt-5.4` sweep and the
-  `gpt-5.4-mini` sweep, overlapping the `gpt-5.3-codex` sweep. The adapter
-  arguments and prompt were unchanged across versions.
+  CLI `0.121.0` and `0.122.0` (stable). A minor version bump from `0.121.0`
+  to `0.122.0` happened on the author's first machine between the `gpt-5.4`
+  sweep and the first `gpt-5.4-mini` attempt, overlapping the `gpt-5.3-codex`
+  sweep. The `gpt-5.4-mini` sweep was then completed from scratch on a second
+  machine on pinned `0.122.0` (installed via `npm install -g
+  @openai/codex@0.122.0`); the initial 110-sample partial run from the first
+  machine was discarded. The adapter arguments and prompt were unchanged
+  across versions.
 - **Concurrent sweeps on the author's machine.** The `gpt-5.4-mini` sweep was
   launched in a parallel shell during the tail of the `gpt-5.3-codex` sweep to
   reduce wall-clock. Codex outcomes should be independent across sweeps (each

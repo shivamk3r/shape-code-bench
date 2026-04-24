@@ -1,0 +1,67 @@
+{
+  "adapter_error_type_counts": {
+    "none": 143,
+    "timeout": 7
+  },
+  "by_difficulty": {
+    "easy": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.06,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.592951904830139,
+      "mean_pixel_accuracy": 0.9641407775878906,
+      "parse_success_rate": 1.0
+    },
+    "hard": {
+      "adapter_error_type_counts": {
+        "none": 43,
+        "timeout": 7
+      },
+      "error_type_counts": {
+        "empty_program": 7,
+        "none": 31,
+        "out_of_range": 12
+      },
+      "exact_match_rate": 0.02,
+      "execution_success_rate": 0.62,
+      "mean_foreground_iou": 0.39925200233624386,
+      "mean_pixel_accuracy": 0.5835887908935546,
+      "parse_success_rate": 0.62
+    },
+    "medium": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 49,
+        "out_of_range": 1
+      },
+      "exact_match_rate": 0.04,
+      "execution_success_rate": 0.98,
+      "mean_foreground_iou": 0.6146902656546057,
+      "mean_pixel_accuracy": 0.9342710876464844,
+      "parse_success_rate": 0.98
+    }
+  },
+  "dataset_dir": "/Users/shivamair/projects/personal/ui-bench/data/eval_v1/eval",
+  "error_type_counts": {
+    "empty_program": 7,
+    "none": 130,
+    "out_of_range": 13
+  },
+  "exact_match_rate": 0.04,
+  "execution_success_rate": 0.8666666666666667,
+  "mean_foreground_iou": 0.5356313909403295,
+  "mean_pixel_accuracy": 0.8273335520426432,
+  "model": "gpt-5.4-mini",
+  "parse_success_rate": 0.8666666666666667,
+  "prompt_mode": "zero-shot",
+  "provider": "codex",
+  "run_id": "20260423T104654Z-codex-gpt-5-4-mini",
+  "total_samples": 150
+}

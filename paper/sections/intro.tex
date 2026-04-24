@@ -49,9 +49,12 @@ rasters.
     artifact capture.
   \item We report baseline results for three Codex-backed multimodal models
     (\texttt{gpt-5.4}, \texttt{gpt-5.3-codex}, \texttt{gpt-5.4-mini}) and two
-    non-LLM baselines (empty program, classical-CV heuristic). The combined
-    results confirm that \textsc{ui-bench} is not saturated, and expose a
-    difficulty-dependent gap between symbolic and multimodal approaches.
+    non-LLM baselines (empty program, classical-CV heuristic). Multimodal
+    models reach mean foreground IoU up to $0.87$ but cap at $0.047$ overall
+    exact match, while the classical heuristic leads easy-tier exact match
+    at $0.26$ -- a tier-dependent crossover that confirms \textsc{ui-bench}
+    is not saturated and exposes distinct failure modes in perception versus
+    structured code emission.
 \end{enumerate}
 
 The rest of the paper is organized as follows. Section~\ref{sec:related} places

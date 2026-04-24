@@ -1,0 +1,26 @@
+{
+  "difficulty": "medium",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.890044716897949,
+    "parse_success": true,
+    "pixel_accuracy": 0.9600410461425781
+  },
+  "image_path": "data/eval_v1/eval/medium/eval-medium-00000042.png",
+  "metadata_path": "data/eval_v1/eval/medium/eval-medium-00000042.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 95615,
+    "model": "gpt-5.4-mini",
+    "normalized_text": "filled_circle(cx=255, cy=31, radius=31)\nfilled_circle(cx=245, cy=196, radius=126)\nfilled_circle(cx=160, cy=319, radius=134)",
+    "raw_text": "filled_circle(cx=255, cy=31, radius=31)\nfilled_circle(cx=245, cy=196, radius=126)\nfilled_circle(cx=160, cy=319, radius=134)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-medium-00000042",
+  "seed": 42,
+  "split": "eval"
+}

@@ -1,0 +1,73 @@
+{
+  "run_id": "20260423T104654Z-codex-gpt-5-4-mini",
+  "output_dir": "data/runs/20260423T104654Z-codex-gpt-5-4-mini",
+  "run_config_path": "data/runs/20260423T104654Z-codex-gpt-5-4-mini/run_config.json",
+  "summary_path": "data/runs/20260423T104654Z-codex-gpt-5-4-mini/summary.json",
+  "summary": {
+    "run_id": "20260423T104654Z-codex-gpt-5-4-mini",
+    "dataset_dir": "/Users/shivamair/projects/personal/ui-bench/data/eval_v1/eval",
+    "provider": "codex",
+    "model": "gpt-5.4-mini",
+    "prompt_mode": "zero-shot",
+    "total_samples": 150,
+    "exact_match_rate": 0.04,
+    "mean_pixel_accuracy": 0.8273335520426432,
+    "mean_foreground_iou": 0.5356313909403295,
+    "parse_success_rate": 0.8666666666666667,
+    "execution_success_rate": 0.8666666666666667,
+    "error_type_counts": {
+      "empty_program": 7,
+      "none": 130,
+      "out_of_range": 13
+    },
+    "adapter_error_type_counts": {
+      "none": 143,
+      "timeout": 7
+    },
+    "by_difficulty": {
+      "easy": {
+        "exact_match_rate": 0.06,
+        "mean_pixel_accuracy": 0.9641407775878906,
+        "mean_foreground_iou": 0.592951904830139,
+        "parse_success_rate": 1.0,
+        "execution_success_rate": 1.0,
+        "error_type_counts": {
+          "none": 50
+        },
+        "adapter_error_type_counts": {
+          "none": 50
+        }
+      },
+      "hard": {
+        "exact_match_rate": 0.02,
+        "mean_pixel_accuracy": 0.5835887908935546,
+        "mean_foreground_iou": 0.39925200233624386,
+        "parse_success_rate": 0.62,
+        "execution_success_rate": 0.62,
+        "error_type_counts": {
+          "empty_program": 7,
+          "none": 31,
+          "out_of_range": 12
+        },
+        "adapter_error_type_counts": {
+          "none": 43,
+          "timeout": 7
+        }
+      },
+      "medium": {
+        "exact_match_rate": 0.04,
+        "mean_pixel_accuracy": 0.9342710876464844,
+        "mean_foreground_iou": 0.6146902656546057,
+        "parse_success_rate": 0.98,
+        "execution_success_rate": 0.98,
+        "error_type_counts": {
+          "none": 49,
+          "out_of_range": 1
+        },
+        "adapter_error_type_counts": {
+          "none": 50
+        }
+      }
+    }
+  }
+}

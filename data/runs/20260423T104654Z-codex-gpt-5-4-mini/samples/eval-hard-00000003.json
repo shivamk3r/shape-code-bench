@@ -1,0 +1,26 @@
+{
+  "difficulty": "hard",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.7990487042238592,
+    "parse_success": true,
+    "pixel_accuracy": 0.9421424865722656
+  },
+  "image_path": "data/eval_v1/eval/hard/eval-hard-00000003.png",
+  "metadata_path": "data/eval_v1/eval/hard/eval-hard-00000003.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 196801,
+    "model": "gpt-5.4-mini",
+    "normalized_text": "filled_circle(cx=40, cy=309, radius=36)\ncircle(cx=496, cy=66, radius=56, stroke=7)\nfilled_circle(cx=500, cy=267, radius=126)\ncircle(cx=158, cy=400, radius=43, stroke=1)\nfilled_circle(cx=262, cy=486, radius=124)\ncircle(cx=496, cy=392, radius=32, stroke=2)",
+    "raw_text": "filled_circle(cx=40, cy=309, radius=36)\ncircle(cx=496, cy=66, radius=56, stroke=7)\nfilled_circle(cx=500, cy=267, radius=126)\ncircle(cx=158, cy=400, radius=43, stroke=1)\nfilled_circle(cx=262, cy=486, radius=124)\ncircle(cx=496, cy=392, radius=32, stroke=2)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-hard-00000003",
+  "seed": 3,
+  "split": "eval"
+}
