@@ -33,7 +33,7 @@ def test_live_openai_smoke_run(tmp_path: Path) -> None:
             "--provider",
             "openai",
             "--model",
-            "gpt-5.4-nano-2026-03-17",
+            "gpt-5.5",
             "--reasoning-effort",
             "low",
             "--image-detail",

@@ -1,0 +1,33 @@
+{
+  "timestamp": "20260509T170949Z",
+  "n_programs": 100,
+  "shuffles_per_program": 10,
+  "total_renders": 1100,
+  "total_comparisons": 1000,
+  "exact_matches": 1000,
+  "mismatches": 0,
+  "mismatch_rate": 0.0,
+  "elapsed_seconds": 0.263,
+  "by_difficulty": {
+    "easy": {
+      "n_programs": 34,
+      "n_shuffles": 340,
+      "n_matches": 340,
+      "n_mismatches": 0
+    },
+    "medium": {
+      "n_programs": 33,
+      "n_shuffles": 330,
+      "n_matches": 330,
+      "n_mismatches": 0
+    },
+    "hard": {
+      "n_programs": 33,
+      "n_shuffles": 330,
+      "n_matches": 330,
+      "n_mismatches": 0
+    }
+  },
+  "first_mismatch": null,
+  "n_unique_target_hashes": 100
+}

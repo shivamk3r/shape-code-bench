@@ -1,0 +1,60 @@
+{
+  "adapter_error_type_counts": {
+    "none": 150
+  },
+  "by_difficulty": {
+    "easy": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.0,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.4364098409495866,
+      "mean_pixel_accuracy": 0.9485519409179688,
+      "parse_success_rate": 1.0
+    },
+    "hard": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.0,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.47924609659802053,
+      "mean_pixel_accuracy": 0.8886920928955078,
+      "parse_success_rate": 1.0
+    },
+    "medium": {
+      "adapter_error_type_counts": {
+        "none": 50
+      },
+      "error_type_counts": {
+        "none": 50
+      },
+      "exact_match_rate": 0.0,
+      "execution_success_rate": 1.0,
+      "mean_foreground_iou": 0.46636746988626854,
+      "mean_pixel_accuracy": 0.9210279083251953,
+      "parse_success_rate": 1.0
+    }
+  },
+  "dataset_dir": "/Users/shivamkumar/projects/personal/ui-bench/data/eval_v1/eval",
+  "error_type_counts": {
+    "none": 150
+  },
+  "exact_match_rate": 0.0,
+  "execution_success_rate": 1.0,
+  "mean_foreground_iou": 0.46067446914462523,
+  "mean_pixel_accuracy": 0.9194239807128907,
+  "model": "claude-opus-4-7[1m]",
+  "parse_success_rate": 1.0,
+  "prompt_mode": "zero-shot",
+  "provider": "claude",
+  "run_id": "20260509T181550Z-claude-claude-opus-4-7-1m",
+  "total_samples": 150
+}

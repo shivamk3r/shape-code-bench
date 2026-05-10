@@ -1,11 +1,11 @@
 model,provider,error_type,count,n
 Heuristic-CV,heuristic,none,150,150
 Empty-Program,empty,empty_program,150,150
-gpt-5.4,codex,none,146,150
-gpt-5.4,codex,out_of_range,4,150
-gpt-5.3-codex,codex,none,146,150
-gpt-5.3-codex,codex,empty_program,2,150
-gpt-5.3-codex,codex,out_of_range,2,150
-gpt-5.4-mini,codex,none,130,150
-gpt-5.4-mini,codex,empty_program,7,150
-gpt-5.4-mini,codex,out_of_range,13,150
+claude-opus-4-7[1m] (high),claude,none,147,150
+claude-opus-4-7[1m] (high),claude,invalid_stroke,1,150
+claude-opus-4-7[1m] (high),claude,unexpected_argument,2,150
+gpt-5.5 (medium),codex,none,146,150
+gpt-5.5 (medium),codex,out_of_range,4,150
+claude-opus-4-7[1m] (max),claude,none,150,150
+gpt-5.5 (extra_high),codex,none,149,150
+gpt-5.5 (extra_high),codex,out_of_range,1,150

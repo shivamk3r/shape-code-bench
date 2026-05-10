@@ -197,7 +197,7 @@ If parsing or execution fails, the prediction receives a scored failure with zer
 
 ## 8. Adapter Layer
 
-The current end-to-end runner uses a provider-agnostic adapter interface with one live OpenAI implementation.
+The end-to-end runner uses a provider-agnostic adapter interface with three live LLM-relevant implementations plus two non-LLM baselines.
 
 ### Adapter Interface
 
@@ -205,18 +205,43 @@ The current end-to-end runner uses a provider-agnostic adapter interface with on
 - `PredictionResult`: raw text, normalized text, model id, request id, usage, latency, adapter error fields
 - `ModelAdapter.predict(...) -> PredictionResult`
 
-### Current OpenAI Implementation
+### OpenAI Responses API Adapter
 
 - provider: `openai`
 - API: Responses API
 - image input: Base64 `data:image/png;base64,...`
-- default model: `gpt-5.4-nano-2026-03-17`
+- default model: `gpt-5.5`
 - default `reasoning_effort`: `low`
 - default image `detail`: `low`
 - default `max_output_tokens`: `256`
 - retry policy: none
 
 Local development loads `OPENAI_API_KEY` from process env, with `.env` auto-load as a convenience fallback.
+
+### OpenAI Codex CLI Adapter
+
+- provider: `codex`
+- transport: `subprocess.run` against `codex exec`
+- image input: `-i <image_path>` flag on `codex exec`
+- default model: `gpt-5.5`
+- default sandbox: `read-only`
+- default timeout: `180s` per sample
+- default retries: `2` with exponential backoff
+- `reasoning_effort`: unset by default; when set, threaded as `-c reasoning_effort=<value>`
+- output captured via `--output-last-message`
+- authenticates against the user's ChatGPT login; no API tokens consumed
+
+### Claude Code CLI Adapter
+
+- provider: `claude`
+- transport: `subprocess.run` against `claude --print`
+- image input: attached via Claude Code's `@<path>` file-reference syntax in the prompt body, with `--add-dir <image-parent>` granting read access
+- default model: `claude-opus-4-7[1m]`
+- default effort: `medium` (one of `low|medium|high|xhigh|max`, threaded as `--effort`)
+- default timeout: `240s` per sample
+- default retries: `2` with exponential backoff
+- session persistence is disabled via `--no-session-persistence`; output captured from stdout with `--output-format text`
+- authenticates against the user's Claude subscription; no API tokens consumed
 
 ## 9. Prompting Protocol
 
@@ -250,7 +275,7 @@ Typical model run:
 uv run ui-bench run \
   --dataset-dir data/generated/train \
   --provider openai \
-  --model gpt-5.4-nano-2026-03-17 \
+  --model gpt-5.5 \
   --reasoning-effort low \
   --image-detail low \
   --max-output-tokens 256 \
@@ -275,15 +300,15 @@ Coverage includes:
 - renderer snapshot tests
 - generator reproducibility and difficulty-bound tests
 - evaluator tests
-- adapter tests with mocked OpenAI client behavior
+- adapter tests with mocked OpenAI / Codex / Claude Code CLI subprocess behavior
 - runner tests with a fake adapter
 - CLI tests for `generate`, `render`, `eval`, and `run`
 
-The live OpenAI smoke test is:
+The live smoke tests are:
 
-- opt-in only
+- opt-in only (`UI_BENCH_RUN_LIVE_OPENAI=1` and `UI_BENCH_RUN_LIVE_CODEX=1`)
 - skipped by default
-- capped at 2 local examples
+- capped at 2 local examples each
 
 ## 12. Repository Shape
 
@@ -309,11 +334,16 @@ ui-bench/
       types.py
   tests/
     test_adapters.py
+    test_baselines.py
+    test_claude_code_adapter.py
     test_cli.py
+    test_codex_adapter.py
     test_dsl.py
     test_evaluator.py
     test_generator.py
+    test_live_codex_smoke.py
     test_live_openai_smoke.py
+    test_normalization.py
     test_renderer.py
     test_runner.py
   docs/

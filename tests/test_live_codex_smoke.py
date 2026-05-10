@@ -32,7 +32,7 @@ def test_live_codex_smoke_run(tmp_path: Path) -> None:
             "--provider",
             "codex",
             "--codex-model",
-            os.getenv("UI_BENCH_CODEX_SMOKE_MODEL", "gpt-5.4"),
+            os.getenv("UI_BENCH_CODEX_SMOKE_MODEL", "gpt-5.5"),
             "--codex-timeout-seconds",
             "240",
             "--codex-max-retries",

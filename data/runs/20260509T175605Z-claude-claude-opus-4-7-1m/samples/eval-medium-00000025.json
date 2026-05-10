@@ -1,0 +1,26 @@
+{
+  "difficulty": "medium",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.7512770942425134,
+    "parse_success": true,
+    "pixel_accuracy": 0.9258918762207031
+  },
+  "image_path": "data/eval_v1/eval/medium/eval-medium-00000025.png",
+  "metadata_path": "data/eval_v1/eval/medium/eval-medium-00000025.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 9651,
+    "model": "claude-opus-4-7[1m]",
+    "normalized_text": "filled_circle(cx=300, cy=290, radius=110)\nfilled_circle(cx=230, cy=370, radius=70)\ncircle(cx=230, cy=180, radius=80, stroke=3)\nfilled_square(cx=350, cy=90, size=110)\nsquare(cx=410, cy=140, size=30, stroke=3)\nfilled_square(cx=110, cy=370, size=90)",
+    "raw_text": "filled_circle(cx=300, cy=290, radius=110)\nfilled_circle(cx=230, cy=370, radius=70)\ncircle(cx=230, cy=180, radius=80, stroke=3)\nfilled_square(cx=350, cy=90, size=110)\nsquare(cx=410, cy=140, size=30, stroke=3)\nfilled_square(cx=110, cy=370, size=90)\n",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-medium-00000025",
+  "seed": 25,
+  "split": "eval"
+}

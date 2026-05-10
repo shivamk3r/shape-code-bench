@@ -3,7 +3,9 @@
 
 \subsection{Protocol}
 
-We evaluate five systems on the frozen \textsc{eval\_v1} split:
+We evaluate six systems on the frozen \textsc{eval\_v1} split: two non-LLM
+baselines and four reasoning-effort configurations across two frontier
+multimodal models, each invoked through its vendor's headless CLI.
 \begin{itemize}
   \item \textbf{Empty-Program} -- a floor baseline that always predicts an empty
     string; every sample fails parsing.
@@ -12,21 +14,28 @@ We evaluate five systems on the frozen \textsc{eval\_v1} split:
     square by bounding-box fill ratio, and as hollow or filled by morphological
     erosion. Stroke widths are estimated from the ratio of component area to
     estimated perimeter.
-  \item \textbf{\texttt{gpt-5.4}}, \textbf{\texttt{gpt-5.3-codex}},
-    \textbf{\texttt{gpt-5.4-mini}} -- three recent multimodal models, invoked
-    through the OpenAI Codex CLI (\texttt{codex exec}) in read-only sandbox mode,
-    with ephemeral sessions, default Codex reasoning effort, and a single image
-    attachment per request.
+  \item \textbf{\textsc{Claude Opus 4.7} (1M context)} at \texttt{high} and
+    \texttt{max} effort -- invoked through the Claude Code CLI
+    (\texttt{claude --print}) with \texttt{--no-session-persistence}, the
+    target image attached via Claude Code's \texttt{@<path>} file-reference
+    syntax, and \texttt{--add-dir} granting read access to the sample's
+    directory.
+  \item \textbf{\textsc{GPT-5.5}} at \texttt{medium} and \texttt{extra\_high}
+    reasoning effort -- invoked through the OpenAI Codex CLI
+    (\texttt{codex exec}) in read-only sandbox mode with ephemeral sessions,
+    a single image attachment per request, and the target effort level
+    threaded as \texttt{-c reasoning\_effort=<value>}.
 \end{itemize}
 
-All LLM runs use the same zero-shot prompt: a one-sentence system instruction
-(``Return only valid ui-bench DSL code. Do not include markdown fences, comments,
-or prose.'') and a user block listing the four primitive signatures and
-formatting constraints. We do not use chain-of-thought prompting or few-shot
-examples. Codex outputs are post-processed by a shared normalizer that prefers
-fenced code blocks anywhere in the response, falls back to primitive-signature
-line filtering, and ultimately surfaces the raw response so that parse errors
-are visible rather than masked.
+All four LLM configurations share the same zero-shot prompt: a one-sentence
+system instruction (``Return only valid ui-bench DSL code. Do not include
+markdown fences, comments, or prose.'') and a user block listing the four
+primitive signatures and formatting constraints. We do not use chain-of-thought
+prompting or few-shot examples. CLI stdout (Claude Code) and the captured
+last-message file (Codex) are post-processed by a shared normalizer that
+prefers fenced code blocks anywhere in the response, falls back to
+primitive-signature line filtering, and ultimately surfaces the raw response
+so that parse errors are visible rather than masked.
 
 \subsection{Runner and artifacts}
 

@@ -71,12 +71,18 @@ def _load_runs(runs_root: Path) -> list[dict]:
         sample_payloads = []
         for sample_path in sorted(samples_dir.glob("*.json")):
             sample_payloads.append(json.loads(sample_path.read_text(encoding="utf-8")))
+        adapter_config: dict = {}
+        run_config_path = run_dir / "run_config.json"
+        if run_config_path.exists():
+            run_config = json.loads(run_config_path.read_text(encoding="utf-8"))
+            adapter_config = run_config.get("adapter", {}) or {}
         runs.append(
             {
                 "run_dir": run_dir,
                 "summary": summary,
                 "samples": sample_payloads,
-                "model_label": _model_label(summary),
+                "adapter_config": adapter_config,
+                "model_label": _model_label(summary, adapter_config),
                 "provider": summary["provider"],
                 "model": summary["model"],
             }
@@ -84,15 +90,23 @@ def _load_runs(runs_root: Path) -> list[dict]:
     return runs
 
 
-def _model_label(summary: dict) -> str:
+def _model_label(summary: dict, adapter_config: dict | None = None) -> str:
     provider = summary["provider"]
     model = summary["model"]
-    if provider == "codex":
-        return model
+    cfg = adapter_config or {}
     if provider == "heuristic":
         return "Heuristic-CV"
     if provider == "empty":
         return "Empty-Program"
+    if provider == "claude":
+        effort = cfg.get("effort")
+        return f"{model} ({effort})" if effort else model
+    if provider == "codex":
+        effort = cfg.get("reasoning_effort")
+        return f"{model} ({effort})" if effort else model
+    if provider == "openai":
+        effort = cfg.get("reasoning_effort")
+        return f"{model} ({effort})" if effort else model
     return f"{provider}:{model}"
 
 

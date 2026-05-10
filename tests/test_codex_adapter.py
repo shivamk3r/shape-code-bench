@@ -49,12 +49,12 @@ class FakeRunner:
 def test_codex_adapter_builds_expected_argv_and_returns_normalized(tmp_path: Path) -> None:
     request = _build_request(tmp_path)
     runner = FakeRunner(output_body="Here is the DSL:\n\n```\nfilled_circle(cx=10, cy=10, radius=4)\n```")
-    adapter = CodexAdapter(model="gpt-5.4", subprocess_run=runner)
+    adapter = CodexAdapter(model="gpt-5.5", subprocess_run=runner)
 
     result = adapter.predict(request)
 
     assert result.error_type is None
-    assert result.model == "gpt-5.4"
+    assert result.model == "gpt-5.5"
     assert result.normalized_text == "filled_circle(cx=10, cy=10, radius=4)"
     assert result.raw_text.startswith("Here is the DSL")
     assert result.request_id is None
@@ -68,7 +68,7 @@ def test_codex_adapter_builds_expected_argv_and_returns_normalized(tmp_path: Pat
     assert "--skip-git-repo-check" in argv
     assert "--ephemeral" in argv
     assert argv[argv.index("-s") + 1] == "read-only"
-    assert argv[argv.index("-m") + 1] == "gpt-5.4"
+    assert argv[argv.index("-m") + 1] == "gpt-5.5"
     assert argv[argv.index("-i") + 1] == str(request.image_path)
     assert argv[-1] == f"{request.system_instruction}\n\n{request.prompt_text}"
 
@@ -161,7 +161,7 @@ def test_codex_adapter_retries_on_transient_failure(tmp_path: Path) -> None:
 
 def test_codex_adapter_to_config_is_serializable() -> None:
     adapter = CodexAdapter(
-        model="gpt-5.3-codex",
+        model="gpt-5.5",
         sandbox="read-only",
         timeout_seconds=90,
         max_retries=1,
@@ -172,13 +172,47 @@ def test_codex_adapter_to_config_is_serializable() -> None:
 
     assert config == {
         "provider": "codex",
-        "model": "gpt-5.3-codex",
+        "model": "gpt-5.5",
         "sandbox": "read-only",
         "timeout_seconds": 90,
         "codex_binary": "codex",
         "max_retries": 1,
+        "reasoning_effort": None,
         "extra_args": ["--foo", "bar"],
     }
+
+
+def test_codex_adapter_threads_reasoning_effort_into_argv(tmp_path: Path) -> None:
+    request = _build_request(tmp_path)
+    runner = FakeRunner()
+    adapter = CodexAdapter(
+        model="gpt-5.5",
+        reasoning_effort="extra_high",
+        subprocess_run=runner,
+    )
+
+    adapter.predict(request)
+
+    argv = runner.calls[0]
+    config_idx = argv.index("-c")
+    assert argv[config_idx + 1] == "reasoning_effort=extra_high"
+    # Effort flag must appear before the trailing prompt argument and after the model spec.
+    assert config_idx > argv.index("-m")
+    assert config_idx < len(argv) - 1
+    # to_config also surfaces the new field.
+    assert adapter.to_config()["reasoning_effort"] == "extra_high"
+
+
+def test_codex_adapter_omits_reasoning_effort_when_unset(tmp_path: Path) -> None:
+    request = _build_request(tmp_path)
+    runner = FakeRunner()
+    adapter = CodexAdapter(model="gpt-5.5", subprocess_run=runner)
+
+    adapter.predict(request)
+
+    argv = runner.calls[0]
+    assert "-c" not in argv
+    assert all("reasoning_effort=" not in part for part in argv)
 
 
 def test_codex_adapter_rejects_invalid_timeout() -> None:

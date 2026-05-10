@@ -1,0 +1,26 @@
+{
+  "difficulty": "medium",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.9434413805940384,
+    "parse_success": true,
+    "pixel_accuracy": 0.9918861389160156
+  },
+  "image_path": "data/eval_v1/eval/medium/eval-medium-00000041.png",
+  "metadata_path": "data/eval_v1/eval/medium/eval-medium-00000041.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 18079,
+    "model": "gpt-5.5",
+    "normalized_text": "circle(cx=166, cy=154, radius=102, stroke=2)\ncircle(cx=215, cy=137, radius=50, stroke=3)\nfilled_circle(cx=72, cy=288, radius=63)\nfilled_square(cx=228, cy=326, size=61)\nfilled_square(cx=425, cy=441, size=102)\nfilled_square(cx=368, cy=486, size=126)",
+    "raw_text": "circle(cx=166, cy=154, radius=102, stroke=2)\ncircle(cx=215, cy=137, radius=50, stroke=3)\nfilled_circle(cx=72, cy=288, radius=63)\nfilled_square(cx=228, cy=326, size=61)\nfilled_square(cx=425, cy=441, size=102)\nfilled_square(cx=368, cy=486, size=126)",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-medium-00000041",
+  "seed": 41,
+  "split": "eval"
+}

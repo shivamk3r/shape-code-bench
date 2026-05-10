@@ -1,0 +1,26 @@
+{
+  "difficulty": "medium",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.7551552042092774,
+    "parse_success": true,
+    "pixel_accuracy": 0.9275741577148438
+  },
+  "image_path": "data/eval_v1/eval/medium/eval-medium-00000030.png",
+  "metadata_path": "data/eval_v1/eval/medium/eval-medium-00000030.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 9932,
+    "model": "claude-opus-4-7[1m]",
+    "normalized_text": "filled_circle(cx=165, cy=100, radius=85)\nfilled_circle(cx=235, cy=245, radius=120)\nfilled_circle(cx=335, cy=325, radius=55)\nsquare(cx=95, cy=275, size=110, stroke=2)\nsquare(cx=445, cy=105, size=25, stroke=2)",
+    "raw_text": "filled_circle(cx=165, cy=100, radius=85)\nfilled_circle(cx=235, cy=245, radius=120)\nfilled_circle(cx=335, cy=325, radius=55)\nsquare(cx=95, cy=275, size=110, stroke=2)\nsquare(cx=445, cy=105, size=25, stroke=2)\n",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-medium-00000030",
+  "seed": 30,
+  "split": "eval"
+}

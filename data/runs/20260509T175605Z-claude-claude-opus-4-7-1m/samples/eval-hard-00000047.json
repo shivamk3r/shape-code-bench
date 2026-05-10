@@ -1,0 +1,26 @@
+{
+  "difficulty": "hard",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.6238891162244117,
+    "parse_success": true,
+    "pixel_accuracy": 0.8632583618164062
+  },
+  "image_path": "data/eval_v1/eval/hard/eval-hard-00000047.png",
+  "metadata_path": "data/eval_v1/eval/hard/eval-hard-00000047.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 7864,
+    "model": "claude-opus-4-7[1m]",
+    "normalized_text": "filled_circle(cx=430, cy=20, radius=80)\nfilled_square(cx=200, cy=235, size=60)\nfilled_circle(cx=340, cy=400, radius=110)\nfilled_circle(cx=240, cy=440, radius=80)",
+    "raw_text": "filled_circle(cx=430, cy=20, radius=80)\nfilled_square(cx=200, cy=235, size=60)\nfilled_circle(cx=340, cy=400, radius=110)\nfilled_circle(cx=240, cy=440, radius=80)\n",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-hard-00000047",
+  "seed": 47,
+  "split": "eval"
+}

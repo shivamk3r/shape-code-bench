@@ -55,9 +55,11 @@ Unless explicitly updated elsewhere in the repository, assume the following:
 - Primary scoring is render-based, not exact code-string match.
 - V1 should ship with `easy`, `medium`, and `hard` difficulty tiers.
 - The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`, `numpy`, the OpenAI Python SDK, `python-dotenv`, `pytest`, and `ruff`.
-- The first end-to-end model runner uses a provider-agnostic adapter interface with an OpenAI Responses API implementation.
-- The default low-cost OpenAI smoke-test settings are `gpt-5.4-nano-2026-03-17`, `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and no retry.
-- Live API testing should remain opt-in and capped at 2 examples unless the user explicitly requests a larger run.
+- The model runner uses a provider-agnostic adapter interface with three LLM-relevant implementations: an OpenAI Responses API adapter, an OpenAI Codex CLI adapter (`codex exec`), and a Claude Code CLI adapter (`claude --print`).
+- The default low-cost OpenAI smoke-test settings are `gpt-5.5`, `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and no retry.
+- The default Codex CLI settings are `gpt-5.5` with sandbox `read-only`, timeout `180s`, and `2` retries; effort is unset by default and threaded via `--codex-reasoning-effort`.
+- The default Claude Code CLI settings are `claude-opus-4-7[1m]` with effort `medium`, timeout `240s`, and `2` retries; effort is one of `low|medium|high|xhigh|max`.
+- Live API/CLI testing should remain opt-in and capped at 2 examples unless the user explicitly requests a larger run.
 
 ## Current Repository Structure
 
@@ -66,7 +68,7 @@ The current implementation lives in:
 - `src/ui_bench/dsl.py` for parsing and canonical serialization
 - `src/ui_bench/renderer.py` for deterministic raster rendering
 - `src/ui_bench/generator.py` for seeded scene generation, sample metadata, and smoke-test dataset creation
-- `src/ui_bench/adapters/` for the provider-agnostic adapter layer and OpenAI implementation
+- `src/ui_bench/adapters/` for the provider-agnostic adapter layer with OpenAI Responses API, OpenAI Codex CLI, and Claude Code CLI implementations
 - `src/ui_bench/evaluator.py` for render-based scoring
 - `src/ui_bench/prompts.py` for the fixed zero-shot benchmark prompt
 - `src/ui_bench/normalization.py` for minimal output normalization

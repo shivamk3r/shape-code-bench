@@ -1,0 +1,26 @@
+{
+  "difficulty": "easy",
+  "evaluation": {
+    "error_type": null,
+    "exact_match": false,
+    "execution_success": true,
+    "foreground_iou": 0.0,
+    "parse_success": true,
+    "pixel_accuracy": 0.9858245849609375
+  },
+  "image_path": "data/eval_v1/eval/easy/eval-easy-00000028.png",
+  "metadata_path": "data/eval_v1/eval/easy/eval-easy-00000028.json",
+  "prediction": {
+    "error_message": null,
+    "error_type": null,
+    "latency_ms": 6578,
+    "model": "claude-opus-4-7[1m]",
+    "normalized_text": "circle(cx=170, cy=180, radius=110, stroke=2)",
+    "raw_text": "circle(cx=170, cy=180, radius=110, stroke=2)\n",
+    "request_id": null,
+    "usage": null
+  },
+  "sample_id": "eval-easy-00000028",
+  "seed": 28,
+  "split": "eval"
+}

@@ -13,7 +13,7 @@ from openai import OpenAI
 from ui_bench.adapters.base import PredictionRequest, PredictionResult
 from ui_bench.normalization import normalize_prediction_text
 
-DEFAULT_OPENAI_MODEL = "gpt-5.4-nano-2026-03-17"
+DEFAULT_OPENAI_MODEL = "gpt-5.5"
 DEFAULT_REASONING_EFFORT = "low"
 DEFAULT_IMAGE_DETAIL = "low"
 DEFAULT_MAX_OUTPUT_TOKENS = 256

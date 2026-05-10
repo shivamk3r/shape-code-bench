@@ -50,13 +50,18 @@ uv sync --dev
 uv run pytest
 ```
 
-For local OpenAI runs, add your key to `.env`:
+For local OpenAI Responses API runs, add your key to `.env`:
 
 ```bash
 OPENAI_API_KEY=...
 ```
 
 The key is loaded automatically for local development and is never written to benchmark artifacts.
+
+For the two CLI-backed providers, install and authenticate the CLI directly — no API key is required, and no API tokens are consumed:
+
+- **OpenAI Codex CLI** (`codex`): `codex login` (uses a ChatGPT subscription).
+- **Claude Code CLI** (`claude`): `claude auth` (uses a Claude subscription).
 
 ## Commands
 
@@ -79,25 +84,35 @@ uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
 ```
 
 Run a model over a generated dataset. `--provider` selects one of `openai`,
-`codex`, `heuristic`, or `empty`:
+`codex`, `claude`, `heuristic`, or `empty`:
 
 ```bash
-# Via the OpenAI API (burns API tokens)
+# Via the OpenAI Responses API (burns API tokens)
 uv run ui-bench run \
   --dataset-dir data/generated/train \
   --provider openai \
-  --model gpt-5.4-nano-2026-03-17 \
+  --model gpt-5.5 \
   --reasoning-effort low \
   --image-detail low \
   --max-output-tokens 256 \
   --limit 2
 
-# Via the Codex CLI (uses the ChatGPT login, no API tokens)
+# Via the OpenAI Codex CLI (uses the ChatGPT login, no API tokens)
 uv run ui-bench run \
   --dataset-dir data/eval_v1/eval \
   --provider codex \
-  --codex-model gpt-5.4 \
+  --codex-model gpt-5.5 \
+  --codex-reasoning-effort medium \
   --codex-timeout-seconds 240 \
+  --limit 2
+
+# Via the Claude Code CLI (uses the Claude subscription, no API tokens)
+uv run ui-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider claude \
+  --claude-model 'claude-opus-4-7[1m]' \
+  --claude-effort high \
+  --claude-timeout-seconds 240 \
   --limit 2
 
 # Classical-CV baseline (no LLM, under a second for 150 samples)
@@ -112,23 +127,36 @@ Adapter defaults are kept conservative on cost.
 
 **OpenAI Responses API** (`--provider openai`):
 
-- default model: `gpt-5.4-nano-2026-03-17`
+- default model: `gpt-5.5`
 - `reasoning_effort`: `low`
 - image `detail`: `low`
 - `max_output_tokens`: `256`
 - retry policy: none
 - prompt mode: zero-shot only
 
-**Codex CLI** (`--provider codex`):
+**OpenAI Codex CLI** (`--provider codex`):
 
-- default model: `gpt-5.4`
+- default model: `gpt-5.5`
 - sandbox: `read-only`
 - timeout: `180` seconds per sample
 - retries: `2` with exponential backoff
+- `--codex-reasoning-effort {low,medium,high,extra_high}`: unset by default;
+  when set, threaded as `-c reasoning_effort=<value>` to `codex exec`
 - uses the ChatGPT login (no API tokens consumed)
 
-Both LLM providers share a zero-shot prompt. The designed cost floor is small
-personal-account smoke tests.
+**Claude Code CLI** (`--provider claude`):
+
+- default model: `claude-opus-4-7[1m]`
+- `--claude-effort {low,medium,high,xhigh,max}`: defaults to `medium`
+- timeout: `240` seconds per sample
+- retries: `2` with exponential backoff
+- ephemeral session via `--no-session-persistence`; the target image is attached
+  via Claude Code's `@<path>` file-reference syntax, with `--add-dir` granting
+  read access to the sample's directory
+- uses the Claude subscription (no API tokens consumed)
+
+All three LLM providers share a zero-shot prompt. The designed cost floor is
+small personal-account smoke tests.
 
 ## DSL Example
 
@@ -151,12 +179,12 @@ The evaluator accepts only a restricted subset of Python syntax:
 - `src/ui_bench/dsl.py`: safe parser and canonical serializer
 - `src/ui_bench/renderer.py`: deterministic Pillow renderer
 - `src/ui_bench/generator.py`: seeded scene generation, sample writing, and a 2-sample smoke-test dataset helper
-- `src/ui_bench/adapters/`: provider-agnostic adapter interface plus the OpenAI Responses API implementation
+- `src/ui_bench/adapters/`: provider-agnostic adapter interface plus three LLM-relevant implementations (OpenAI Responses API, OpenAI Codex CLI, Claude Code CLI)
 - `src/ui_bench/prompts.py`: fixed zero-shot benchmark prompt
 - `src/ui_bench/normalization.py`: minimal response normalization
 - `src/ui_bench/runner.py`: dataset loader, model runner, aggregation, and artifact writing
 - `src/ui_bench/cli.py`: `generate`, `render`, `eval`, and `run` commands
-- `tests/`: offline unit coverage plus an opt-in live OpenAI smoke test
+- `tests/`: offline unit coverage plus opt-in live smoke tests for the OpenAI Responses API and the Codex CLI
 
 Generated benchmark samples are written under `data/generated/<split>/<difficulty>/`.
 
@@ -194,9 +222,12 @@ Live API testing is explicit and intentionally tiny.
 
 ## Current Status
 
-The V1 benchmark core, three provider adapters (OpenAI, Codex, and two non-LLM
-baselines), the frozen `eval_v1` evaluation split, the analysis and figure
-scripts, and the arXiv paper draft are all in place. See
-[paper/main.tex](paper/main.tex) for the writeup and
-[docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the end-to-end
-reproduction workflow.
+The V1 benchmark core, three LLM provider adapters (OpenAI Responses API, OpenAI
+Codex CLI, Claude Code CLI) plus two non-LLM baselines (empty-program floor,
+classical-CV heuristic), the frozen `eval_v1` evaluation split, the analysis
+and figure scripts, and the arXiv paper draft are all in place. The paper's
+canonical four-config baseline -- Claude Opus 4.7 (1M context) at `high` /
+`max` effort and GPT-5.5 at `medium` / `extra_high` reasoning effort -- is
+reproduced by `scripts/run_paper_sweep.sh`. See [paper/main.tex](paper/main.tex)
+for the writeup and [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the
+end-to-end reproduction workflow.

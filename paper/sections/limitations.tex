@@ -20,16 +20,17 @@ We evaluate without chain-of-thought prompting or few-shot examples. These are
 natural knobs to explore and may change the ordering of models, especially for
 the reasoning-heavy hard tier.
 
-\paragraph{Codex non-determinism.}
-Codex-backed runs are not deterministic at the sampling level: the CLI does not
-expose a seed for the underlying model, and two identical requests can produce
-different predictions. Each run's \texttt{run\_config.json} captures the model
-identifier and the adapter settings (sandbox, timeout, retries) used at
-invocation time, and the Codex CLI versions under which the sweeps ran are
+\paragraph{CLI sampling non-determinism.}
+Both the OpenAI Codex CLI and the Claude Code CLI are non-deterministic at the
+sampling level: neither exposes a seed for the underlying model, and two
+identical requests can produce different predictions. Each run's
+\texttt{run\_config.json} captures the model identifier, the effort level, and
+the adapter settings (sandbox / permission mode, timeout, retries) used at
+invocation time, and the specific CLI versions under which the sweeps ran are
 documented in \texttt{docs/REPRODUCIBILITY.md}. We cannot guarantee bit-exact
 reproduction of reported numbers. The renewable design of \textsc{ui-bench}
 mitigates this: other researchers can regenerate the evaluation split from
-published seeds and re-run the Codex CLI themselves.
+published seeds and re-run either CLI themselves.
 
 \paragraph{No human baseline.}
 We do not report human performance. An informal human baseline on a small
@@ -37,8 +38,10 @@ sample of scenes would make the ``how hard is this really?'' claim concrete,
 and we plan to add it in a subsequent revision.
 
 \paragraph{Model coverage.}
-We evaluate three recent multimodal models that are available via Codex CLI on
-a ChatGPT Pro subscription. Other frontier multimodal systems are not covered
+We evaluate two frontier multimodal models -- \textsc{Claude Opus 4.7} (1M
+context) via the Claude Code CLI on a Claude subscription, and \textsc{GPT-5.5}
+via the OpenAI Codex CLI on a ChatGPT Pro subscription -- across two
+reasoning-effort tiers each. Other frontier multimodal systems are not covered
 here but can be added by implementing a new adapter against the same
 \texttt{ModelAdapter} Protocol.
 

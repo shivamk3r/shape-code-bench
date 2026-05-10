@@ -10,7 +10,7 @@ from typing import Any
 from ui_bench.adapters.base import PredictionRequest, PredictionResult
 from ui_bench.normalization import normalize_prediction_text
 
-DEFAULT_CODEX_MODEL = "gpt-5.4"
+DEFAULT_CODEX_MODEL = "gpt-5.5"
 DEFAULT_CODEX_SANDBOX = "read-only"
 DEFAULT_CODEX_TIMEOUT_SECONDS = 180
 DEFAULT_CODEX_BINARY = "codex"
@@ -38,6 +38,7 @@ class CodexAdapter:
         timeout_seconds: int = DEFAULT_CODEX_TIMEOUT_SECONDS,
         codex_binary: str = DEFAULT_CODEX_BINARY,
         max_retries: int = DEFAULT_CODEX_MAX_RETRIES,
+        reasoning_effort: str | None = None,
         extra_args: tuple[str, ...] = (),
         subprocess_run: Any = None,
     ) -> None:
@@ -51,6 +52,7 @@ class CodexAdapter:
         self.timeout_seconds = timeout_seconds
         self.codex_binary = codex_binary
         self.max_retries = max_retries
+        self.reasoning_effort = reasoning_effort
         self.extra_args = tuple(extra_args)
         self._run = subprocess_run or subprocess.run
 
@@ -82,6 +84,7 @@ class CodexAdapter:
             "timeout_seconds": self.timeout_seconds,
             "codex_binary": self.codex_binary,
             "max_retries": self.max_retries,
+            "reasoning_effort": self.reasoning_effort,
             "extra_args": list(self.extra_args),
         }
 
@@ -161,6 +164,8 @@ class CodexAdapter:
             "--color",
             "never",
         ]
+        if self.reasoning_effort is not None:
+            argv.extend(["-c", f"reasoning_effort={self.reasoning_effort}"])
         argv.extend(self.extra_args)
         argv.append(prompt)
         return argv

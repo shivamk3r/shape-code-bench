@@ -6,6 +6,12 @@ import sys
 from pathlib import Path
 
 from ui_bench.adapters import (
+    CLAUDE_EFFORT_LEVELS,
+    DEFAULT_CLAUDE_BINARY,
+    DEFAULT_CLAUDE_EFFORT,
+    DEFAULT_CLAUDE_MAX_RETRIES,
+    DEFAULT_CLAUDE_MODEL,
+    DEFAULT_CLAUDE_TIMEOUT_SECONDS,
     DEFAULT_CODEX_BINARY,
     DEFAULT_CODEX_MAX_RETRIES,
     DEFAULT_CODEX_MODEL,
@@ -15,6 +21,7 @@ from ui_bench.adapters import (
     DEFAULT_MAX_OUTPUT_TOKENS,
     DEFAULT_OPENAI_MODEL,
     DEFAULT_REASONING_EFFORT,
+    ClaudeCodeAdapter,
     CodexAdapter,
     ModelAdapter,
     OpenAIResponsesAdapter,
@@ -26,7 +33,7 @@ from ui_bench.generator import write_generated_sample
 from ui_bench.renderer import render_scene
 from ui_bench.runner import run_benchmark
 
-PROVIDER_CHOICES = ("openai", "codex", "heuristic", "empty")
+PROVIDER_CHOICES = ("openai", "codex", "claude", "heuristic", "empty")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -96,6 +103,22 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--codex-timeout-seconds", type=int, default=DEFAULT_CODEX_TIMEOUT_SECONDS)
     run_parser.add_argument("--codex-binary", default=DEFAULT_CODEX_BINARY)
     run_parser.add_argument("--codex-max-retries", type=int, default=DEFAULT_CODEX_MAX_RETRIES)
+    run_parser.add_argument(
+        "--codex-reasoning-effort",
+        choices=("low", "medium", "high", "extra_high"),
+        default=None,
+    )
+
+    # Claude-specific flags
+    run_parser.add_argument("--claude-model", default=DEFAULT_CLAUDE_MODEL)
+    run_parser.add_argument(
+        "--claude-effort",
+        choices=CLAUDE_EFFORT_LEVELS,
+        default=DEFAULT_CLAUDE_EFFORT,
+    )
+    run_parser.add_argument("--claude-binary", default=DEFAULT_CLAUDE_BINARY)
+    run_parser.add_argument("--claude-timeout-seconds", type=int, default=DEFAULT_CLAUDE_TIMEOUT_SECONDS)
+    run_parser.add_argument("--claude-max-retries", type=int, default=DEFAULT_CLAUDE_MAX_RETRIES)
 
     run_parser.set_defaults(handler=_handle_run)
 
@@ -195,6 +218,15 @@ def _build_adapter_from_args(args: argparse.Namespace) -> ModelAdapter:
             timeout_seconds=args.codex_timeout_seconds,
             codex_binary=args.codex_binary,
             max_retries=args.codex_max_retries,
+            reasoning_effort=args.codex_reasoning_effort,
+        )
+    if args.provider == "claude":
+        return ClaudeCodeAdapter(
+            model=args.claude_model,
+            effort=args.claude_effort,
+            timeout_seconds=args.claude_timeout_seconds,
+            claude_binary=args.claude_binary,
+            max_retries=args.claude_max_retries,
         )
     if args.provider == "heuristic":
         return HeuristicCVAdapter()

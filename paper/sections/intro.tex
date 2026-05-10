@@ -43,18 +43,24 @@ rasters.
     deterministic seeds, and publish per-sample raster hashes to make the exact
     evaluation instances reproducible across platforms.
   \item We show how to run frontier multimodal models through the benchmark
-    \emph{without} consuming API tokens by wrapping the OpenAI Codex CLI
-    (\texttt{codex exec}) in the benchmark's provider-agnostic adapter. This
-    lowers the cost floor for independent evaluation while preserving full
-    artifact capture.
-  \item We report baseline results for three Codex-backed multimodal models
-    (\texttt{gpt-5.4}, \texttt{gpt-5.3-codex}, \texttt{gpt-5.4-mini}) and two
-    non-LLM baselines (empty program, classical-CV heuristic). Multimodal
-    models reach mean foreground IoU up to $0.87$ but cap at $0.047$ overall
-    exact match, while the classical heuristic leads easy-tier exact match
-    at $0.26$ -- a tier-dependent crossover that confirms \textsc{ui-bench}
-    is not saturated and exposes distinct failure modes in perception versus
-    structured code emission.
+    \emph{without} consuming API tokens by wrapping two subscription-authenticated
+    headless CLIs -- the OpenAI Codex CLI (\texttt{codex exec}) and the Claude
+    Code CLI (\texttt{claude --print}) -- in the benchmark's provider-agnostic
+    adapter. This lowers the cost floor for independent evaluation while
+    preserving full artifact capture.
+  \item We report baseline results for four CLI-backed multimodal configurations
+    -- \textsc{Claude Opus 4.7} (1M context) at \texttt{high} and \texttt{max}
+    effort, and \textsc{GPT-5.5} at \texttt{medium} and \texttt{extra\_high}
+    reasoning effort -- alongside two non-LLM baselines (empty program,
+    classical-CV heuristic). The strongest multimodal model
+    (\textsc{GPT-5.5}/\texttt{extra\_high}) reaches mean foreground IoU $0.87$
+    but caps at $0.027$ overall exact match for any multimodal configuration,
+    while the classical heuristic leads easy-tier exact match at $0.26$ -- a
+    tier-dependent crossover that confirms \textsc{ui-bench} is not saturated
+    and exposes distinct failure modes in perception versus structured code
+    emission. Effort tier helps modestly (\texttt{max}\,$>$\,\texttt{high} for
+    Claude on FG-IoU; \texttt{extra\_high}\,$>$\,\texttt{medium} for GPT-5.5)
+    but does not close either gap.
 \end{enumerate}
 
 The rest of the paper is organized as follows. Section~\ref{sec:related} places

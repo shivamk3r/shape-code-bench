@@ -108,12 +108,18 @@ def _load_runs(runs_root: Path) -> list[dict]:
             json.loads(p.read_text(encoding="utf-8"))
             for p in sorted((run_dir / "samples").glob("*.json"))
         ]
+        adapter_config: dict = {}
+        run_config_path = run_dir / "run_config.json"
+        if run_config_path.exists():
+            run_config = json.loads(run_config_path.read_text(encoding="utf-8"))
+            adapter_config = run_config.get("adapter", {}) or {}
         runs.append(
             {
                 "run_dir": run_dir,
                 "summary": summary,
                 "samples": samples,
-                "label": _run_label(summary),
+                "adapter_config": adapter_config,
+                "label": _run_label(summary, adapter_config),
                 "provider": summary["provider"],
                 "model": summary["model"],
             }
@@ -121,14 +127,24 @@ def _load_runs(runs_root: Path) -> list[dict]:
     return runs
 
 
-def _run_label(summary: dict) -> str:
-    if summary["provider"] == "codex":
-        return summary["model"]
-    if summary["provider"] == "heuristic":
+def _run_label(summary: dict, adapter_config: dict | None = None) -> str:
+    provider = summary["provider"]
+    model = summary["model"]
+    cfg = adapter_config or {}
+    if provider == "heuristic":
         return "Heuristic-CV"
-    if summary["provider"] == "empty":
+    if provider == "empty":
         return "Empty-Program"
-    return f"{summary['provider']}:{summary['model']}"
+    if provider == "claude":
+        effort = cfg.get("effort")
+        return f"{model} ({effort})" if effort else model
+    if provider == "codex":
+        effort = cfg.get("reasoning_effort")
+        return f"{model} ({effort})" if effort else model
+    if provider == "openai":
+        effort = cfg.get("reasoning_effort")
+        return f"{model} ({effort})" if effort else model
+    return f"{provider}:{model}"
 
 
 def _metric_values(samples: list[dict], metric: str) -> np.ndarray:
@@ -296,8 +312,8 @@ def _pick_qualitative_run(runs: list[dict], explicit: str | None) -> dict | None
                 return run
         return None
 
-    codex_runs = [r for r in runs if r["provider"] == "codex"]
-    candidates = codex_runs or runs
+    real_model_runs = [r for r in runs if r["provider"] not in ("heuristic", "empty")]
+    candidates = real_model_runs or runs
     if not candidates:
         return None
     return max(candidates, key=lambda r: r["summary"]["exact_match_rate"])
@@ -325,6 +341,7 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
         return
 
     fig, axes = plt.subplots(rows, 3, figsize=(7.5, 1.2 * rows), squeeze=False)
+    last_win_row = len(wins) - 1
     for row_idx, payload in enumerate(wins + losses):
         target_img = _open_target(payload)
         pred_img = _render_prediction(payload)
@@ -332,22 +349,52 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
 
         axes[row_idx, 0].imshow(target_img, cmap="gray", vmin=0, vmax=255)
         axes[row_idx, 0].set_title(_short_title(payload, kind="target"), fontsize=8)
-        axes[row_idx, 0].axis("off")
 
         if pred_img is not None:
             axes[row_idx, 1].imshow(pred_img, cmap="gray", vmin=0, vmax=255)
         axes[row_idx, 1].set_title(_short_title(payload, kind="prediction"), fontsize=8)
-        axes[row_idx, 1].axis("off")
 
         if diff_img is not None:
             axes[row_idx, 2].imshow(diff_img, cmap="gray", vmin=0, vmax=255)
         axes[row_idx, 2].set_title("XOR diff", fontsize=8)
-        axes[row_idx, 2].axis("off")
+
+        for col_idx in range(3):
+            _style_qualitative_cell(
+                axes[row_idx, col_idx],
+                col_idx=col_idx,
+                row_idx=row_idx,
+                last_row=rows - 1,
+                last_win_row=last_win_row,
+            )
 
     fig.suptitle(f"{run['label']} — wins (top {len(wins)}) and losses (bottom {len(losses)})", fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.97))
     fig.savefig(output, bbox_inches="tight")
     plt.close(fig)
+
+
+def _style_qualitative_cell(ax, *, col_idx: int, row_idx: int, last_row: int, last_win_row: int) -> None:
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_edgecolor("0.6")
+        spine.set_linewidth(0.5)
+
+    if col_idx < 2:
+        ax.spines["right"].set_edgecolor("0.2")
+        ax.spines["right"].set_linewidth(1.0)
+    if col_idx > 0:
+        ax.spines["left"].set_edgecolor("0.2")
+        ax.spines["left"].set_linewidth(1.0)
+
+    if row_idx < last_row:
+        is_wins_losses_divider = last_win_row >= 0 and row_idx == last_win_row
+        ax.spines["bottom"].set_edgecolor("black" if is_wins_losses_divider else "0.2")
+        ax.spines["bottom"].set_linewidth(1.4 if is_wins_losses_divider else 1.0)
+    if row_idx > 0:
+        is_below_wins_losses_divider = last_win_row >= 0 and row_idx == last_win_row + 1
+        ax.spines["top"].set_edgecolor("black" if is_below_wins_losses_divider else "0.2")
+        ax.spines["top"].set_linewidth(1.4 if is_below_wins_losses_divider else 1.0)
 
 
 def _open_target(payload: dict) -> np.ndarray:
