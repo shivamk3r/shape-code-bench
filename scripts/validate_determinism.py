@@ -1,10 +1,11 @@
 """Empirically validate render-order invariance of the V1 renderer.
 
-Generates 100 random scenes (≈33/33/34 across easy/medium/hard), then for each
-scene shuffles the shape tuple 10 deterministic ways and re-renders. Compares
-every shuffle's pixel array against the canonical-order render with
-``np.array_equal``. Any mismatch is recorded with the offending DSL programs
-and PNGs for inspection.
+Generates 100 eligible random scenes, then for each scene creates 10 unique
+non-canonical shape-order permutations and re-renders. Eligible scenes must
+have enough instructions to support the requested number of unique permutations.
+Each permutation's pixel array is compared against the canonical-order render
+with ``np.array_equal``. Any mismatch is recorded with the offending DSL
+programs and PNGs for inspection.
 
 Writes a JSON summary to ``data/runs/determinism/<UTC-timestamp>.json``.
 """
@@ -13,6 +14,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import time
 from collections import Counter
 from datetime import datetime, timezone
@@ -28,12 +30,19 @@ from ui_bench.types import Scene
 
 
 DIFFICULTIES = ("easy", "medium", "hard")
+MAX_PERMUTATION_ATTEMPTS = 10_000
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate render-order invariance.")
     parser.add_argument("--n-programs", type=int, default=100)
-    parser.add_argument("--shuffles-per-program", type=int, default=10)
+    parser.add_argument(
+        "--shuffles-per-program",
+        type=int,
+        default=10,
+        help="Number of unique non-canonical instruction-order permutations to render per program.",
+    )
+    parser.add_argument("--max-candidate-programs", type=int, default=10_000)
     parser.add_argument("--output-dir", default="data/runs/determinism")
     args = parser.parse_args()
 
@@ -41,6 +50,10 @@ def main() -> int:
         raise SystemExit("--n-programs must be at least 1")
     if args.shuffles_per_program < 1:
         raise SystemExit("--shuffles-per-program must be at least 1")
+    if args.max_candidate_programs < args.n_programs:
+        raise SystemExit("--max-candidate-programs must be at least --n-programs")
+
+    min_shapes_required = _min_shapes_for_unique_permutations(args.shuffles_per_program)
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output_root = Path(args.output_dir)
@@ -49,23 +62,52 @@ def main() -> int:
 
     started = time.perf_counter()
     by_difficulty: dict[str, dict[str, int]] = {
-        d: {"n_programs": 0, "n_shuffles": 0, "n_matches": 0, "n_mismatches": 0}
+        d: {
+            "n_candidates": 0,
+            "n_programs": 0,
+            "n_shuffles": 0,
+            "n_matches": 0,
+            "n_mismatches": 0,
+            "n_rejected_too_few_shapes": 0,
+            "n_rejected_insufficient_unique_permutations": 0,
+        }
         for d in DIFFICULTIES
     }
     mismatch_records: list[dict[str, object]] = []
     target_hash_counts: Counter[str] = Counter()
 
-    for i in range(args.n_programs):
-        difficulty = DIFFICULTIES[i % 3]
-        scene = generate_scene(difficulty, seed=i)
+    candidate_idx = 0
+    program_idx = 0
+    total_permutation_attempts = 0
+    while program_idx < args.n_programs and candidate_idx < args.max_candidate_programs:
+        difficulty = DIFFICULTIES[candidate_idx % len(DIFFICULTIES)]
+        seed = candidate_idx
+        candidate_idx += 1
+        scene = generate_scene(difficulty, seed=seed)
+        by_difficulty[difficulty]["n_candidates"] += 1
+
+        if len(scene.shapes) < min_shapes_required:
+            by_difficulty[difficulty]["n_rejected_too_few_shapes"] += 1
+            continue
+
+        rng = np.random.default_rng(seed=10_000 + seed)
+        shuffled_scenes, attempts = _unique_shuffled_scenes(
+            scene=scene,
+            rng=rng,
+            count=args.shuffles_per_program,
+            max_attempts=MAX_PERMUTATION_ATTEMPTS,
+        )
+        total_permutation_attempts += attempts
+        if len(shuffled_scenes) < args.shuffles_per_program:
+            by_difficulty[difficulty]["n_rejected_insufficient_unique_permutations"] += 1
+            continue
+
         target_array = _render_array(scene)
         target_hash = _array_hash(target_array)
         target_hash_counts[target_hash] += 1
         by_difficulty[difficulty]["n_programs"] += 1
 
-        rng = np.random.default_rng(seed=10_000 + i)
-        for j in range(args.shuffles_per_program):
-            shuffled = _shuffle_scene(scene, rng)
+        for shuffle_idx, shuffled in enumerate(shuffled_scenes):
             candidate = _render_array(shuffled)
             match = bool(np.array_equal(target_array, candidate))
 
@@ -76,8 +118,8 @@ def main() -> int:
                 by_difficulty[difficulty]["n_mismatches"] += 1
                 _persist_mismatch(
                     mismatches_dir=mismatches_dir,
-                    program_idx=i,
-                    shuffle_idx=j,
+                    program_idx=program_idx,
+                    shuffle_idx=shuffle_idx,
                     difficulty=difficulty,
                     canonical_scene=scene,
                     shuffled_scene=shuffled,
@@ -86,14 +128,21 @@ def main() -> int:
                 )
                 mismatch_records.append(
                     {
-                        "program_idx": i,
-                        "shuffle_idx": j,
+                        "program_idx": program_idx,
+                        "shuffle_idx": shuffle_idx,
                         "difficulty": difficulty,
-                        "seed": i,
+                        "seed": seed,
                         "target_hash": target_hash,
                         "shuffled_hash": _array_hash(candidate),
                     }
                 )
+        program_idx += 1
+
+    if program_idx < args.n_programs:
+        raise SystemExit(
+            "Unable to collect "
+            f"{args.n_programs} eligible programs from {args.max_candidate_programs} candidates."
+        )
 
     elapsed = time.perf_counter() - started
     total_shuffles = args.n_programs * args.shuffles_per_program
@@ -103,7 +152,12 @@ def main() -> int:
     report = {
         "timestamp": timestamp,
         "n_programs": args.n_programs,
+        "candidate_programs_seen": candidate_idx,
+        "min_shapes_required": min_shapes_required,
         "shuffles_per_program": args.shuffles_per_program,
+        "unique_permutations_per_program": args.shuffles_per_program,
+        "max_permutation_attempts_per_program": MAX_PERMUTATION_ATTEMPTS,
+        "total_permutation_attempts": total_permutation_attempts,
         "total_renders": args.n_programs + total_shuffles,
         "total_comparisons": total_shuffles,
         "exact_matches": total_matches,
@@ -120,6 +174,35 @@ def main() -> int:
 
     print(json.dumps(report, indent=2))
     return 0
+
+
+def _min_shapes_for_unique_permutations(unique_permutations: int) -> int:
+    n_shapes = 1
+    while math.factorial(n_shapes) - 1 < unique_permutations:
+        n_shapes += 1
+    return n_shapes
+
+
+def _unique_shuffled_scenes(
+    *,
+    scene: Scene,
+    rng: np.random.Generator,
+    count: int,
+    max_attempts: int,
+) -> tuple[list[Scene], int]:
+    canonical_program = serialize_scene(scene)
+    seen = {canonical_program}
+    shuffled_scenes: list[Scene] = []
+    attempts = 0
+    while len(shuffled_scenes) < count and attempts < max_attempts:
+        attempts += 1
+        shuffled = _shuffle_scene(scene, rng)
+        shuffled_program = serialize_scene(shuffled)
+        if shuffled_program in seen:
+            continue
+        seen.add(shuffled_program)
+        shuffled_scenes.append(shuffled)
+    return shuffled_scenes, attempts
 
 
 def _shuffle_scene(scene: Scene, rng: np.random.Generator) -> Scene:

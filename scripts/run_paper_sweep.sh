@@ -10,20 +10,18 @@ DATASET_DIR="data/eval_v1/eval"
 OUTPUT_DIR="data/runs"
 
 CLAUDE_MODEL="claude-opus-4-7[1m]"
-CLAUDE_TIMEOUT=300
 CODEX_MODEL="gpt-5.5"
-CODEX_TIMEOUT=300
 
-# (label, provider, effort-flag, effort-value)
+# (label, provider, effort-flag, effort-value, timeout-seconds)
 CONFIGS=(
-  "claude-opus-4-7-1m@max|claude|--claude-effort|max"
-  "claude-opus-4-7-1m@high|claude|--claude-effort|high"
-  "gpt-5.5@extra_high|codex|--codex-reasoning-effort|extra_high"
-  "gpt-5.5@medium|codex|--codex-reasoning-effort|medium"
+  "claude-opus-4-7-1m@max|claude|--claude-effort|max|2400"
+  "claude-opus-4-7-1m@high|claude|--claude-effort|high|1800"
+  "gpt-5.5@extra_high|codex|--codex-reasoning-effort|extra_high|2400"
+  "gpt-5.5@medium|codex|--codex-reasoning-effort|medium|1800"
 )
 
 for entry in "${CONFIGS[@]}"; do
-  IFS="|" read -r label provider effort_flag effort_value <<<"${entry}"
+  IFS="|" read -r label provider effort_flag effort_value timeout_seconds <<<"${entry}"
 
   echo "========================================================================"
   echo "[$(date -u +%H:%M:%SZ)] Starting sweep: ${label}"
@@ -35,7 +33,7 @@ for entry in "${CONFIGS[@]}"; do
       --provider claude \
       --claude-model "${CLAUDE_MODEL}" \
       "${effort_flag}" "${effort_value}" \
-      --claude-timeout-seconds "${CLAUDE_TIMEOUT}" \
+      --claude-timeout-seconds "${timeout_seconds}" \
       --output-dir "${OUTPUT_DIR}" \
       || {
         echo "[$(date -u +%H:%M:%SZ)] sweep ${label} exited non-zero; continuing"
@@ -46,7 +44,7 @@ for entry in "${CONFIGS[@]}"; do
       --provider codex \
       --codex-model "${CODEX_MODEL}" \
       "${effort_flag}" "${effort_value}" \
-      --codex-timeout-seconds "${CODEX_TIMEOUT}" \
+      --codex-timeout-seconds "${timeout_seconds}" \
       --output-dir "${OUTPUT_DIR}" \
       || {
         echo "[$(date -u +%H:%M:%SZ)] sweep ${label} exited non-zero; continuing"

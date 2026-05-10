@@ -110,6 +110,9 @@ The script iterates over the four canonical paper configurations:
 - `gpt-5.5` at `--codex-reasoning-effort extra_high`
 
 and writes each run under `data/runs/<timestamp>-<provider>-<model-slug>/`.
+The committed sweep script uses the same per-sample timeout budgets as the
+checked-in paper artifacts: 1800 seconds for the `high`/`medium` runs and 2400
+seconds for the `max`/`extra_high` runs.
 
 Every run directory contains:
 

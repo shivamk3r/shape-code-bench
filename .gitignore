@@ -207,7 +207,9 @@ marimo/_lsp/
 __marimo__/
 
 # ui-bench run artifacts (kept in data/runs/, per-run configs/summaries; can grow large)
-data/runs/
+data/runs/*
+!data/runs/determinism/
+!data/runs/determinism/*.json
 
 # Hidden log files from background sweeps
 data/runs/.*

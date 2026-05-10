@@ -19,6 +19,7 @@ from collections import Counter
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import numpy as np
 from PIL import Image
 
@@ -358,43 +359,58 @@ def _plot_qualitative_grid(*, run: dict, output: Path) -> None:
             axes[row_idx, 2].imshow(diff_img, cmap="gray", vmin=0, vmax=255)
         axes[row_idx, 2].set_title("XOR diff", fontsize=8)
 
-        for col_idx in range(3):
-            _style_qualitative_cell(
-                axes[row_idx, col_idx],
-                col_idx=col_idx,
-                row_idx=row_idx,
-                last_row=rows - 1,
-                last_win_row=last_win_row,
-            )
+        for ax in axes[row_idx]:
+            _style_qualitative_cell(ax)
 
     fig.suptitle(f"{run['label']} — wins (top {len(wins)}) and losses (bottom {len(losses)})", fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.97))
+    fig.tight_layout(rect=(0, 0, 1, 0.97), h_pad=1.25, w_pad=1.0)
+    _add_qualitative_separators(fig=fig, axes=axes, last_win_row=last_win_row)
     fig.savefig(output, bbox_inches="tight")
     plt.close(fig)
 
 
-def _style_qualitative_cell(ax, *, col_idx: int, row_idx: int, last_row: int, last_win_row: int) -> None:
+def _style_qualitative_cell(ax) -> None:
     ax.set_xticks([])
     ax.set_yticks([])
     for spine in ax.spines.values():
-        spine.set_edgecolor("0.6")
-        spine.set_linewidth(0.5)
+        spine.set_edgecolor("0.72")
+        spine.set_linewidth(0.4)
 
-    if col_idx < 2:
-        ax.spines["right"].set_edgecolor("0.2")
-        ax.spines["right"].set_linewidth(1.0)
-    if col_idx > 0:
-        ax.spines["left"].set_edgecolor("0.2")
-        ax.spines["left"].set_linewidth(1.0)
 
-    if row_idx < last_row:
+def _add_qualitative_separators(*, fig, axes, last_win_row: int) -> None:
+    rows = axes.shape[0]
+    left = min(ax.get_position().x0 for ax in axes.ravel())
+    right = max(ax.get_position().x1 for ax in axes.ravel())
+    top = max(axes[0, col].get_position().y1 for col in range(axes.shape[1]))
+    bottom = min(axes[rows - 1, col].get_position().y0 for col in range(axes.shape[1]))
+
+    for row_idx in range(rows - 1):
+        current_bottom = min(axes[row_idx, col].get_position().y0 for col in range(axes.shape[1]))
+        next_top = max(axes[row_idx + 1, col].get_position().y1 for col in range(axes.shape[1]))
+        y = current_bottom - (current_bottom - next_top) * 0.2
         is_wins_losses_divider = last_win_row >= 0 and row_idx == last_win_row
-        ax.spines["bottom"].set_edgecolor("black" if is_wins_losses_divider else "0.2")
-        ax.spines["bottom"].set_linewidth(1.4 if is_wins_losses_divider else 1.0)
-    if row_idx > 0:
-        is_below_wins_losses_divider = last_win_row >= 0 and row_idx == last_win_row + 1
-        ax.spines["top"].set_edgecolor("black" if is_below_wins_losses_divider else "0.2")
-        ax.spines["top"].set_linewidth(1.4 if is_below_wins_losses_divider else 1.0)
+        fig.add_artist(
+            Line2D(
+                [left, right],
+                [y, y],
+                transform=fig.transFigure,
+                color="black" if is_wins_losses_divider else "0.25",
+                linewidth=1.2 if is_wins_losses_divider else 0.8,
+                clip_on=False,
+            )
+        )
+
+    x = (axes[0, 0].get_position().x1 + axes[0, 1].get_position().x0) / 2
+    fig.add_artist(
+        Line2D(
+            [x, x],
+            [bottom, top],
+            transform=fig.transFigure,
+            color="black",
+            linewidth=1.1,
+            clip_on=False,
+        )
+    )
 
 
 def _open_target(payload: dict) -> np.ndarray:

@@ -1,0 +1,47 @@
+{
+  "timestamp": "20260510T034707Z",
+  "n_programs": 100,
+  "candidate_programs_seen": 174,
+  "min_shapes_required": 4,
+  "shuffles_per_program": 10,
+  "unique_permutations_per_program": 10,
+  "max_permutation_attempts_per_program": 10000,
+  "total_permutation_attempts": 1059,
+  "total_renders": 1100,
+  "total_comparisons": 1000,
+  "exact_matches": 1000,
+  "mismatches": 0,
+  "mismatch_rate": 0.0,
+  "elapsed_seconds": 0.117,
+  "by_difficulty": {
+    "easy": {
+      "n_candidates": 58,
+      "n_programs": 0,
+      "n_shuffles": 0,
+      "n_matches": 0,
+      "n_mismatches": 0,
+      "n_rejected_too_few_shapes": 58,
+      "n_rejected_insufficient_unique_permutations": 0
+    },
+    "medium": {
+      "n_candidates": 58,
+      "n_programs": 42,
+      "n_shuffles": 420,
+      "n_matches": 420,
+      "n_mismatches": 0,
+      "n_rejected_too_few_shapes": 16,
+      "n_rejected_insufficient_unique_permutations": 0
+    },
+    "hard": {
+      "n_candidates": 58,
+      "n_programs": 58,
+      "n_shuffles": 580,
+      "n_matches": 580,
+      "n_mismatches": 0,
+      "n_rejected_too_few_shapes": 0,
+      "n_rejected_insufficient_unique_permutations": 0
+    }
+  },
+  "first_mismatch": null,
+  "n_unique_target_hashes": 100
+}
