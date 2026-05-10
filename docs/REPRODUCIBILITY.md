@@ -195,14 +195,14 @@ uv run ui-bench run \
 
 ## 8. Limitations and caveats
 
-- **CLI sampling non-determinism.** Neither the OpenAI Codex CLI nor the Claude
-  Code CLI exposes a seed for the underlying model, so two identical requests
-  can produce different predictions. Each run's `run_config.json` captures the
-  model identifier, the effort level, and the adapter settings used at
-  invocation time. We cannot guarantee bit-exact reproduction of reported
-  numbers; the renewable design of `ui-bench` mitigates this — re-running
-  either CLI on the same `eval_v1` seeds reproduces the *experimental setup*
-  faithfully even when individual predictions vary.
+- **Model-inference variability.** Dataset regeneration and metric computation
+  are deterministic: re-running `scripts/freeze_eval_v1.py` from the same seeds
+  should reproduce the same target PNGs. The remaining variability is in model
+  inference. Repeating the same image-and-prompt request to a hosted multimodal
+  model may produce a different predicted program, so we cannot guarantee
+  bit-exact reproduction of reported model scores. Each run's `run_config.json`
+  records the model configuration and invocation settings needed to reproduce
+  the experimental setup.
 - **CLI versions used.** The four sweeps reported in the paper were run on
   whatever Codex CLI and Claude Code CLI versions were installed on the
   author's machine at sweep time; the exact binary versions are not pinned in

@@ -20,15 +20,15 @@ We evaluate without chain-of-thought prompting or few-shot examples. These are
 natural knobs to explore and may change the ordering of models, especially for
 the reasoning-heavy hard tier.
 
-\paragraph{Sampling non-determinism.}
-The model-serving interfaces used for the reported multimodal runs do not expose
-a fixed sampling seed, and two identical requests can produce different
-predictions. Each run's \texttt{run\_config.json} captures the model identifier,
-effort level, and invocation settings used for the sweep; Appendix~\ref{app:reproducibility}
-and \texttt{docs/REPRODUCIBILITY.md} document the exact operational setup. We
-cannot guarantee bit-exact reproduction of reported numbers. The renewable
-design of \textsc{ui-bench} mitigates this: other researchers can regenerate the
-evaluation split from published seeds and re-run the same model configurations.
+\paragraph{Model-inference variability.}
+The frozen evaluation images, parser, renderer, and scorer are deterministic:
+regenerating \textsc{eval\_v1} from the published seeds should reproduce the
+same target PNGs and metric computation. The remaining variability is in model
+inference. Repeating the same image-and-prompt request to a hosted multimodal
+model may produce a different predicted program, so we cannot guarantee
+bit-exact reproduction of the reported model scores. Each run's
+\texttt{run\_config.json} records the model configuration and invocation settings
+needed to reproduce the experimental setup.
 
 \paragraph{No human baseline.}
 We do not report human performance. An informal human baseline on a small
