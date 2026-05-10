@@ -1,12 +1,14 @@
 # AGENTS.md
 
-This file contains repository-wide instructions for any coding agent working on `ui-bench`.
+This is the canonical operating guide for any AI agent working on `ui-bench`.
+Keep shared agent behavior here. Product-specific files should be thin adapters
+that point back to this file or to `.agents/`.
 
-Treat this as a living project guide. Keep it current as the benchmark evolves so future agents inherit the latest project context, decisions, and working expectations.
+## Project Purpose
 
-## Project Mission
-
-`ui-bench` is a synthetic multimodal benchmark for testing whether a model can look at an image and reconstruct the executable drawing program that generated it.
+`ui-bench` is a synthetic multimodal benchmark for testing whether a model can
+look at an image and reconstruct the executable drawing program that generated
+it.
 
 Core benchmark loop:
 
@@ -19,118 +21,247 @@ Core benchmark loop:
 
 The main benchmark question is:
 
-> Can a model infer the underlying program for a rendered synthetic scene well enough to reproduce the same output?
+> Can a model infer the underlying program for a rendered synthetic scene well
+> enough to reproduce the same output?
 
 ## Why This Project Matters
 
 - It measures visual understanding and structured code generation together.
 - It is fully synthetic, so large datasets can be generated cheaply.
-- It supports difficulty-controlled evaluation through easy, medium, and hard tiers.
+- It supports difficulty-controlled evaluation through easy, medium, and hard
+  tiers.
 - It favors objective scoring by comparing rendered outputs.
-- It can generate fresh held-out examples on demand, which reduces dependence on a permanently fixed public dataset.
+- It can generate fresh held-out examples on demand, which reduces dependence
+  on a permanently fixed public dataset.
 
-## Main USP
+## Contamination Resistance
 
-One of the strongest advantages of `ui-bench` is contamination resistance at the instance level.
+One of the strongest advantages of `ui-bench` is contamination resistance at the
+instance level.
 
-If a released batch of examples becomes known or contaminated, the project can generate a brand-new evaluation set from fresh seeds. This helps reduce memorization of exact benchmark instances and keeps evaluation useful over time.
+If a released batch of examples becomes known or contaminated, the project can
+generate a brand-new evaluation set from fresh seeds. This helps reduce
+memorization of exact benchmark instances and keeps evaluation useful over time.
 
 Important nuance:
 
 - This reduces contamination of exact examples.
-- It does not fully prevent models from learning the overall generator distribution.
+- It does not fully prevent models from learning the overall generator
+  distribution.
 - Hidden seeds and periodic refreshes still matter.
+
+## Read First
+
+Before making a substantial change, load context in this order:
+
+1. `README.md` for the public overview, quickstart, commands, and current
+   status.
+2. `docs/benchmark-spec.md` for normative DSL, rendering, generation,
+   evaluation, adapter, and artifact semantics.
+3. The relevant implementation files under `src/ui_bench/`.
+4. The matching tests under `tests/`.
+5. This `AGENTS.md` for repository memory and shared agent behavior.
+
+Do not treat backlog notes, scratch plans, or old run artifacts as live
+instructions unless the user explicitly invokes them.
+
+## Important Paths
+
+- `src/ui_bench/dsl.py`: restricted parser and canonical serializer
+- `src/ui_bench/renderer.py`: deterministic Pillow renderer
+- `src/ui_bench/generator.py`: seeded scene generation and sample metadata
+- `src/ui_bench/evaluator.py`: render-based scoring
+- `src/ui_bench/prompts.py`: fixed zero-shot benchmark prompt
+- `src/ui_bench/normalization.py`: minimal model-output normalization
+- `src/ui_bench/runner.py`: dataset loading, model execution, aggregation, and
+  run artifacts
+- `src/ui_bench/adapters/`: provider-agnostic adapters for OpenAI Responses API,
+  OpenAI Codex CLI, Claude Code CLI, and baselines
+- `src/ui_bench/cli.py`: `generate`, `render`, `eval`, and `run`
+- `tests/`: offline unit coverage plus opt-in live smoke tests
+- `docs/`: benchmark specification, reproducibility notes, and research context
+- `paper/`: arXiv paper source and build files
+- `scripts/`: analysis, determinism, figure, evaluation-freezing, and paper
+  sweep helpers
+
+Generated samples go under `data/generated/<split>/<difficulty>/`.
+Benchmark run outputs go under `data/runs/<run_id>/`.
 
 ## Current V1 Decisions
 
-Unless explicitly updated elsewhere in the repository, assume the following:
+Unless explicitly updated in the source-of-truth documents, assume:
 
 - Canvas size is fixed at `512x512`.
 - V1 primitives are `circle`, `filled_circle`, `square`, and `filled_square`.
 - The initial palette is black shapes on a white background.
 - Rendering must be deterministic.
-- Program order is preserved, but under the black-on-white V1 palette overlapping shapes are effectively order-invariant in the final raster.
-- The benchmark should use a project-owned DSL rather than an external drawing framework.
-- The syntax may look Python-like, but the evaluator must parse a restricted subset instead of executing arbitrary Python.
+- Program order is preserved, but under the black-on-white V1 palette
+  overlapping shapes are effectively order-invariant in the final raster.
+- The benchmark uses a project-owned Python-like DSL.
+- The evaluator must parse a restricted subset instead of executing arbitrary
+  Python.
 - Primary scoring is render-based, not exact code-string match.
-- V1 should ship with `easy`, `medium`, and `hard` difficulty tiers.
-- The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`, `numpy`, the OpenAI Python SDK, `python-dotenv`, `pytest`, and `ruff`.
-- The model runner uses a provider-agnostic adapter interface with three LLM-relevant implementations: an OpenAI Responses API adapter, an OpenAI Codex CLI adapter (`codex exec`), and a Claude Code CLI adapter (`claude --print`).
-- The default low-cost OpenAI smoke-test settings are `gpt-5.5`, `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and no retry.
-- The default Codex CLI settings are `gpt-5.5` with sandbox `read-only`, timeout `180s`, and `2` retries; effort is unset by default and threaded via `--codex-reasoning-effort`.
-- The default Claude Code CLI settings are `claude-opus-4-7[1m]` with effort `medium`, timeout `240s`, and `2` retries; effort is one of `low|medium|high|xhigh|max`.
-- Live API/CLI testing should remain opt-in and capped at 2 examples unless the user explicitly requests a larger run.
+- V1 ships with `easy`, `medium`, and `hard` difficulty tiers.
+- The implemented stack is Python `3.12` with `uv`, a local `.venv`, `Pillow`,
+  `numpy`, the OpenAI Python SDK, `python-dotenv`, `pytest`, and `ruff`.
+- The model runner uses a provider-agnostic adapter interface with OpenAI
+  Responses API, OpenAI Codex CLI (`codex exec`), Claude Code CLI
+  (`claude --print`), and baseline implementations.
+- Default low-cost OpenAI smoke-test settings are `gpt-5.5`,
+  `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and
+  no retry.
+- Default Codex CLI settings are `gpt-5.5` with sandbox `read-only`, timeout
+  `180s`, and `2` retries; effort is unset by default and threaded via
+  `--codex-reasoning-effort`.
+- Default Claude Code CLI settings are `claude-opus-4-7[1m]` with effort
+  `medium`, timeout `240s`, and `2` retries; effort is one of
+  `low|medium|high|xhigh|max`.
+- Live API/CLI testing remains opt-in and capped at 2 examples unless the user
+  explicitly requests a larger run.
 
-## Current Repository Structure
+## Source Of Truth And Recency
 
-The current implementation lives in:
+Keep these documents aligned:
 
-- `src/ui_bench/dsl.py` for parsing and canonical serialization
-- `src/ui_bench/renderer.py` for deterministic raster rendering
-- `src/ui_bench/generator.py` for seeded scene generation, sample metadata, and smoke-test dataset creation
-- `src/ui_bench/adapters/` for the provider-agnostic adapter layer with OpenAI Responses API, OpenAI Codex CLI, and Claude Code CLI implementations
-- `src/ui_bench/evaluator.py` for render-based scoring
-- `src/ui_bench/prompts.py` for the fixed zero-shot benchmark prompt
-- `src/ui_bench/normalization.py` for minimal output normalization
-- `src/ui_bench/runner.py` for dataset loading, model execution, aggregation, and run artifacts
-- `src/ui_bench/cli.py` for `generate`, `render`, `eval`, and `run`
-- `tests/` for parser, renderer, generator, evaluator, adapters, runner, CLI, and the opt-in live smoke test
+- `README.md` for the public project overview and implementation snapshot
+- `docs/benchmark-spec.md` for deeper benchmark and implementation semantics
+- `AGENTS.md` for repository-wide agent instructions and project memory
 
-Generated outputs should go under `data/generated/<split>/<difficulty>/`.
-Benchmark run outputs should go under `data/runs/<run_id>/`.
+When source and docs disagree, prefer executable code and tests for current
+behavior, then update the docs if the behavior is intentional. For policy,
+workflow, or collaboration rules, prefer this file.
 
-## Agent Working Principles
+Update `AGENTS.md` whenever any of these change:
+
+- benchmark task definition
+- DSL surface area
+- evaluation metrics or scoring policy
+- dataset generation strategy
+- difficulty-tier definitions
+- repository structure
+- major workflow or tooling decisions
+- shared agent asset layout
+
+Before finishing a substantial change, do a freshness check:
+
+- Does `README.md` still describe the project accurately?
+- Does `docs/benchmark-spec.md` still match the implementation?
+- Should `AGENTS.md` be updated so future agents inherit the latest decisions?
+
+## Privacy And Sensitivity
+
+- Do not commit secrets, API keys, credentials, local tokens, or personal account
+  state.
+- `.env` is for local development only. The OpenAI key is loaded automatically
+  when present and must never be written to benchmark artifacts.
+- CLI adapters use the user's authenticated `codex` or `claude` sessions. Do
+  not expose, copy, or persist authentication material.
+- Treat generated model outputs and benchmark run artifacts as potentially
+  sensitive until the user says they are safe to publish.
+- Keep live API/CLI runs opt-in, small, and explicit because they may consume
+  credits, subscription quota, or local authenticated sessions.
+
+## Coding And Editing Conventions
 
 - Preserve the benchmark's focus on perception-to-program reconstruction.
 - Keep the DSL intentionally small in V1.
-- Prefer deterministic behavior everywhere: generation, rendering, parsing, and scoring.
+- Prefer deterministic behavior everywhere: generation, rendering, parsing,
+  scoring, tests, and scripts.
 - Treat image-level equivalence as more important than textual code equivalence.
-- Avoid adding features that make the task depend on library trivia instead of visual reasoning.
-- When making implementation decisions, optimize for benchmark credibility, reproducibility, and clean evaluation.
+- Avoid features that make the task depend on graphics-library trivia instead
+  of visual reasoning.
+- Use the project-owned DSL and restricted parser; never execute arbitrary
+  model-produced code.
+- Prefer small, focused changes that match existing style and test structure.
+- Use `uv` for project commands.
+- Preserve unrelated user changes. Do not rewrite generated data, paper
+  artifacts, or cached files unless the task requires it.
+- Keep portable agent instructions product-neutral. Put product-specific setup
+  only in the adapter folders described below.
 
 ## Safety And Evaluation Guardrails
 
 - Do not execute arbitrary model-produced code.
-- Prefer restricted parsing and validated dispatch into approved drawing operations.
+- Prefer restricted parsing and validated dispatch into approved drawing
+  operations.
 - Keep outputs reproducible from seeds.
 - Log enough metadata to reproduce a sample and an evaluation run.
 - Start simple before expanding to colors, rotation, or more complex shapes.
 
-## Source Of Truth
+## Verification Expectations
 
-When working in this repository, keep these documents aligned:
+Default verification should be offline and deterministic:
 
-- `README.md` for the public project overview
-- `docs/benchmark-spec.md` for the deeper benchmark and implementation spec
-- `AGENTS.md` for repository-wide agent instructions and project memory
+```bash
+uv run pytest
+uv run ruff check .
+```
 
-If one of these changes in a meaningful way, check whether the others should be updated too.
+Run narrower tests when the change is scoped, and broaden verification when a
+change touches shared behavior, scoring, adapters, or CLI workflows.
 
-## Documentation Responsibilities
+Live smoke tests are skipped by default and must stay explicit:
 
-Update `AGENTS.md` whenever any of the following changes:
+- `UI_BENCH_RUN_LIVE_OPENAI=1`
+- `UI_BENCH_RUN_LIVE_CODEX=1`
 
-- The benchmark task definition
-- The DSL surface area
-- Evaluation metrics or scoring policy
-- Dataset generation strategy
-- Difficulty-tier definitions
-- Repository structure
-- Major workflow or tooling decisions
+Do not run live API/CLI evaluation over more than 2 examples unless the user
+explicitly asks for a larger run.
+
+For agent-file changes, also run:
+
+```bash
+for p in CLAUDE.md .claude/skills .claude/commands .cursor/skills .cursor/commands .codex/skills; do printf '%s -> %s\n' "$p" "$(readlink "$p")"; done
+git diff --check
+git status --short
+```
+
+## Agent Assets
+
+Portable shared assets live under `.agents/`:
+
+- `.agents/skills/<skill-name>/SKILL.md`: reusable task workflows with context,
+  steps, output contract, and verification requirements.
+- `.agents/skills/<skill-name>/references/`: optional supporting docs for that
+  skill.
+- `.agents/skills/<skill-name>/scripts/`: optional helper scripts for that
+  skill.
+- `.agents/commands/<command-name>.md`: lightweight reusable prompts or
+  slash-command templates.
+
+Skills and commands in `.agents/` must be product-neutral and usable by Claude,
+Cursor, Codex, or other agents. Do not place platform-specific metadata inside
+portable skills unless the user explicitly requests it.
+
+## Tool Compatibility Folders
+
+Tool-specific folders are adapters, not sources of truth:
+
+- `CLAUDE.md` should be a symlink to `AGENTS.md`.
+- `.claude/skills` should symlink to `../.agents/skills`.
+- `.claude/commands` should symlink to `../.agents/commands`.
+- `.cursor/skills` should symlink to `../.agents/skills`.
+- `.cursor/commands` should symlink to `../.agents/commands`.
+- `.codex/skills` should symlink to `../.agents/skills`.
+
+Do not duplicate shared skills or commands inside tool-specific folders.
+
+Codex-only setup belongs under `.codex/environments/`, for example:
+
+- `.codex/environments/environment.toml`
+- `.codex/environments/setup-worktree.sh`
+- `.codex/environments/cleanup-worktree.sh`
+
+Do not create `.codex/commands` unless this repository explicitly needs a
+Codex-only command layer.
 
 ## Near-Term Build Order
 
-The benchmark core and first live runner are implemented. The current recommended next order is:
+The benchmark core and live runners are implemented. The recommended next
+order is:
 
 1. Add richer reporting and per-slice benchmark diagnostics.
 2. Validate the current zero-shot baseline empirically on small pilot runs.
-3. Add more providers or prompt regimes only after the baseline is characterized.
+3. Add more providers or prompt regimes only after the baseline is
+   characterized.
 4. Expand the DSL only after the V1 core is stable and benchmarked.
-
-## Freshness Check For Agents
-
-Before finishing any substantial change, quickly check:
-
-- Does `README.md` still describe the project accurately?
-- Does `docs/benchmark-spec.md` still match the implementation plan?
-- Should `AGENTS.md` be updated so future agents inherit the latest decisions?

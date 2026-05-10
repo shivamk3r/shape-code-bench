@@ -318,8 +318,21 @@ The implemented repository shape is:
 ui-bench/
   README.md
   AGENTS.md
+  CLAUDE.md -> AGENTS.md
   pyproject.toml
   uv.lock
+  .agents/
+    skills/
+    commands/
+  .claude/
+    skills -> ../.agents/skills
+    commands -> ../.agents/commands
+  .cursor/
+    skills -> ../.agents/skills
+    commands -> ../.agents/commands
+  .codex/
+    skills -> ../.agents/skills
+    environments/
   src/
     ui_bench/
       adapters/
@@ -353,6 +366,10 @@ ui-bench/
     generated/
     runs/
 ```
+
+Agent-facing collaboration guidance is centralized in `AGENTS.md`. Portable
+skills and saved prompts live under `.agents/`; product folders are compatibility
+adapters that should symlink to the shared layer instead of duplicating it.
 
 ## 13. Next Steps
 

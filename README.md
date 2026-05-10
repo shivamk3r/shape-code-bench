@@ -220,6 +220,17 @@ Live API testing is explicit and intentionally tiny.
 - [docs/research-landscape.md](docs/research-landscape.md): framework choice, related work, and positioning
 - [AGENTS.md](AGENTS.md): repository guidance and project memory for coding agents
 
+## Agent Context
+
+`AGENTS.md` is the root operating guide and canonical source of shared
+instructions for AI agents working in this repository.
+
+Portable agent assets live under `.agents/`: reusable workflows in
+`.agents/skills/` and saved prompt templates in `.agents/commands/`. The
+`.claude/`, `.cursor/`, and `.codex/` directories are thin compatibility layers
+that symlink to those shared assets; Codex-only environment setup belongs under
+`.codex/environments/`.
+
 ## Current Status
 
 The V1 benchmark core, three LLM provider adapters (OpenAI Responses API, OpenAI
