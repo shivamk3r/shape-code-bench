@@ -1,0 +1,43 @@
+\section{Reproducibility Details}
+\label{app:reproducibility}
+
+The main paper reports model identifiers and reasoning-effort settings; this
+appendix records the operational path used for the reported sweeps. The full
+step-by-step workflow is maintained in \path{docs/REPRODUCIBILITY.md}, and each
+run also writes its exact configuration to
+\path{data/runs/<run_id>/run_config.json}.
+
+\paragraph{OpenAI Codex invocation.}
+\textsc{GPT-5.5} runs used the OpenAI Codex CLI, authenticated through the
+author's ChatGPT subscription. The adapter invokes this command shape:
+\begin{lstlisting}
+codex exec --skip-git-repo-check --ephemeral -s read-only \
+  -m gpt-5.5 -i <image_path> -o <last_message_path> \
+  -C <temporary_workdir> --color never \
+  -c reasoning_effort=<medium|extra_high>
+\end{lstlisting}
+The image is attached once per request, and \texttt{-o} captures the final
+message for normalization. The paper sweeps used two retries with exponential
+backoff and per-sample timeouts of 1800 seconds for \texttt{medium} and 2400
+seconds for \texttt{extra\_high}.
+
+\paragraph{Claude invocation.}
+\textsc{Claude Opus 4.7} (1M context) runs used the Claude Code CLI,
+authenticated through the author's Claude subscription. The adapter invokes this
+command shape:
+\begin{lstlisting}
+claude --print --add-dir <image_parent> \
+  --model claude-opus-4-7[1m] --effort <high|max> \
+  --output-format text --no-session-persistence
+\end{lstlisting}
+The target image is referenced in the prompt as \texttt{@<image\_path>}, and
+\texttt{--add-dir} grants read access to the sample directory. The paper sweeps
+used two retries with exponential backoff and per-sample timeouts of 1800
+seconds for \texttt{high} and 2400 seconds for \texttt{max}.
+
+\paragraph{Artifacts.}
+Both multimodal paths receive the same zero-shot prompt and are normalized by the
+same prediction normalizer before parsing and rendering. Run artifacts include
+the raw response, normalized response, latency, adapter metadata, full evaluation
+result, and aggregate summaries. The non-LLM baselines use the same runner and
+artifact schema but do not call an external model-serving interface.

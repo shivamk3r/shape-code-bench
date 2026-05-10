@@ -10,18 +10,17 @@ human annotation or manual judging. We release a frozen split,
 match, pixel accuracy, and foreground IoU alongside parse and execution
 success. Evaluating four
 reasoning-effort configurations of two frontier multimodal models -- \textsc{Claude
-Opus 4.7} (1M context) at \texttt{high} and \texttt{max} effort through the Claude
-Code CLI, and \textsc{GPT-5.5} at \texttt{medium} and \texttt{extra\_high}
-reasoning effort through the OpenAI Codex CLI (both subscription-authenticated,
-no API-token consumption) -- against an empty-program floor and a classical-CV
-heuristic baseline, exposes a tier-dependent crossover: the heuristic leads
-easy-tier exact match ($0.26$ vs.\ at most $0.08$ for any multimodal
-configuration) by individuating separated connected components, but collapses on
-medium and hard scenes as overlapping shapes fuse; the strongest multimodal model
-(\textsc{GPT-5.5} at \texttt{extra\_high} effort) retains most of the spatial
-structure and leads foreground IoU on every tier (up to $0.87$), yet misses
-exact match by small parameter errors, while \textsc{Claude Opus 4.7} (1M)
-trails the heuristic on foreground IoU at both effort levels. Best overall exact
-match is $0.087$ (heuristic) and $0.027$ among multimodal models, so
+Opus 4.7} (1M context) at \texttt{high} and \texttt{max} effort, and
+\textsc{GPT-5.5} at \texttt{medium} and \texttt{extra\_high} reasoning effort --
+against an empty-program floor and a classical-CV heuristic baseline exposes a
+tier-dependent crossover: the heuristic leads easy-tier exact match ($0.26$ vs.\
+at most $0.08$ for any multimodal configuration) by individuating separated
+connected components, but collapses on medium and hard scenes as overlapping
+shapes fuse; the strongest multimodal model by foreground IoU (\textsc{GPT-5.5}
+at \texttt{extra\_high} effort) retains most of the spatial structure and leads
+foreground IoU on every tier (up to $0.87$), yet misses exact match by small
+parameter errors, while \textsc{Claude Opus 4.7} (1M) trails the heuristic on
+foreground IoU at both effort levels. Best overall exact match is $0.087$
+(heuristic) and $0.027$ among multimodal models, so
 \textsc{ui-bench} is far from saturated. Benchmark code, frozen dataset, and full
 run artifacts are released to support independent replication and extension.

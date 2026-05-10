@@ -5,7 +5,8 @@
 
 We evaluate six systems on the frozen \textsc{eval\_v1} split: two non-LLM
 baselines and four reasoning-effort configurations across two frontier
-multimodal models, each invoked through its vendor's headless CLI.
+multimodal models. Exact invocation details are provided in
+Appendix~\ref{app:reproducibility}.
 \begin{itemize}
   \item \textbf{Empty-Program} -- a floor baseline that always predicts an empty
     string; every sample fails parsing.
@@ -15,26 +16,18 @@ multimodal models, each invoked through its vendor's headless CLI.
     erosion. Stroke widths are estimated from the ratio of component area to
     estimated perimeter.
   \item \textbf{\textsc{Claude Opus 4.7} (1M context)} at \texttt{high} and
-    \texttt{max} effort -- invoked through the Claude Code CLI
-    (\texttt{claude --print}) with \texttt{--no-session-persistence}, the
-    target image attached via Claude Code's \texttt{@<path>} file-reference
-    syntax, and \texttt{--add-dir} granting read access to the sample's
-    directory.
+    \texttt{max} effort.
   \item \textbf{\textsc{GPT-5.5}} at \texttt{medium} and \texttt{extra\_high}
-    reasoning effort -- invoked through the OpenAI Codex CLI
-    (\texttt{codex exec}) in read-only sandbox mode with ephemeral sessions,
-    a single image attachment per request, and the target effort level
-    threaded as \texttt{-c reasoning\_effort=<value>}.
+    reasoning effort.
 \end{itemize}
 
 All four LLM configurations share the same zero-shot prompt: a one-sentence
 system instruction (``Return only valid ui-bench DSL code. Do not include
 markdown fences, comments, or prose.'') and a user block listing the four
 primitive signatures and formatting constraints. We do not use chain-of-thought
-prompting or few-shot examples. CLI stdout (Claude Code) and the captured
-last-message file (Codex) are post-processed by a shared normalizer that
-prefers fenced code blocks anywhere in the response, falls back to
-primitive-signature line filtering, and ultimately surfaces the raw response
+prompting or few-shot examples. Raw model outputs are post-processed by a shared
+normalizer that prefers fenced code blocks anywhere in the response, falls back
+to primitive-signature line filtering, and ultimately surfaces the raw response
 so that parse errors are visible rather than masked.
 
 \subsection{Runner and artifacts}

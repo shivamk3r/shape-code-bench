@@ -35,9 +35,10 @@ foreground IoU rather than parse failures.
 \subsection{Qualitative wins and losses}
 
 Figure~\ref{fig:qualitative} shows representative wins (top rows) and losses
-(bottom rows) for the strongest LLM: each row shows the target image, the
-prediction rendered through the same renderer, and the XOR diff of foreground
-masks. The wins are dominated by the easy tier, where two or three
+(bottom rows) for the best exact-match multimodal configuration: each row shows
+the target image, the prediction rendered through the same renderer, and the XOR
+diff of foreground masks. The wins are dominated by the easy tier, where two or
+three
 non-overlapping shapes can be located and parameterized precisely. Losses tend
 to come from medium and hard tiers and split into three recurring categories:
 (i) correct shape inventory but off-by-a-few-pixel parameter estimates, (ii)
@@ -47,7 +48,7 @@ of hollow vs. filled when stroke widths are thin.
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/fig_qualitative_grid.pdf}
-  \caption{Wins (top) and losses (bottom) for the strongest multimodal
+  \caption{Wins (top) and losses (bottom) for the best exact-match multimodal
   configuration on \textsc{eval\_v1} (\textsc{GPT-5.5} at \texttt{medium}
   reasoning effort, selected automatically by exact-match rate). Each row shows
   the target, the re-rendered prediction, and a foreground-XOR diff. Losses

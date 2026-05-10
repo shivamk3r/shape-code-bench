@@ -20,17 +20,15 @@ We evaluate without chain-of-thought prompting or few-shot examples. These are
 natural knobs to explore and may change the ordering of models, especially for
 the reasoning-heavy hard tier.
 
-\paragraph{CLI sampling non-determinism.}
-Both the OpenAI Codex CLI and the Claude Code CLI are non-deterministic at the
-sampling level: neither exposes a seed for the underlying model, and two
-identical requests can produce different predictions. Each run's
-\texttt{run\_config.json} captures the model identifier, the effort level, and
-the adapter settings (sandbox / permission mode, timeout, retries) used at
-invocation time, and the specific CLI versions under which the sweeps ran are
-documented in \texttt{docs/REPRODUCIBILITY.md}. We cannot guarantee bit-exact
-reproduction of reported numbers. The renewable design of \textsc{ui-bench}
-mitigates this: other researchers can regenerate the evaluation split from
-published seeds and re-run either CLI themselves.
+\paragraph{Sampling non-determinism.}
+The model-serving interfaces used for the reported multimodal runs do not expose
+a fixed sampling seed, and two identical requests can produce different
+predictions. Each run's \texttt{run\_config.json} captures the model identifier,
+effort level, and invocation settings used for the sweep; Appendix~\ref{app:reproducibility}
+and \texttt{docs/REPRODUCIBILITY.md} document the exact operational setup. We
+cannot guarantee bit-exact reproduction of reported numbers. The renewable
+design of \textsc{ui-bench} mitigates this: other researchers can regenerate the
+evaluation split from published seeds and re-run the same model configurations.
 
 \paragraph{No human baseline.}
 We do not report human performance. An informal human baseline on a small
@@ -39,11 +37,9 @@ and we plan to add it in a subsequent revision.
 
 \paragraph{Model coverage.}
 We evaluate two frontier multimodal models -- \textsc{Claude Opus 4.7} (1M
-context) via the Claude Code CLI on a Claude subscription, and \textsc{GPT-5.5}
-via the OpenAI Codex CLI on a ChatGPT Pro subscription -- across two
-reasoning-effort tiers each. Other frontier multimodal systems are not covered
-here but can be added by implementing a new adapter against the same
-\texttt{ModelAdapter} Protocol.
+context) and \textsc{GPT-5.5} -- across two reasoning-effort tiers each. Other
+frontier multimodal systems are not covered here but can be added by
+implementing a new adapter against the same \texttt{ModelAdapter} Protocol.
 
 \paragraph{Contamination resistance.}
 The current eval split's seeds are public. We rely on the \emph{renewability}

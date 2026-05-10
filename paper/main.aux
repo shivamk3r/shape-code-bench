@@ -19,13 +19,15 @@
 \citation{bahdanau2019closure}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{sharma2018csgnet}
 \citation{liu2019scenes}
 \citation{li2020perspective}
 \citation{li2020multiplane}
 \citation{duan2022parametric}
 \citation{grand2024lilo}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
 \citation{johnson2017clevr}
 \citation{bahdanau2019closure}
 \citation{white2024livebench}
@@ -40,14 +42,12 @@
 \citation{liu2023rltf}
 \citation{guo2025deepseekr1}
 \citation{zeng2025rlve}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
-\newlabel{sec:related}{{2}{3}{Related Work}{section.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{Visual program induction and inverse graphics.}{3}{section*.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Benchmark design.}{3}{section*.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Renewable and dynamic evaluation.}{3}{section*.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Closest benchmark predecessors.}{3}{section*.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Broader image-to-code.}{3}{section*.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Verifiable feedback for training.}{4}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Verifiable feedback for training.}{3}{section*.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{How to read the contribution.}{4}{section*.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Benchmark Design}{4}{section.3}\protected@file@percent }
 \newlabel{sec:benchmark}{{3}{4}{Benchmark Design}{section.3}{}}
@@ -55,11 +55,11 @@
 \newlabel{sec:dsl}{{3.1}{4}{The ui-bench DSL}{subsection.3.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Renderer}{4}{subsection.3.2}\protected@file@percent }
 \newlabel{sec:renderer}{{3.2}{4}{Renderer}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Generator and Difficulty Tiers}{4}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:generator}{{3.3}{4}{Generator and Difficulty Tiers}{subsection.3.3}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Difficulty tiers used to structure generation in \textsc  {ui-bench}. ``Extent'' is the radius or size range; a missing Max bbox IoU indicates no constraint.}}{5}{table.caption.9}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{tab:difficulty-tiers}{{1}{5}{Difficulty tiers used to structure generation in \textsc {ui-bench}. ``Extent'' is the radius or size range; a missing Max bbox IoU indicates no constraint}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Generator and Difficulty Tiers}{5}{subsection.3.3}\protected@file@percent }
-\newlabel{sec:generator}{{3.3}{5}{Generator and Difficulty Tiers}{subsection.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Evaluator}{5}{subsection.3.4}\protected@file@percent }
 \newlabel{sec:evaluator}{{3.4}{5}{Evaluator}{subsection.3.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{5}{section.4}\protected@file@percent }
@@ -67,43 +67,43 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Protocol}{5}{subsection.4.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Representative samples from \textsc  {eval\_v1} at each difficulty tier. The three tiers differ in shape count, extent, and overlap.}}{6}{figure.caption.10}\protected@file@percent }
 \newlabel{fig:sample-grid}{{1}{6}{Representative samples from \textsc {eval\_v1} at each difficulty tier. The three tiers differ in shape count, extent, and overlap}{figure.caption.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Runner and artifacts}{7}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Runner and artifacts}{6}{subsection.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Headline results}{7}{subsection.4.3}\protected@file@percent }
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Main results on \textsc  {eval\_v1}. ``Exact'' is pixel-exact raster match; ``PixAcc'' is mean pixel accuracy; ``FG-IoU'' is mean foreground IoU; ``Parse'' is parse success rate. Brackets give 95\% bootstrap CIs.}}{7}{table.caption.11}\protected@file@percent }
 \newlabel{tab:main-results}{{2}{7}{Main results on \textsc {eval\_v1}. ``Exact'' is pixel-exact raster match; ``PixAcc'' is mean pixel accuracy; ``FG-IoU'' is mean foreground IoU; ``Parse'' is parse success rate. Brackets give 95\% bootstrap CIs}{table.caption.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Analysis}{7}{section.5}\protected@file@percent }
-\newlabel{sec:analysis}{{5}{7}{Analysis}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Error taxonomy}{7}{subsection.5.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Exact-match rate by difficulty tier. Error bars are 95\% bootstrap CIs over per-sample indicators.}}{8}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:acc-by-diff}{{2}{8}{Exact-match rate by difficulty tier. Error bars are 95\% bootstrap CIs over per-sample indicators}{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Exact-match rate by difficulty tier. Error bars are 95\% bootstrap CIs over per-sample indicators.}}{7}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:acc-by-diff}{{2}{7}{Exact-match rate by difficulty tier. Error bars are 95\% bootstrap CIs over per-sample indicators}{figure.caption.12}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces All four scored metrics by difficulty tier. The four panels are exact-match, pixel accuracy, foreground IoU, and parse success.}}{8}{figure.caption.13}\protected@file@percent }
 \newlabel{fig:metric-panel}{{3}{8}{All four scored metrics by difficulty tier. The four panels are exact-match, pixel accuracy, foreground IoU, and parse success}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Analysis}{9}{section.5}\protected@file@percent }
+\newlabel{sec:analysis}{{5}{9}{Analysis}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Error taxonomy}{9}{subsection.5.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Evaluator error taxonomy per model. The ``none'' bar counts samples whose predictions parsed and rendered without error, including samples that did not pixel-match the target. Remaining categories surface structured parsing or validation failures.}}{9}{figure.caption.14}\protected@file@percent }
 \newlabel{fig:error-hist}{{4}{9}{Evaluator error taxonomy per model. The ``none'' bar counts samples whose predictions parsed and rendered without error, including samples that did not pixel-match the target. Remaining categories surface structured parsing or validation failures}{figure.caption.14}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Qualitative wins and losses}{9}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Difficulty validity}{9}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Heuristic vs. LLM gap}{9}{subsection.5.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Wins (top) and losses (bottom) for the strongest multimodal configuration on \textsc  {eval\_v1} (\textsc  {GPT-5.5} at \texttt  {medium} reasoning effort, selected automatically by exact-match rate). Each row shows the target, the re-rendered prediction, and a foreground-XOR diff. Losses cluster on overlapping hard scenes and stroke-width confusions.}}{10}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:qualitative}{{5}{10}{Wins (top) and losses (bottom) for the strongest multimodal configuration on \textsc {eval\_v1} (\textsc {GPT-5.5} at \texttt {medium} reasoning effort, selected automatically by exact-match rate). Each row shows the target, the re-rendered prediction, and a foreground-XOR diff. Losses cluster on overlapping hard scenes and stroke-width confusions}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Wins (top) and losses (bottom) for the best exact-match multimodal configuration on \textsc  {eval\_v1} (\textsc  {GPT-5.5} at \texttt  {medium} reasoning effort, selected automatically by exact-match rate). Each row shows the target, the re-rendered prediction, and a foreground-XOR diff. Losses cluster on overlapping hard scenes and stroke-width confusions.}}{10}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:qualitative}{{5}{10}{Wins (top) and losses (bottom) for the best exact-match multimodal configuration on \textsc {eval\_v1} (\textsc {GPT-5.5} at \texttt {medium} reasoning effort, selected automatically by exact-match rate). Each row shows the target, the re-rendered prediction, and a foreground-XOR diff. Losses cluster on overlapping hard scenes and stroke-width confusions}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Difficulty validity}{11}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Heuristic vs. LLM gap}{11}{subsection.5.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {6}Limitations and Future Work}{11}{section.6}\protected@file@percent }
 \newlabel{sec:limitations}{{6}{11}{Limitations and Future Work}{section.6}{}}
 \@writefile{toc}{\contentsline {paragraph}{Monochrome palette.}{11}{section*.16}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Four primitives.}{11}{section*.17}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Zero-shot only.}{11}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{CLI sampling non-determinism.}{11}{section*.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{No human baseline.}{11}{section*.20}\protected@file@percent }
 \bibstyle{plain}
 \bibdata{references}
 \bibcite{bahdanau2019closure}{1}
 \bibcite{beltramelli2017pix2code}{2}
-\bibcite{guo2025deepseekr1}{3}
-\bibcite{duan2022parametric}{4}
-\bibcite{grand2024lilo}{5}
-\bibcite{johnson2017clevr}{6}
+\@writefile{toc}{\contentsline {paragraph}{Sampling non-determinism.}{12}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{No human baseline.}{12}{section*.20}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Model coverage.}{12}{section*.21}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Contamination resistance.}{12}{section*.22}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Training signal, not a training pipeline.}{12}{section*.23}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Reproducibility.}{12}{section*.24}\protected@file@percent }
+\bibcite{guo2025deepseekr1}{3}
+\bibcite{duan2022parametric}{4}
+\bibcite{grand2024lilo}{5}
+\bibcite{johnson2017clevr}{6}
 \bibcite{le2022coderl}{7}
 \bibcite{li2020multiplane}{8}
 \bibcite{li2020perspective}{9}
@@ -117,4 +117,9 @@
 \bibcite{white2024livebench}{17}
 \bibcite{zeng2025rlve}{18}
 \bibcite{zhou2026omni}{19}
-\gdef \@abspage@last{13}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Reproducibility Details}{14}{appendix.A}\protected@file@percent }
+\newlabel{app:reproducibility}{{A}{14}{Reproducibility Details}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{OpenAI Codex invocation.}{14}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Claude invocation.}{14}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Artifacts.}{14}{section*.29}\protected@file@percent }
+\gdef \@abspage@last{14}
