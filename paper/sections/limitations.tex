@@ -52,6 +52,17 @@ setting, regenerate \textsc{eval\_vN} from fresh seeds using the published
 generator and manifest. This is intentionally cheap: the entire 150-sample split
 regenerates in under a second.
 
+\paragraph{Training signal, not a training pipeline.}
+The current evaluator is an offline benchmark, not a differentiable pretraining
+loss. Predictions are discrete DSL text, the parser is symbolic, the renderer is
+Pillow-based, and the reported metrics are computed after hard rasterization.
+Future training use would therefore require a separate setup, such as supervised
+fine-tuning on generated image/program pairs, reinforcement learning or
+rejection sampling with render-based rewards, a learned reward or critic model,
+or a differentiable renderer variant. Any such use should train on generated
+training seeds and reserve \textsc{eval\_v1} or fresh held-out splits for clean
+evaluation.
+
 \paragraph{Reproducibility.}
 We publish the benchmark code, the frozen \textsc{eval\_v1} dataset with
 SHA-256 hashes per image, per-run artifacts, analysis scripts, and paper sources.

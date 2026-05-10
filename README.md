@@ -210,6 +210,23 @@ Live API testing is explicit and intentionally tiny.
 - It supports controlled difficulty through size, overlap, clipping, and object count.
 - It favors objective evaluation by comparing rendered outputs directly.
 - It supports fresh held-out sets from new seeds, which reduces memorization of exact benchmark instances.
+- It turns dataset refresh plus automatic scoring into a fast feedback loop for model, prompt, and adapter iteration without per-instance human annotation or manual judging.
+
+## Evaluation Hygiene And Training Use
+
+`eval_v1` is the frozen reporting split. Do not tune prompts, adapters, model
+checkpoints, heuristic parameters, or difficulty settings on `eval_v1` and then
+report the result as a clean held-out evaluation.
+
+For development, generate separate train/dev splits from fresh seeds. Fresh
+seeds reduce exact-instance contamination, but they do not prevent a model from
+learning the overall generator distribution.
+
+The current repository is an evaluation harness, not a training pipeline or a
+differentiable pretraining loss. Future training use could pair generated images
+with canonical DSL programs for supervised fine-tuning, or use parse/render
+feedback as a verifiable reward for RL-style training. Those uses should keep
+training seeds separate from frozen or newly minted held-out evaluation splits.
 
 ## Document Structure
 

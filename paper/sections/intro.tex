@@ -21,7 +21,10 @@ failure modes can be attributed to specific visual factors, in the tradition of
 \textsc{CLEVR}~\cite{johnson2017clevr,bahdanau2019closure}. Most existing
 benchmarks satisfy one or two of these, but few satisfy all three while remaining
 \emph{renewable} -- that is, cheap enough to regenerate when an existing split
-becomes contaminated.
+becomes contaminated. For model development, renewability also changes the
+feedback cycle: a researcher can generate fresh instances, run a model, and
+obtain objective scores without commissioning new labels or manual judgments for
+each refreshed example.
 
 We present \textsc{ui-bench}, a perception-to-program benchmark that attempts to
 hit the intersection of these pressures. The task is narrow by design: the DSL
@@ -42,6 +45,11 @@ rasters.
   \item We freeze an evaluation split, \textsc{eval\_v1}, of 150 samples with
     deterministic seeds, and publish per-sample raster hashes to make the exact
     evaluation instances reproducible across platforms.
+  \item We make benchmark refresh a first-class workflow: new held-out splits can
+    be generated from fresh seeds and scored automatically, enabling fast
+    regression-style feedback while avoiding per-instance human annotation or
+    manual judging. This mitigates exact-instance contamination but does not
+    prevent models from learning the generator distribution.
   \item We show how to run frontier multimodal models through the benchmark
     \emph{without} consuming API tokens by wrapping two subscription-authenticated
     headless CLIs -- the OpenAI Codex CLI (\texttt{codex exec}) and the Claude

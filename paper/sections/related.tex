@@ -30,6 +30,16 @@ systematic generalization. We adopt the same diagnostic posture: rather than
 building a large, noisy dataset, we expose the axes of variation explicitly and
 allow researchers to regenerate the dataset from a seed.
 
+\paragraph{Renewable and dynamic evaluation.}
+Renewability is becoming a first-class benchmark-design goal. \textsc{LiveBench}~\cite{white2024livebench}
+adds and updates automatically scored questions to reduce test-set
+contamination and avoid the failure modes of human crowdsourcing or LLM-as-judge
+scoring on hard tasks. \textsc{Image2Struct}~\cite{roberts2024image2struct}
+similarly emphasizes fully automatic, renewable round-trip evaluation. \textsc{ui-bench}
+inherits this philosophy in a synthetic inverse-graphics setting: instead of
+downloading fresh natural data, it mints new controlled instances from fresh
+seeds and scores them through deterministic rendering.
+
 \paragraph{Closest benchmark predecessors.}
 \textsc{TurtleBench}~\cite{rismanchian2025turtlebench} evaluates vision-language
 models on turtle-geometry programs and is the closest benchmark-level neighbor.
@@ -56,6 +66,17 @@ confounders: OCR, library conventions, rendering-engine variability, and externa
 assets. \textsc{ui-bench} strips away these confounders by design, providing a
 sibling benchmark whose strengths are control and reproducibility rather than
 realism.
+
+\paragraph{Verifiable feedback for training.}
+Automatic execution feedback has also become an important training signal for
+code and reasoning models. \textsc{CodeRL}~\cite{le2022coderl} and
+\textsc{RLTF}~\cite{liu2023rltf} use unit-test or execution feedback to improve
+code generation, while \textsc{DeepSeek-R1}~\cite{guo2025deepseekr1} and
+\textsc{RLVE}~\cite{zeng2025rlve} illustrate the broader role of verifiable
+rewards and procedurally generated environments in reinforcement learning for
+language models. These results motivate a future use of \textsc{ui-bench} as a
+verifiable training environment, but our present contribution is an evaluation
+benchmark: we do not train or fine-tune models on the task.
 
 \paragraph{How to read the contribution.}
 \textsc{ui-bench} is not the first benchmark to ask models to reconstruct

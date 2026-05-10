@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.12)  10 MAY 2026 08:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.4.12)  10 MAY 2026 08:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -657,54 +657,54 @@ exlive/2026basic/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2
 texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2026basic/texmf
 -dist/fonts/enc/dvips/lm/lm-mathit.enc}]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 30.
-) (./sections/related.tex [2]) (./sections/benchmark.tex [3]
-<figures/fig_sample_grid.pdf, id=162, 455.23145pt x 451.15689pt>
+(Font)              <10.95> on input line 33.
+) (./sections/related.tex [2] [3]) (./sections/benchmark.tex
+[4]
+<figures/fig_sample_grid.pdf, id=186, 455.23145pt x 451.15689pt>
 File: figures/fig_sample_grid.pdf Graphic file (type pdf)
 <use figures/fig_sample_grid.pdf>
 Package pdftex.def Info: figures/fig_sample_grid.pdf  used on input line 84.
 (pdftex.def)             Requested size: 399.29463pt x 395.72507pt.
-
-[4]) (./sections/experiments.tex [5 <./figures/fig_sample_grid.pdf>]
+) (./sections/experiments.tex [5]
 
 LaTeX Font Warning: Font shape `T1/lmr/bx/sc' undefined
 (Font)              using `T1/lmr/bx/n' instead on input line 17.
 
-(./tables/main_results.tex)
+[6 <./figures/fig_sample_grid.pdf>] (./tables/main_results.tex)
 Overfull \hbox (5.96791pt too wide) in paragraph at lines 2--64
  [][] 
  []
 
-<figures/fig_accuracy_by_difficulty.pdf, id=219, 542.025pt x 274.626pt>
+<figures/fig_accuracy_by_difficulty.pdf, id=237, 542.025pt x 274.626pt>
 File: figures/fig_accuracy_by_difficulty.pdf Graphic file (type pdf)
 <use figures/fig_accuracy_by_difficulty.pdf>
 Package pdftex.def Info: figures/fig_accuracy_by_difficulty.pdf  used on input 
 line 70.
 (pdftex.def)             Requested size: 469.75502pt x 238.01755pt.
-<figures/fig_metric_comparison.pdf, id=220, 686.565pt x 448.07399pt>
+<figures/fig_metric_comparison.pdf, id=238, 686.565pt x 448.07399pt>
 File: figures/fig_metric_comparison.pdf Graphic file (type pdf)
 <use figures/fig_metric_comparison.pdf>
 Package pdftex.def Info: figures/fig_metric_comparison.pdf  used on input line 
 78.
 (pdftex.def)             Requested size: 469.75502pt x 306.57329pt.
 ) (./sections/analysis.tex
-<figures/fig_error_histogram.pdf, id=223, 605.7472pt x 281.27423pt>
+<figures/fig_error_histogram.pdf, id=241, 605.7472pt x 281.27423pt>
 File: figures/fig_error_histogram.pdf Graphic file (type pdf)
 <use figures/fig_error_histogram.pdf>
 Package pdftex.def Info: figures/fig_error_histogram.pdf  used on input line 11
 .
 (pdftex.def)             Requested size: 469.75502pt x 218.13548pt.
- [6] [7 <./figures/fig_accuracy_by_difficulty.pdf>]
-[8 <./figures/fig_metric_comparison.pdf>]
-<figures/fig_qualitative_grid.pdf, id=339, 393.94728pt x 512.84236pt>
+ [7] [8 <./figures/fig_accuracy_by_difficulty.pdf> <./figures/fig_metric_compar
+ison.pdf>]
+<figures/fig_qualitative_grid.pdf, id=354, 393.94728pt x 512.84236pt>
 File: figures/fig_qualitative_grid.pdf Graphic file (type pdf)
 <use figures/fig_qualitative_grid.pdf>
 Package pdftex.def Info: figures/fig_qualitative_grid.pdf  used on input line 4
 9.
 (pdftex.def)             Requested size: 446.26582pt x 580.96062pt.
- [9 <./figures/fig_error_histogram.pdf>] [10 <./figures/fig_qualitative_grid.pd
-f>]) (./sections/limitations.tex
-[11]) (./main.bbl [12]) [13] (./main.aux)
+ [9 <./figures/fig_error_histogram.pdf>]
+[10 <./figures/fig_qualitative_grid.pdf>]) (./sections/limitations.tex [11])
+(./main.bbl [12]) [13] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -717,11 +717,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: A0D18F6D08E9EDABE1FFC336C5DC36D8;2326.
  ) 
 Here is how much of TeX's memory you used:
- 16641 strings out of 469006
- 262160 string characters out of 5454813
- 749065 words of memory out of 5000000
- 44757 multiletter control sequences out of 15000+600000
- 739953 words of font info for 245 fonts, out of 8000000 for 9000
+ 16667 strings out of 469006
+ 262518 string characters out of 5454813
+ 747252 words of memory out of 5000000
+ 44762 multiletter control sequences out of 15000+600000
+ 740614 words of font info for 251 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
  75i,9n,79p,997b,1089s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></u
@@ -740,10 +740,10 @@ blic/lm/lmr9.pfb></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/lm
 b></usr/local/texlive/2026basic/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></u
 sr/local/texlive/2026basic/texmf-dist/fonts/type1/public/lm/lmtt12.pfb></usr/lo
 cal/texlive/2026basic/texmf-dist/fonts/type1/public/lm/lmtt9.pfb>
-Output written on main.pdf (13 pages, 498468 bytes).
+Output written on main.pdf (13 pages, 504371 bytes).
 PDF statistics:
- 605 PDF objects out of 1000 (max. 8388607)
- 336 compressed objects within 4 object streams
- 77 named destinations out of 1000 (max. 500000)
+ 622 PDF objects out of 1000 (max. 8388607)
+ 353 compressed objects within 4 object streams
+ 86 named destinations out of 1000 (max. 500000)
  66722 words of extra memory for PDF output out of 74296 (max. 10000000)
 

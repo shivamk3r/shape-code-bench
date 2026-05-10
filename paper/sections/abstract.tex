@@ -3,9 +3,12 @@ reconstruction}: given a rendered raster, a model must emit an executable drawin
 program that a deterministic evaluator re-renders and compares. The DSL has four
 primitives on a $512 \times 512$ black-on-white canvas, but every instance is
 generated from a seeded RNG, so fresh held-out sets can be minted to mitigate
-benchmark contamination. We release a frozen split, \textsc{eval\_v1} ($150$
-samples, $50$ per difficulty tier), scored by exact match, pixel accuracy, and
-foreground IoU alongside parse and execution success. Evaluating four
+benchmark contamination. Because both instance generation and scoring are
+automatic, the same loop can refresh evaluations quickly without per-instance
+human annotation or manual judging. We release a frozen split,
+\textsc{eval\_v1} ($150$ samples, $50$ per difficulty tier), scored by exact
+match, pixel accuracy, and foreground IoU alongside parse and execution
+success. Evaluating four
 reasoning-effort configurations of two frontier multimodal models -- \textsc{Claude
 Opus 4.7} (1M context) at \texttt{high} and \texttt{max} effort through the Claude
 Code CLI, and \textsc{GPT-5.5} at \texttt{medium} and \texttt{extra\_high}

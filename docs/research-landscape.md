@@ -54,6 +54,10 @@ If we want to keep surveying this area, these are the most relevant search phras
 - render-and-compare evaluation
 - synthetic diagnostic benchmark
 - renewable benchmark
+- dynamic benchmark
+- verifiable reward
+- execution feedback
+- procedural RL environment
 - turtle graphics benchmark
 
 ## What Already Exists
@@ -104,6 +108,7 @@ These works are not the same task, but they are important for how `ui-bench` sho
 | [CLEVR (Johnson et al., 2017)](https://arxiv.org/abs/1612.06890) | The classic example of a synthetic diagnostic benchmark that mattered because it reduced spurious shortcuts and exposed reasoning failure modes. `ui-bench` can aim for that style of controlled evaluation, but for perception-to-program reconstruction rather than question answering. |
 | [CLOSURE (Bahdanau et al., 2019)](https://arxiv.org/abs/1912.05783) | Important reminder that a synthetic benchmark is only valuable if it truly tests systematic generalization rather than letting models exploit superficial regularities. |
 | [Image2Struct (Roberts et al., 2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/d0718553fd6b227a353c6432cf893285-Paper-Datasets_and_Benchmarks_Track.pdf) | Extremely relevant methodologically. It uses round-trip evaluation: image -> structure -> rendered image -> similarity score. It also argues for renewable benchmarks using fresh data and avoids exact-string matching when multiple valid structures exist. This is one of the strongest external validations of `ui-bench`'s scoring philosophy. |
+| [LiveBench (White et al., 2024)](https://arxiv.org/abs/2406.19314) | Important for the contamination and refresh argument. It uses frequently updated, automatically scored questions to reduce test-set contamination and avoid relying on human or LLM judges for hard examples. |
 
 ### 4. Broader Image-To-Code Benchmarks
 
@@ -118,6 +123,24 @@ This broader area is moving quickly, which helps justify the overall direction.
 | [Omni-I2C (Zhou et al., 2026)](https://arxiv.org/abs/2603.17508) | Complex digital graphics -> executable code | Shows the image-to-code frontier is broadening into a general multimodal coding capability benchmark. |
 
 The lesson from this group is not that `ui-bench` is redundant. The lesson is that the field now has a real appetite for evaluating visual understanding through executable structured outputs.
+
+### 5. Verifiable Feedback And Training Environments
+
+These works are not benchmark predecessors, but they clarify what can and cannot
+be claimed about using `ui-bench` as a training signal.
+
+| Work | Why it matters |
+| --- | --- |
+| [CodeRL (Le et al., 2022)](https://arxiv.org/abs/2207.01780) | Shows that execution feedback and learned critics can improve code generation beyond plain supervised pairs. |
+| [RLTF (Liu et al., 2023)](https://arxiv.org/abs/2307.04349) | Uses online RL from unit-test feedback, supporting the general idea that automatic program feedback can be a useful training signal. |
+| [DeepSeek-R1 (Guo et al., 2025)](https://arxiv.org/abs/2501.12948) | Popularized large-scale reasoning training with rule-based/verifiable rewards for domains such as math and code. |
+| [RLVE (Zeng et al., 2025)](https://arxiv.org/abs/2511.07317) | Directly supports the idea of procedurally generated, adaptively leveled environments with algorithmically verifiable rewards. |
+
+The conservative claim for `ui-bench` is that it could become a verifiable
+training environment: generated image/program pairs support supervised
+fine-tuning, and parse/render/compare feedback can define an RL-style reward.
+The current repository does not implement such training, and its evaluator is
+not a differentiable pretraining loss.
 
 ## So Is `ui-bench` Useful?
 
@@ -145,13 +168,18 @@ It is less useful if we present it as:
 4. It supports renewable evaluation.
    Fresh seeds make it much easier to refresh held-out sets and reduce overfitting to exact instances.
 
-5. It can be highly diagnostic.
+5. It enables a fast feedback loop.
+   Because instance generation and scoring are automatic, model developers can
+   iterate on prompts, adapters, and model variants without per-instance human
+   annotation or manual judging.
+
+6. It can be highly diagnostic.
    Because scenes are generated, we can slice performance by overlap, clipping, symmetry, draw-order sensitivity, object count, and parameter precision.
 
-6. It is safe by design.
+7. It is safe by design.
    A project-owned DSL and restricted parser create a cleaner evaluator than arbitrary code execution.
 
-7. It fills a middle ground.
+8. It fills a middle ground.
    Existing work often sits at one of two extremes:
    very specialized inverse-graphics methods, or broad messy real-world image-to-code tasks.
    `ui-bench` can occupy the middle: simple enough to be controlled, rich enough to stress perception-plus-program synthesis.
@@ -174,6 +202,11 @@ It is less useful if we present it as:
 
 5. The benchmark over-claims novelty.
    TurtleBench, CSGNet, scene-program papers, and Image2Struct make it clear that `ui-bench` belongs to an existing lineage.
+
+6. The benchmark blurs evaluation with training.
+   `eval_v1` should remain a clean reporting split. If `ui-bench` is used for
+   SFT or RL-style reward training, that training should use separate generated
+   seeds and be evaluated on frozen or freshly minted held-out splits.
 
 ## What Value `ui-bench` Adds If Built Well
 
@@ -257,9 +290,13 @@ If this project becomes a paper, README, or talk, the positioning should emphasi
 1. `ui-bench` is a **benchmark**, not mainly a method paper.
 2. The benchmark targets **perception-to-program reconstruction** in a tiny but expressive DSL.
 3. The key contribution is **evaluation design**:
-   renewable data, deterministic rendering, and ambiguity-aware render scoring.
+   renewable data, deterministic rendering, ambiguity-aware render scoring, and
+   fast automatic feedback without per-instance human annotation.
 4. The benchmark is meant to be **diagnostic**, not maximally realistic.
 5. The benchmark complements, rather than replaces, real-world image-to-code benchmarks like webpage or SVG generation.
+6. Training-signal use is a **future direction**, not an implemented contribution:
+   the current evaluator can become a verifiable reward source, but it is not a
+   differentiable pretraining loss or current training pipeline.
 
 ## Recommended Next Steps To Make The Work Stronger
 
@@ -298,6 +335,10 @@ If this project becomes a paper, README, or talk, the positioning should emphasi
 3. Benchmark for contamination resistance, not just claim it.
    Use hidden seeds, refreshed evaluation batches, and generator versioning.
 
+4. Keep evaluation and training splits separate.
+   If using generated samples for supervised fine-tuning or RL-style rewards,
+   never tune on `eval_v1` and report those numbers as clean held-out results.
+
 ## Bottom Line
 
 `ui-bench` is not useless. It is promising.
@@ -321,7 +362,12 @@ If the repository follows that path, it can contribute a credible and practicall
 - [Rismanchian et al., 2025. TurtleBench: A Visual Programming Benchmark in Turtle Geometry.](https://arxiv.org/abs/2411.00264)
 - [Johnson et al., 2017. CLEVR: A Diagnostic Dataset for Compositional Language and Elementary Visual Reasoning.](https://arxiv.org/abs/1612.06890)
 - [Bahdanau et al., 2019. CLOSURE: Assessing Systematic Generalization of CLEVR Models.](https://arxiv.org/abs/1912.05783)
+- [White et al., 2024. LiveBench: A Challenging, Contamination-Limited LLM Benchmark.](https://arxiv.org/abs/2406.19314)
 - [Roberts et al., 2024. Image2Struct: Benchmarking Structure Extraction for Vision-Language Models.](https://proceedings.neurips.cc/paper_files/paper/2024/file/d0718553fd6b227a353c6432cf893285-Paper-Datasets_and_Benchmarks_Track.pdf)
+- [Le et al., 2022. CodeRL: Mastering Code Generation through Pretrained Models and Deep Reinforcement Learning.](https://arxiv.org/abs/2207.01780)
+- [Liu et al., 2023. RLTF: Reinforcement Learning from Unit Test Feedback.](https://arxiv.org/abs/2307.04349)
+- [Guo et al., 2025. DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning.](https://arxiv.org/abs/2501.12948)
+- [Zeng et al., 2025. RLVE: Scaling Up Reinforcement Learning for Language Models with Adaptive Verifiable Environments.](https://arxiv.org/abs/2511.07317)
 - [Beltramelli, 2017. pix2code: Generating Code from a Graphical User Interface Screenshot.](https://arxiv.org/abs/1705.07962)
 - [Si et al., 2024. Design2Code: How Far Are We From Automating Front-End Engineering?](https://salt-nlp.github.io/Design2Code/)
 - [Lin et al., 2025. VCode: a Multimodal Coding Benchmark with SVG as Symbolic Visual Representation.](https://arxiv.org/abs/2511.02778)

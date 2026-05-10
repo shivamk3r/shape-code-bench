@@ -11,6 +11,12 @@ Tony Beltramelli.
 \newblock pix2code: Generating code from a graphical user interface screenshot.
 \newblock {\em arXiv preprint arXiv:1705.07962}, 2017.
 
+\bibitem{guo2025deepseekr1}
+{DeepSeek-AI}, Daya Guo, et~al.
+\newblock Deepseek-r1: Incentivizing reasoning capability in {LLM}s via
+  reinforcement learning.
+\newblock {\em arXiv preprint arXiv:2501.12948}, 2025.
+
 \bibitem{duan2022parametric}
 Xuguang Duan, Xin Wang, Pengchuan Zhao, Guangyao Shen, and Wenwu Zhu.
 \newblock Parametric visual program induction with function modularization.
@@ -31,6 +37,13 @@ Justin Johnson, Bharath Hariharan, Laurens van~der Maaten, Li~Fei-Fei,
 \newblock In {\em Conference on Computer Vision and Pattern Recognition
   (CVPR)}, 2017.
 
+\bibitem{le2022coderl}
+Hung Le, Yue Wang, Akhilesh~Deepak Gotmare, Silvio Savarese, and Steven C.~H.
+  Hoi.
+\newblock Coderl: Mastering code generation through pretrained models and deep
+  reinforcement learning.
+\newblock {\em arXiv preprint arXiv:2207.01780}, 2022.
+
 \bibitem{li2020multiplane}
 Yikai Li, Jiayuan Mao, Xiuming Zhang, William~T. Freeman, Joshua~B. Tenenbaum,
   and Jiajun Wu.
@@ -48,6 +61,11 @@ Lin et~al.
 \newblock Vcode: a multimodal coding benchmark with svg as symbolic visual
   representation.
 \newblock {\em arXiv preprint arXiv:2511.02778}, 2025.
+
+\bibitem{liu2023rltf}
+Jiate Liu, Yiqin Zhu, Kaiwen Xiao, Qiang Fu, Xiao Han, Wei Yang, and Deheng Ye.
+\newblock Rltf: Reinforcement learning from unit test feedback.
+\newblock {\em arXiv preprint arXiv:2307.04349}, 2023.
 
 \bibitem{liu2019scenes}
 Yunchao Liu, Jiajun Wu, Zhijian Wu, Daniel Ritchie, William~T. Freeman, and
@@ -77,6 +95,23 @@ Gopal Sharma, Rishabh Goyal, Difan Liu, Evangelos Kalogerakis, and Subhransu
 Chenglei Si, Yanzhe Zhang, Zhengyuan Yang, Ruibo Liu, and Diyi Yang.
 \newblock Design2code: How far are we from automating front-end engineering?
 \newblock In {\em arXiv}, 2024.
+
+\bibitem{white2024livebench}
+Colin White, Samuel Dooley, Manley Roberts, Arka Pal, Ben Feuer, Siddhartha
+  Jain, Ravid Shwartz-Ziv, Neel Jain, Khalid Saifullah, Sreemanti Dey,
+  Shubh-Agrawal, Sandeep~Singh Sandha, Siddartha Naidu, Chinmay Hegde, Yann
+  LeCun, Tom Goldstein, Willie Neiswanger, and Micah Goldblum.
+\newblock Livebench: A challenging, contamination-limited {LLM} benchmark.
+\newblock {\em arXiv preprint arXiv:2406.19314}, 2024.
+
+\bibitem{zeng2025rlve}
+Zhiyuan Zeng, Hamish Ivison, Yiping Wang, Lifan Yuan, Shuyue~Stella Li, Zhuorui
+  Ye, Siting Li, Jacqueline He, Runlong Zhou, Tong Chen, Chenyang Zhao, Yulia
+  Tsvetkov, Simon~Shaolei Du, Natasha Jaques, Hao Peng, Pang~Wei Koh, and
+  Hannaneh Hajishirzi.
+\newblock Rlve: Scaling up reinforcement learning for language models with
+  adaptive verifiable environments.
+\newblock {\em arXiv preprint arXiv:2511.07317}, 2025.
 
 \bibitem{zhou2026omni}
 Zhou et~al.

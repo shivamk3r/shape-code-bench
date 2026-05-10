@@ -290,7 +290,30 @@ Run artifacts are written under `data/runs/<run_id>/`:
 
 Each per-sample file includes image path, metadata path, raw prediction, normalized prediction, metrics, and adapter metadata.
 
-## 11. Testing Strategy
+## 11. Evaluation Hygiene And Training Use
+
+`eval_v1` is a frozen reporting split. It should not be used to tune prompts,
+model checkpoints, adapters, heuristic baselines, or generator settings if the
+result will be reported as clean held-out performance.
+
+For iteration, use generated train/dev splits from fresh seeds. Fresh seeds
+reduce exact-instance contamination, but they do not prevent a model from
+learning the overall generator distribution.
+
+The implemented evaluator is not a differentiable pretraining loss. Model
+outputs are discrete DSL text, the parser is symbolic, the renderer is
+Pillow-based, and metrics are computed after hard rasterization. Training use is
+a future direction and would require a separate setup such as:
+
+- supervised fine-tuning on generated image/program pairs
+- reinforcement learning or rejection sampling with parse/render rewards
+- a learned reward or critic model
+- a differentiable renderer variant
+
+Any training setup should keep training seeds separate from `eval_v1` and from
+new held-out refresh splits used for reporting.
+
+## 12. Testing Strategy
 
 Default `pytest` runs stay fully offline.
 
@@ -310,7 +333,7 @@ The live smoke tests are:
 - skipped by default
 - capped at 2 local examples each
 
-## 12. Repository Shape
+## 13. Repository Shape
 
 The implemented repository shape is:
 
@@ -371,10 +394,11 @@ Agent-facing collaboration guidance is centralized in `AGENTS.md`. Portable
 skills and saved prompts live under `.agents/`; product folders are compatibility
 adapters that should symlink to the shared layer instead of duplicating it.
 
-## 13. Next Steps
+## 14. Next Steps
 
 The benchmark core and first live runner now exist. The next recommended steps are:
 
 1. Add richer aggregate reporting and per-slice diagnostics.
 2. Characterize the current baseline on small pilot runs before expanding scope.
 3. Add additional providers or prompt regimes only after the current zero-shot OpenAI baseline is stable.
+4. Explore training-signal variants only after preserving a clean separation between generated training seeds and held-out evaluation splits.
