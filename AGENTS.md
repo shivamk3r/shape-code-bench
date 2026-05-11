@@ -83,6 +83,7 @@ instructions unless the user explicitly invokes them.
 - `paper/`: arXiv paper source and build files
 - `scripts/`: analysis, determinism, figure, evaluation-freezing, and paper
   sweep helpers
+- `publish_docs/`: git-ignored private publishing drafts, notes, and prep work
 
 Generated samples go under `data/generated/<split>/<difficulty>/`.
 Benchmark run outputs go under `data/runs/<run_id>/`.
@@ -160,6 +161,10 @@ Before finishing a substantial change, do a freshness check:
   sensitive until the user says they are safe to publish.
 - Keep live API/CLI runs opt-in, small, and explicit because they may consume
   credits, subscription quota, or local authenticated sessions.
+- `publish_docs/` is intentionally git ignored. Agents may create or use it for
+  private publishing drafts, notes, and prep work, but its contents must not be
+  committed or treated as public project documentation. If the directory is
+  missing, agents may recreate it locally.
 
 ## Coding And Editing Conventions
 

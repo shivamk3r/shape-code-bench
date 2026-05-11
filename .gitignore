@@ -214,6 +214,9 @@ data/runs/*
 # Hidden log files from background sweeps
 data/runs/.*
 
+# Private local publishing drafts and notes
+publish_docs/
+
 # LaTeX build artifacts
 paper/*.aux
 paper/*.log
