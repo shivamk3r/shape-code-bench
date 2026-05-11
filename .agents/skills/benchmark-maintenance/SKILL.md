@@ -1,6 +1,6 @@
 ---
 name: benchmark-maintenance
-description: Safely modify ui-bench benchmark behavior, documentation, tests, or provider adapters while preserving deterministic evaluation.
+description: Safely modify ShapeCodeBench benchmark behavior, documentation, tests, or provider adapters while preserving deterministic evaluation.
 ---
 
 # Benchmark Maintenance
@@ -15,7 +15,7 @@ generator, evaluator, adapters, CLI, docs, or paper/reproducibility workflow.
 - `AGENTS.md`
 - `README.md`
 - `docs/benchmark-spec.md`
-- The relevant files under `src/ui_bench/`
+- The relevant files under `src/shape_code_bench/`
 - The matching tests under `tests/`
 - `docs/REPRODUCIBILITY.md` when paper numbers, frozen evaluation, or live runs
   are involved

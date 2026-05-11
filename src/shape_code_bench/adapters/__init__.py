@@ -1,7 +1,7 @@
-"""Model adapter interfaces and implementations for ui-bench."""
+"""Model adapter interfaces and implementations for ShapeCodeBench."""
 
-from ui_bench.adapters.base import ModelAdapter, PredictionRequest, PredictionResult
-from ui_bench.adapters.claude_code_adapter import (
+from shape_code_bench.adapters.base import ModelAdapter, PredictionRequest, PredictionResult
+from shape_code_bench.adapters.claude_code_adapter import (
     CLAUDE_EFFORT_LEVELS,
     DEFAULT_CLAUDE_BINARY,
     DEFAULT_CLAUDE_EFFORT,
@@ -10,7 +10,7 @@ from ui_bench.adapters.claude_code_adapter import (
     DEFAULT_CLAUDE_TIMEOUT_SECONDS,
     ClaudeCodeAdapter,
 )
-from ui_bench.adapters.codex_adapter import (
+from shape_code_bench.adapters.codex_adapter import (
     DEFAULT_CODEX_BINARY,
     DEFAULT_CODEX_MAX_RETRIES,
     DEFAULT_CODEX_MODEL,
@@ -18,7 +18,7 @@ from ui_bench.adapters.codex_adapter import (
     DEFAULT_CODEX_TIMEOUT_SECONDS,
     CodexAdapter,
 )
-from ui_bench.adapters.openai_adapter import (
+from shape_code_bench.adapters.openai_adapter import (
     DEFAULT_IMAGE_DETAIL,
     DEFAULT_MAX_OUTPUT_TOKENS,
     DEFAULT_OPENAI_MODEL,

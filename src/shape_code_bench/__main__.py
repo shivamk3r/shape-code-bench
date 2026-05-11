@@ -1,4 +1,4 @@
-from ui_bench.cli import main
+from shape_code_bench.cli import main
 
 
 if __name__ == "__main__":

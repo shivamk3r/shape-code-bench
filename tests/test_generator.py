@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ui_bench.generator import generate_scene
-from ui_bench.types import Circle, FilledCircle, Square, bbox_intersection_area, bbox_iou
-from ui_bench.types import is_clipped, shape_bounds
+from shape_code_bench.generator import generate_scene
+from shape_code_bench.types import Circle, FilledCircle, Square, bbox_intersection_area, bbox_iou
+from shape_code_bench.types import is_clipped, shape_bounds
 
 
 def test_generate_scene_is_reproducible() -> None:

@@ -4,11 +4,11 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-from ui_bench.adapters.base import PredictionRequest
-from ui_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
-from ui_bench.dsl import parse_program
-from ui_bench.evaluator import evaluate_program
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.adapters.base import PredictionRequest
+from shape_code_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
+from shape_code_bench.dsl import parse_program
+from shape_code_bench.evaluator import evaluate_program
+from shape_code_bench.generator import write_generated_sample
 
 
 def test_empty_adapter_returns_empty_program(tmp_path: Path) -> None:

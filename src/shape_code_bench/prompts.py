@@ -19,11 +19,11 @@ class PromptSpec:
 
 def build_zero_shot_prompt_spec() -> PromptSpec:
     system_instruction = (
-        "Return only valid ui-bench DSL code. Do not include markdown fences, comments, or prose."
+        "Return only valid ShapeCodeBench DSL code. Do not include markdown fences, comments, or prose."
     )
     user_text = "\n".join(
         [
-            "Reconstruct the 512x512 image as ui-bench DSL.",
+            "Reconstruct the 512x512 image as ShapeCodeBench DSL.",
             "Allowed:",
             "filled_circle(cx=<int>, cy=<int>, radius=<int>)",
             "circle(cx=<int>, cy=<int>, radius=<int>, stroke=<int>)",

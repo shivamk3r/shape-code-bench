@@ -1,4 +1,4 @@
-We introduce \textsc{ui-bench}, a synthetic benchmark for \emph{perception-to-program
+We introduce \textsc{ShapeCodeBench}, a synthetic benchmark for \emph{perception-to-program
 reconstruction}: given a rendered raster, a model must emit an executable drawing
 program that a deterministic evaluator re-renders and compares. The DSL has four
 primitives on a $512 \times 512$ black-on-white canvas, but every instance is
@@ -22,5 +22,5 @@ foreground IoU on every tier (up to $0.87$), yet misses exact match by small
 parameter errors, while \textsc{Claude Opus 4.7} (1M) trails the heuristic on
 foreground IoU at both effort levels. Best overall exact match is $0.087$
 (heuristic) and $0.027$ among multimodal models, so
-\textsc{ui-bench} is far from saturated. Benchmark code, frozen dataset, and full
+\textsc{ShapeCodeBench} is far from saturated. Benchmark code, frozen dataset, and full
 run artifacts are released to support independent replication and extension.

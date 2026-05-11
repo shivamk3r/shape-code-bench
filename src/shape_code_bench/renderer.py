@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from PIL import Image, ImageDraw
 
-from ui_bench.types import (
+from shape_code_bench.types import (
     BACKGROUND_COLOR,
     CANVAS_SIZE,
     FOREGROUND_COLOR,

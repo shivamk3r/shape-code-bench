@@ -2,7 +2,7 @@
 
 ## 1. Vision
 
-`ui-bench` measures how well a model can reverse-engineer a simple rendered scene into executable drawing code.
+`ShapeCodeBench` measures how well a model can reverse-engineer a simple rendered scene into executable drawing code.
 
 The benchmark question is:
 
@@ -22,7 +22,7 @@ The current V1 implementation uses:
 - the OpenAI Python SDK for the first live multimodal adapter
 - `python-dotenv` for local `.env` loading
 
-The package lives under `src/ui_bench/` and is covered by `pytest` tests in `tests/`.
+The package lives under `src/shape_code_bench/` and is covered by `pytest` tests in `tests/`.
 
 ## 3. V1 Representation
 
@@ -264,15 +264,15 @@ Prompt constraints:
 
 The package exposes:
 
-- `ui-bench generate`
-- `ui-bench render`
-- `ui-bench eval`
-- `ui-bench run`
+- `shape-code-bench generate`
+- `shape-code-bench render`
+- `shape-code-bench eval`
+- `shape-code-bench run`
 
 Typical model run:
 
 ```bash
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/generated/train \
   --provider openai \
   --model gpt-5.5 \
@@ -329,7 +329,7 @@ Coverage includes:
 
 The live smoke tests are:
 
-- opt-in only (`UI_BENCH_RUN_LIVE_OPENAI=1` and `UI_BENCH_RUN_LIVE_CODEX=1`)
+- opt-in only (`SHAPE_CODE_BENCH_RUN_LIVE_OPENAI=1` and `SHAPE_CODE_BENCH_RUN_LIVE_CODEX=1`)
 - skipped by default
 - capped at 2 local examples each
 
@@ -338,7 +338,7 @@ The live smoke tests are:
 The implemented repository shape is:
 
 ```text
-ui-bench/
+shape-code-bench/
   README.md
   AGENTS.md
   CLAUDE.md -> AGENTS.md
@@ -357,7 +357,7 @@ ui-bench/
     skills -> ../.agents/skills
     environments/
   src/
-    ui_bench/
+    shape_code_bench/
       adapters/
       cli.py
       dsl.py

@@ -4,8 +4,8 @@ import hashlib
 
 import numpy as np
 
-from ui_bench.renderer import render_scene
-from ui_bench.types import Circle, FilledCircle, FilledSquare, Scene, Square
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.types import Circle, FilledCircle, FilledSquare, Scene, Square
 
 
 def test_renderer_snapshots() -> None:

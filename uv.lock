@@ -543,7 +543,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ui-bench"
+name = "shape-code-bench"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

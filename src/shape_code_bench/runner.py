@@ -8,10 +8,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from ui_bench.adapters.base import ModelAdapter, PredictionRequest, PredictionResult
-from ui_bench.evaluator import evaluate_program
-from ui_bench.prompts import PromptSpec, build_zero_shot_prompt_spec
-from ui_bench.types import EvaluationResult
+from shape_code_bench.adapters.base import ModelAdapter, PredictionRequest, PredictionResult
+from shape_code_bench.evaluator import evaluate_program
+from shape_code_bench.prompts import PromptSpec, build_zero_shot_prompt_spec
+from shape_code_bench.types import EvaluationResult
 
 
 @dataclass(frozen=True, slots=True)

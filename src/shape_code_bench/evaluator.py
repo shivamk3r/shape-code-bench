@@ -5,9 +5,9 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from ui_bench.dsl import DSLValidationError, parse_program
-from ui_bench.renderer import render_scene
-from ui_bench.types import CANVAS_SIZE, EvaluationResult, FOREGROUND_COLOR
+from shape_code_bench.dsl import DSLValidationError, parse_program
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.types import CANVAS_SIZE, EvaluationResult, FOREGROUND_COLOR
 
 
 def evaluate_program(target_image_path: str, prediction_text: str) -> EvaluationResult:

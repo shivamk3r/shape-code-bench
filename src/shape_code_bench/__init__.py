@@ -1,6 +1,6 @@
-"""Core package for the ui-bench benchmark."""
+"""Core package for the ShapeCodeBench benchmark."""
 
-from ui_bench.adapters import (
+from shape_code_bench.adapters import (
     DEFAULT_IMAGE_DETAIL,
     DEFAULT_MAX_OUTPUT_TOKENS,
     DEFAULT_OPENAI_MODEL,
@@ -10,11 +10,11 @@ from ui_bench.adapters import (
     PredictionRequest,
     PredictionResult,
 )
-from ui_bench.dsl import DSLValidationError, parse_program, serialize_scene
-from ui_bench.evaluator import evaluate_program
-from ui_bench.generator import generate_scene, write_generated_sample, write_smoke_test_dataset
-from ui_bench.renderer import render_scene
-from ui_bench.runner import BenchmarkRunResult, run_benchmark
+from shape_code_bench.dsl import DSLValidationError, parse_program, serialize_scene
+from shape_code_bench.evaluator import evaluate_program
+from shape_code_bench.generator import generate_scene, write_generated_sample, write_smoke_test_dataset
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.runner import BenchmarkRunResult, run_benchmark
 
 __all__ = [
     "BenchmarkRunResult",

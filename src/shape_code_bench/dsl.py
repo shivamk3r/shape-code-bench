@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import ast
 
-from ui_bench.types import CANVAS_SIZE, Circle, FilledCircle, FilledSquare, Scene, Shape, Square
-from ui_bench.types import shape_kwargs, shape_name
+from shape_code_bench.types import CANVAS_SIZE, Circle, FilledCircle, FilledSquare, Scene, Shape, Square
+from shape_code_bench.types import shape_kwargs, shape_name
 
 FUNCTION_ARGUMENTS = {
     "filled_circle": ("cx", "cy", "radius"),

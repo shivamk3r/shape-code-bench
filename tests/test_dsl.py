@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from ui_bench.dsl import DSLValidationError, parse_program, serialize_scene
-from ui_bench.types import Circle, FilledCircle, FilledSquare, Scene, Square
+from shape_code_bench.dsl import DSLValidationError, parse_program, serialize_scene
+from shape_code_bench.types import Circle, FilledCircle, FilledSquare, Scene, Square
 
 
 def test_parse_valid_program() -> None:

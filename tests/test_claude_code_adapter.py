@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from ui_bench.adapters import ClaudeCodeAdapter, PredictionRequest
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.adapters import ClaudeCodeAdapter, PredictionRequest
+from shape_code_bench.generator import write_generated_sample
 
 
 class FakeCompleted:
@@ -143,7 +143,7 @@ def test_claude_adapter_retries_on_transient_failure(tmp_path: Path) -> None:
     runner = FlakyRunner()
     adapter = ClaudeCodeAdapter(subprocess_run=runner, max_retries=2)
 
-    import ui_bench.adapters.claude_code_adapter as claude_module
+    import shape_code_bench.adapters.claude_code_adapter as claude_module
 
     original_sleep = claude_module.time.sleep
     claude_module.time.sleep = lambda _: None

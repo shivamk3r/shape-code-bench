@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the four canonical ui-bench paper baselines on the frozen eval_v1 dataset.
+# Run the four canonical ShapeCodeBench paper baselines on the frozen eval_v1 dataset.
 # Each invocation writes under data/runs/<run_id>/. A failure in one config
 # does not abort the others.
 
@@ -28,7 +28,7 @@ for entry in "${CONFIGS[@]}"; do
   echo "========================================================================"
 
   if [[ "${provider}" == "claude" ]]; then
-    uv run ui-bench run \
+    uv run shape-code-bench run \
       --dataset-dir "${DATASET_DIR}" \
       --provider claude \
       --claude-model "${CLAUDE_MODEL}" \
@@ -39,7 +39,7 @@ for entry in "${CONFIGS[@]}"; do
         echo "[$(date -u +%H:%M:%SZ)] sweep ${label} exited non-zero; continuing"
       }
   else
-    uv run ui-bench run \
+    uv run shape-code-bench run \
       --dataset-dir "${DATASET_DIR}" \
       --provider codex \
       --codex-model "${CODEX_MODEL}" \

@@ -7,8 +7,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ui_bench.adapters.base import PredictionRequest, PredictionResult
-from ui_bench.normalization import normalize_prediction_text
+from shape_code_bench.adapters.base import PredictionRequest, PredictionResult
+from shape_code_bench.normalization import normalize_prediction_text
 
 DEFAULT_CODEX_MODEL = "gpt-5.5"
 DEFAULT_CODEX_SANDBOX = "read-only"
@@ -89,7 +89,7 @@ class CodexAdapter:
         }
 
     def _run_once(self, image_path: Path, prompt: str, started: float) -> PredictionResult:
-        with tempfile.TemporaryDirectory(prefix="ui-bench-codex-") as workdir:
+        with tempfile.TemporaryDirectory(prefix="shape-code-bench-codex-") as workdir:
             output_path = Path(workdir) / "last-message.txt"
             argv = self._build_argv(image_path=image_path, output_path=output_path, workdir=workdir, prompt=prompt)
 

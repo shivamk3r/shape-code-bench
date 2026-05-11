@@ -26,7 +26,7 @@ feedback cycle: a researcher can generate fresh instances, run a model, and
 obtain objective scores without commissioning new labels or manual judgments for
 each refreshed example.
 
-We present \textsc{ui-bench}, a perception-to-program benchmark that attempts to
+We present \textsc{ShapeCodeBench}, a perception-to-program benchmark that attempts to
 hit the intersection of these pressures. The task is narrow by design: the DSL
 has exactly four primitives (\texttt{filled\_circle}, \texttt{circle},
 \texttt{filled\_square}, \texttt{square}) and the canvas is fixed at
@@ -39,7 +39,7 @@ rasters.
 
 \paragraph{Contributions.} We make the following contributions:
 \begin{enumerate}
-  \item We release the \textsc{ui-bench} benchmark: a four-primitive drawing DSL,
+  \item We release the \textsc{ShapeCodeBench} benchmark: a four-primitive drawing DSL,
     a safe restricted parser, a seeded scene generator with three difficulty
     tiers, and a render-based evaluator with five primary metrics.
   \item We freeze an evaluation split, \textsc{eval\_v1}, of 150 samples with
@@ -61,7 +61,7 @@ rasters.
     (\textsc{GPT-5.5}/\texttt{extra\_high}) reaches mean foreground IoU $0.87$,
     the best multimodal exact match remains $0.027$, and the classical
     heuristic leads easy-tier exact match at $0.26$ -- a
-    tier-dependent crossover that confirms \textsc{ui-bench} is not saturated
+    tier-dependent crossover that confirms \textsc{ShapeCodeBench} is not saturated
     and exposes distinct failure modes in perception versus structured code
     emission. Effort tier helps modestly (\texttt{max}\,$>$\,\texttt{high} for
     Claude on FG-IoU; \texttt{extra\_high}\,$>$\,\texttt{medium} for GPT-5.5)
@@ -69,7 +69,7 @@ rasters.
 \end{enumerate}
 
 The rest of the paper is organized as follows. Section~\ref{sec:related} places
-\textsc{ui-bench} against prior work. Section~\ref{sec:benchmark} describes the
+\textsc{ShapeCodeBench} against prior work. Section~\ref{sec:benchmark} describes the
 DSL, generator, renderer, and evaluator. Section~\ref{sec:experiments} details
 the experimental setup and headline results. Section~\ref{sec:analysis} analyzes
 failure modes, the heuristic-vs-LLM gap, and difficulty validity.

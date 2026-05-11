@@ -1,6 +1,6 @@
 {
   "created_utc": "2026-04-22T02:58:44+00:00",
-  "dataset_id": "ui-bench-eval-v1",
+  "dataset_id": "shape-code-bench-eval-v1",
   "generator_commit": "925e1bfd23f6f5edd8ee2b612d967b6584c8688c",
   "splits": [
     {
@@ -175,5 +175,5 @@
       "split": "eval"
     }
   ],
-  "ui_bench_version": "0.1.0"
+  "shape_code_bench_version": "0.1.0"
 }

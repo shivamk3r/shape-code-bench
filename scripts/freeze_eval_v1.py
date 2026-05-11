@@ -1,8 +1,8 @@
-"""Freeze the ui-bench eval_v1 dataset.
+"""Freeze the ShapeCodeBench eval_v1 dataset.
 
 Generates 50 samples per difficulty tier (seeds 0..49), writes them under
 ``data/eval_v1/<difficulty>/`` alongside a manifest and SHA256SUMS file.
-Re-running this script is idempotent given the same ui-bench version.
+Re-running this script is idempotent given the same ShapeCodeBench version.
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.generator import write_generated_sample
 
 EVAL_SPLIT = "eval"
 DIFFICULTIES: tuple[str, ...] = ("easy", "medium", "hard")
@@ -65,8 +65,8 @@ def main() -> int:
 
     generator_commit = _git_revision()
     manifest = {
-        "dataset_id": "ui-bench-eval-v1",
-        "ui_bench_version": "0.1.0",
+        "dataset_id": "shape-code-bench-eval-v1",
+        "shape_code_bench_version": "0.1.0",
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "generator_commit": generator_commit,
         "splits": manifest_splits,

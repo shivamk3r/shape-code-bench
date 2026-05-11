@@ -5,9 +5,9 @@ import random
 from dataclasses import dataclass
 from pathlib import Path
 
-from ui_bench.dsl import serialize_scene
-from ui_bench.renderer import render_scene
-from ui_bench.types import (
+from shape_code_bench.dsl import serialize_scene
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.types import (
     CANVAS_SIZE,
     Circle,
     DifficultyName,

@@ -5,8 +5,8 @@ from pathlib import Path
 import httpx
 import openai
 
-from ui_bench.adapters import OpenAIResponsesAdapter, PredictionRequest
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.adapters import OpenAIResponsesAdapter, PredictionRequest
+from shape_code_bench.generator import write_generated_sample
 
 
 class FakeUsage:

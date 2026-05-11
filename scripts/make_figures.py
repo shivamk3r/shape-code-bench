@@ -1,8 +1,8 @@
-"""Generate PDF figures for the ui-bench paper.
+"""Generate PDF figures for the ShapeCodeBench paper.
 
 Inputs:
 - ``data/runs/*/summary.json`` and per-sample JSON
-- Optional: ``data/eval_v1/`` (for target images) and ``src/ui_bench`` (to render predictions)
+- Optional: ``data/eval_v1/`` (for target images) and ``src/shape_code_bench`` (to render predictions)
 
 Outputs (under ``paper/figures/``):
 - ``fig_accuracy_by_difficulty.pdf`` — grouped bar chart with bootstrap 95% CIs
@@ -23,8 +23,8 @@ from matplotlib.lines import Line2D
 import numpy as np
 from PIL import Image
 
-from ui_bench.dsl import DSLValidationError, parse_program
-from ui_bench.renderer import render_scene
+from shape_code_bench.dsl import DSLValidationError, parse_program
+from shape_code_bench.renderer import render_scene
 
 METRICS = ("exact_match_rate", "mean_pixel_accuracy", "mean_foreground_iou", "parse_success_rate")
 METRIC_LABELS = {
@@ -43,7 +43,7 @@ DIFFICULTIES = ("easy", "medium", "hard")
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Render ui-bench paper figures.")
+    parser = argparse.ArgumentParser(description="Render ShapeCodeBench paper figures.")
     parser.add_argument("--runs-dir", default="data/runs")
     parser.add_argument("--dataset-dir", default="data/eval_v1")
     parser.add_argument("--output-dir", default="paper/figures")

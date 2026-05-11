@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ui-bench"
+name = "shape-code-bench"
 version = "0.1.0"
 description = "Synthetic benchmark for reconstructing drawing programs from images."
 readme = "README.md"
@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-ui-bench = "ui_bench.cli:main"
+shape-code-bench = "shape_code_bench.cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

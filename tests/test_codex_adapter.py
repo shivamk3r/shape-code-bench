@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from ui_bench.adapters import CodexAdapter, PredictionRequest
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.adapters import CodexAdapter, PredictionRequest
+from shape_code_bench.generator import write_generated_sample
 
 
 class FakeCompleted:
@@ -145,7 +145,7 @@ def test_codex_adapter_retries_on_transient_failure(tmp_path: Path) -> None:
     adapter = CodexAdapter(subprocess_run=runner, max_retries=2)
 
     # Patch time.sleep to avoid burning real time during retries.
-    import ui_bench.adapters.codex_adapter as codex_module
+    import shape_code_bench.adapters.codex_adapter as codex_module
 
     original_sleep = codex_module.time.sleep
     codex_module.time.sleep = lambda _: None

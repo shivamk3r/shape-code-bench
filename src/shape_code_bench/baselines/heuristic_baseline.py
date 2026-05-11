@@ -9,8 +9,8 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
-from ui_bench.adapters.base import PredictionRequest, PredictionResult
-from ui_bench.types import CANVAS_SIZE, FOREGROUND_COLOR
+from shape_code_bench.adapters.base import PredictionRequest, PredictionResult
+from shape_code_bench.types import CANVAS_SIZE, FOREGROUND_COLOR
 
 
 class HeuristicCVAdapter:

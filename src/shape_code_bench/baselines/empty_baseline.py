@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from ui_bench.adapters.base import PredictionRequest, PredictionResult
+from shape_code_bench.adapters.base import PredictionRequest, PredictionResult
 
 
 class EmptyProgramAdapter:

@@ -23,10 +23,10 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from ui_bench.dsl import serialize_scene
-from ui_bench.generator import generate_scene
-from ui_bench.renderer import render_scene
-from ui_bench.types import Scene
+from shape_code_bench.dsl import serialize_scene
+from shape_code_bench.generator import generate_scene
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.types import Scene
 
 
 DIFFICULTIES = ("easy", "medium", "hard")

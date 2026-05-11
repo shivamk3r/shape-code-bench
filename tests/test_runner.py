@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ui_bench.adapters import PredictionRequest, PredictionResult
-from ui_bench.generator import write_generated_sample
-from ui_bench.runner import run_benchmark
+from shape_code_bench.adapters import PredictionRequest, PredictionResult
+from shape_code_bench.generator import write_generated_sample
+from shape_code_bench.runner import run_benchmark
 
 
 class FakeAdapter:

@@ -10,8 +10,8 @@ import openai
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from ui_bench.adapters.base import PredictionRequest, PredictionResult
-from ui_bench.normalization import normalize_prediction_text
+from shape_code_bench.adapters.base import PredictionRequest, PredictionResult
+from shape_code_bench.normalization import normalize_prediction_text
 
 DEFAULT_OPENAI_MODEL = "gpt-5.5"
 DEFAULT_REASONING_EFFORT = "low"

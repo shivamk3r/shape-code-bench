@@ -1,6 +1,6 @@
-# ui-bench
+# ShapeCodeBench
 
-`ui-bench` is a synthetic benchmark for testing whether a multimodal model can look at an image and reconstruct the executable drawing program that generated it.
+`ShapeCodeBench` is a synthetic benchmark for testing whether a multimodal model can look at an image and reconstruct the executable drawing program that generated it.
 
 The core loop is:
 
@@ -68,19 +68,19 @@ For the two CLI-backed providers, install and authenticate the CLI directly — 
 Generate a sample set:
 
 ```bash
-uv run ui-bench generate --split train --difficulty easy --count 2 --seed 21
+uv run shape-code-bench generate --split train --difficulty easy --count 2 --seed 21
 ```
 
 Render a DSL program:
 
 ```bash
-uv run ui-bench render --program-file sample.dsl --output-file sample.png
+uv run shape-code-bench render --program-file sample.dsl --output-file sample.png
 ```
 
 Evaluate a predicted program directly:
 
 ```bash
-uv run ui-bench eval --target-image target.png --prediction-file prediction.dsl
+uv run shape-code-bench eval --target-image target.png --prediction-file prediction.dsl
 ```
 
 Run a model over a generated dataset. `--provider` selects one of `openai`,
@@ -88,7 +88,7 @@ Run a model over a generated dataset. `--provider` selects one of `openai`,
 
 ```bash
 # Via the OpenAI Responses API (burns API tokens)
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/generated/train \
   --provider openai \
   --model gpt-5.5 \
@@ -98,7 +98,7 @@ uv run ui-bench run \
   --limit 2
 
 # Via the OpenAI Codex CLI (uses the ChatGPT login, no API tokens)
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/eval_v1/eval \
   --provider codex \
   --codex-model gpt-5.5 \
@@ -107,7 +107,7 @@ uv run ui-bench run \
   --limit 2
 
 # Via the Claude Code CLI (uses the Claude subscription, no API tokens)
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/eval_v1/eval \
   --provider claude \
   --claude-model 'claude-opus-4-7[1m]' \
@@ -116,7 +116,7 @@ uv run ui-bench run \
   --limit 2
 
 # Classical-CV baseline (no LLM, under a second for 150 samples)
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/eval_v1/eval \
   --provider heuristic
 ```
@@ -176,14 +176,14 @@ The evaluator accepts only a restricted subset of Python syntax:
 
 ## What The Repository Includes
 
-- `src/ui_bench/dsl.py`: safe parser and canonical serializer
-- `src/ui_bench/renderer.py`: deterministic Pillow renderer
-- `src/ui_bench/generator.py`: seeded scene generation, sample writing, and a 2-sample smoke-test dataset helper
-- `src/ui_bench/adapters/`: provider-agnostic adapter interface plus three LLM-relevant implementations (OpenAI Responses API, OpenAI Codex CLI, Claude Code CLI)
-- `src/ui_bench/prompts.py`: fixed zero-shot benchmark prompt
-- `src/ui_bench/normalization.py`: minimal response normalization
-- `src/ui_bench/runner.py`: dataset loader, model runner, aggregation, and artifact writing
-- `src/ui_bench/cli.py`: `generate`, `render`, `eval`, and `run` commands
+- `src/shape_code_bench/dsl.py`: safe parser and canonical serializer
+- `src/shape_code_bench/renderer.py`: deterministic Pillow renderer
+- `src/shape_code_bench/generator.py`: seeded scene generation, sample writing, and a 2-sample smoke-test dataset helper
+- `src/shape_code_bench/adapters/`: provider-agnostic adapter interface plus three LLM-relevant implementations (OpenAI Responses API, OpenAI Codex CLI, Claude Code CLI)
+- `src/shape_code_bench/prompts.py`: fixed zero-shot benchmark prompt
+- `src/shape_code_bench/normalization.py`: minimal response normalization
+- `src/shape_code_bench/runner.py`: dataset loader, model runner, aggregation, and artifact writing
+- `src/shape_code_bench/cli.py`: `generate`, `render`, `eval`, and `run` commands
 - `tests/`: offline unit coverage plus opt-in live smoke tests for the OpenAI Responses API and the Codex CLI
 
 Generated benchmark samples are written under `data/generated/<split>/<difficulty>/`.
@@ -199,7 +199,7 @@ Benchmark runs are written under `data/runs/<run_id>/` with:
 Live API testing is explicit and intentionally tiny.
 
 - Default `pytest` stays fully offline.
-- The live smoke test is skipped unless `UI_BENCH_RUN_LIVE_OPENAI=1` is set.
+- The live smoke test is skipped unless `SHAPE_CODE_BENCH_RUN_LIVE_OPENAI=1` is set.
 - The live smoke path generates exactly 2 local examples: 1 `easy` and 1 `medium`.
 - This is the recommended validation path while credits are limited.
 

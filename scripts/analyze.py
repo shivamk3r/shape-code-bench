@@ -1,4 +1,4 @@
-"""Aggregate ui-bench run artifacts into CSV and LaTeX tables.
+"""Aggregate ShapeCodeBench run artifacts into CSV and LaTeX tables.
 
 Walks ``data/runs/*/summary.json``, cross-references per-sample JSON for
 bootstrap CIs, and writes ``paper/tables/{main_results.csv, main_results.tex,
@@ -24,7 +24,7 @@ METRIC_LABELS = {
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Analyze ui-bench runs into paper tables.")
+    parser = argparse.ArgumentParser(description="Analyze ShapeCodeBench runs into paper tables.")
     parser.add_argument("--runs-dir", default="data/runs")
     parser.add_argument("--output-dir", default="paper/tables")
     parser.add_argument("--bootstrap-samples", type=int, default=1000)

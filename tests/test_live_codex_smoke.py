@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from ui_bench.cli import main
-from ui_bench.generator import write_smoke_test_dataset
+from shape_code_bench.cli import main
+from shape_code_bench.generator import write_smoke_test_dataset
 
 
 @pytest.mark.skipif(
-    os.getenv("UI_BENCH_RUN_LIVE_CODEX") != "1",
-    reason="Live Codex smoke test is opt-in. Set UI_BENCH_RUN_LIVE_CODEX=1 to enable it.",
+    os.getenv("SHAPE_CODE_BENCH_RUN_LIVE_CODEX") != "1",
+    reason="Live Codex smoke test is opt-in. Set SHAPE_CODE_BENCH_RUN_LIVE_CODEX=1 to enable it.",
 )
 def test_live_codex_smoke_run(tmp_path: Path) -> None:
     if shutil.which("codex") is None:
@@ -32,7 +32,7 @@ def test_live_codex_smoke_run(tmp_path: Path) -> None:
             "--provider",
             "codex",
             "--codex-model",
-            os.getenv("UI_BENCH_CODEX_SMOKE_MODEL", "gpt-5.5"),
+            os.getenv("SHAPE_CODE_BENCH_CODEX_SMOKE_MODEL", "gpt-5.5"),
             "--codex-timeout-seconds",
             "240",
             "--codex-max-retries",

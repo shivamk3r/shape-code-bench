@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from ui_bench.adapters import (
+from shape_code_bench.adapters import (
     CLAUDE_EFFORT_LEVELS,
     DEFAULT_CLAUDE_BINARY,
     DEFAULT_CLAUDE_EFFORT,
@@ -26,12 +26,12 @@ from ui_bench.adapters import (
     ModelAdapter,
     OpenAIResponsesAdapter,
 )
-from ui_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
-from ui_bench.dsl import DSLValidationError, parse_program, serialize_scene
-from ui_bench.evaluator import evaluate_program
-from ui_bench.generator import write_generated_sample
-from ui_bench.renderer import render_scene
-from ui_bench.runner import run_benchmark
+from shape_code_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
+from shape_code_bench.dsl import DSLValidationError, parse_program, serialize_scene
+from shape_code_bench.evaluator import evaluate_program
+from shape_code_bench.generator import write_generated_sample
+from shape_code_bench.renderer import render_scene
+from shape_code_bench.runner import run_benchmark
 
 PROVIDER_CHOICES = ("openai", "codex", "claude", "heuristic", "empty")
 
@@ -51,7 +51,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="ui-bench benchmark utilities")
+    parser = argparse.ArgumentParser(description="ShapeCodeBench benchmark utilities")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     generate_parser = subparsers.add_parser("generate", help="Generate benchmark samples.")

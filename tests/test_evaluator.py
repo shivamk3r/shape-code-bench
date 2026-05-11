@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from ui_bench.dsl import serialize_scene
-from ui_bench.evaluator import evaluate_program
-from ui_bench.generator import generate_scene
-from ui_bench.renderer import render_scene
+from shape_code_bench.dsl import serialize_scene
+from shape_code_bench.evaluator import evaluate_program
+from shape_code_bench.generator import generate_scene
+from shape_code_bench.renderer import render_scene
 
 
 def test_evaluate_program_scores_ground_truth_as_perfect(tmp_path: Path) -> None:

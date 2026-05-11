@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ui_bench.normalization import normalize_prediction_text
+from shape_code_bench.normalization import normalize_prediction_text
 
 
 def test_empty_input_returns_empty() -> None:

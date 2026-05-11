@@ -1,21 +1,21 @@
 \section{Related Work}
 \label{sec:related}
 
-\textsc{ui-bench} sits at the intersection of three established lines of work:
+\textsc{ShapeCodeBench} sits at the intersection of three established lines of work:
 visual program induction, synthetic diagnostic benchmarks, and image-to-code
 evaluation of multimodal models.
 
 \paragraph{Visual program induction and inverse graphics.}
 Predicting executable programs from images has a long history. CSGNet~\cite{sharma2018csgnet}
 infers constructive solid geometry programs from 2D and 3D shapes, and is the
-direct conceptual ancestor of \textsc{ui-bench}. \cite{liu2019scenes} learn to
+direct conceptual ancestor of \textsc{ShapeCodeBench}. \cite{liu2019scenes} learn to
 describe scenes with a DSL that supports loops and grouping, demonstrating that
 compositional program structure -- and not only local shape identity -- can be
 recovered from a single image. \cite{li2020perspective} and
 \cite{li2020multiplane} extend program induction to perspective scenes and
 repeated 3D structure, while \cite{duan2022parametric} studies parametric
 primitives with explicit function correlations, close in spirit to the
-integer-parameter DSL of \textsc{ui-bench}. LILO~\cite{grand2024lilo} synthesizes
+integer-parameter DSL of \textsc{ShapeCodeBench}. LILO~\cite{grand2024lilo} synthesizes
 reusable program libraries across domains including graphics composition,
 providing a template for symbolic baselines. These systems prove that the
 image-to-program problem is well-defined; none of them are benchmark-first
@@ -35,7 +35,7 @@ Renewability is becoming a first-class benchmark-design goal. \textsc{LiveBench}
 adds and updates automatically scored questions to reduce test-set
 contamination and avoid the failure modes of human crowdsourcing or LLM-as-judge
 scoring on hard tasks. \textsc{Image2Struct}~\cite{roberts2024image2struct}
-similarly emphasizes fully automatic, renewable round-trip evaluation. \textsc{ui-bench}
+similarly emphasizes fully automatic, renewable round-trip evaluation. \textsc{ShapeCodeBench}
 inherits this philosophy in a synthetic inverse-graphics setting: instead of
 downloading fresh natural data, it mints new controlled instances from fresh
 seeds and scores them through deterministic rendering.
@@ -44,7 +44,7 @@ seeds and scores them through deterministic rendering.
 \textsc{TurtleBench}~\cite{rismanchian2025turtlebench} evaluates vision-language
 models on turtle-geometry programs and is the closest benchmark-level neighbor.
 It reports that strong models still struggle, which supports the general thesis
-that visual program reconstruction is hard. \textsc{ui-bench} differs along three
+that visual program reconstruction is hard. \textsc{ShapeCodeBench} differs along three
 axes: (1) the DSL is a tiny shape-primitive set rather than turtle paths, which
 removes path-planning reasoning and isolates perception-plus-emission; (2) the
 benchmark is explicitly renewable via fresh seeds; and (3) scoring is raster-based
@@ -54,7 +54,7 @@ and deterministic.
 structure extraction: image $\rightarrow$ structure $\rightarrow$ rendered image
 $\rightarrow$ similarity. Our scoring pipeline follows the same philosophy.
 Unlike \textsc{Image2Struct}, which spans noisy real-world web pages, LaTeX, and
-music, \textsc{ui-bench} stays inside a small controlled space so that reported
+music, \textsc{ShapeCodeBench} stays inside a small controlled space so that reported
 failures can be cleanly attributed to perception or emission.
 
 \paragraph{Broader image-to-code.}
@@ -63,7 +63,7 @@ pix2code~\cite{beltramelli2017pix2code}, Design2Code~\cite{si2024design2code},
 demonstrate that image-to-code is now a mature benchmark family spanning GUI
 screenshots, SVG, and general graphics-to-code. These benchmarks mix many
 confounders: OCR, library conventions, rendering-engine variability, and external
-assets. \textsc{ui-bench} strips away these confounders by design, providing a
+assets. \textsc{ShapeCodeBench} strips away these confounders by design, providing a
 sibling benchmark whose strengths are control and reproducibility rather than
 realism.
 
@@ -74,12 +74,12 @@ code and reasoning models. \textsc{CodeRL}~\cite{le2022coderl} and
 code generation, while \textsc{DeepSeek-R1}~\cite{guo2025deepseekr1} and
 \textsc{RLVE}~\cite{zeng2025rlve} illustrate the broader role of verifiable
 rewards and procedurally generated environments in reinforcement learning for
-language models. These results motivate a future use of \textsc{ui-bench} as a
+language models. These results motivate a future use of \textsc{ShapeCodeBench} as a
 verifiable training environment, but our present contribution is an evaluation
 benchmark: we do not train or fine-tune models on the task.
 
 \paragraph{How to read the contribution.}
-\textsc{ui-bench} is not the first benchmark to ask models to reconstruct
+\textsc{ShapeCodeBench} is not the first benchmark to ask models to reconstruct
 programs from images. Its contribution is a \emph{specific combination}:
 a deterministic render-based evaluator, explicit difficulty axes, a
 provider-agnostic adapter for cost-controlled runs, and a renewable frozen

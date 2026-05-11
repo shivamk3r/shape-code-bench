@@ -1,17 +1,17 @@
-# Research Landscape And Positioning For `ui-bench`
+# Research Landscape And Positioning For `ShapeCodeBench`
 
 ## Why This Document Exists
 
 This note answers a practical question before implementation gets deep:
 
-> Is `ui-bench` actually a useful research direction, or is it too similar to prior work to matter?
+> Is `ShapeCodeBench` actually a useful research direction, or is it too similar to prior work to matter?
 
 Short answer:
 
 - Yes, it can be useful.
 - No, it is not a brand-new task family.
-- The strongest version of `ui-bench` is not "the first image-to-program idea."
-- The strongest version of `ui-bench` is "a clean, renewable, benchmark-first testbed for perception-to-program reconstruction with deterministic execution and render-based scoring."
+- The strongest version of `ShapeCodeBench` is not "the first image-to-program idea."
+- The strongest version of `ShapeCodeBench` is "a clean, renewable, benchmark-first testbed for perception-to-program reconstruction with deterministic execution and render-based scoring."
 
 The implemented V1 stack follows that framing:
 
@@ -20,11 +20,11 @@ The implemented V1 stack follows that framing:
 - a safe restricted parser instead of arbitrary Python execution,
 - and `uv`-managed Python packaging around that core.
 
-That distinction matters. Prior work already exists on visual program induction, inverse graphics, turtle-graphics code generation, screenshot-to-code, and structure extraction from images. The opportunity for `ui-bench` is to combine the best benchmark-design ideas from those lines into a more controlled evaluation artifact.
+That distinction matters. Prior work already exists on visual program induction, inverse graphics, turtle-graphics code generation, screenshot-to-code, and structure extraction from images. The opportunity for `ShapeCodeBench` is to combine the best benchmark-design ideas from those lines into a more controlled evaluation artifact.
 
 ## Executive Verdict
 
-My assessment is that `ui-bench` is useful **if it is positioned and built as a benchmark**, not as a claim that nobody has ever asked models to recover code from images before.
+My assessment is that `ShapeCodeBench` is useful **if it is positioned and built as a benchmark**, not as a claim that nobody has ever asked models to recover code from images before.
 
 The closest existing work shows that:
 
@@ -64,15 +64,15 @@ If we want to keep surveying this area, these are the most relevant search phras
 
 ### 1. Directly Related: Visual Program Induction And Inverse Graphics
 
-These papers are the closest conceptual neighbors to `ui-bench`.
+These papers are the closest conceptual neighbors to `ShapeCodeBench`.
 
-| Work | What it does | Why it matters for `ui-bench` |
+| Work | What it does | Why it matters for `ShapeCodeBench` |
 | --- | --- | --- |
 | [CSGNet (Sharma et al., 2018)](https://arxiv.org/abs/1712.08290) | Takes a 2D or 3D shape and predicts a constructive solid geometry program that generates it. | This is a direct predecessor for "image in, program out." It proves the problem family is real, but it is a method paper, not a benchmark-first evaluation framework for modern multimodal models. |
 | [Learning to Describe Scenes with Programs (Liu et al., 2019)](https://www.cs.toronto.edu/~bonner/courses/2022s/csc2547/papers/generative/inverse-graphics/learning_to_describe_scenes_with_programs%2C-liu%2C-iclr2019.pdf) | Represents scenes with a DSL containing objects plus higher-level program structure such as loops and grouping. | Very relevant because it targets abstract scene structure rather than only low-level drawing commands. It also shows that scene regularity and compositionality are central to this research space. |
 | [Perspective Plane Program Induction from a Single Image (Li et al., 2020)](https://arxiv.org/abs/2006.14708) | Infers a neuro-symbolic, program-like scene representation from a single image. | Important because it frames the task as inverse graphics with holistic structure recovery, not just object detection. |
 | [Multi-Plane Program Induction with 3D Box Priors (Li et al., 2020)](https://arxiv.org/abs/2011.10007) | Extends program induction to repeated structure across multiple 2D planes in a 3D box-like scene. | Shows that the field already explores structured scene recovery from images with search and geometry. |
-| [Parametric Visual Program Induction with Function Modularization (Duan et al., 2022)](https://proceedings.mlr.press/v162/duan22c.html) | Studies program induction with parametric primitive functions and more complex function correlations. | This is especially relevant because `ui-bench` also wants a parameterized DSL, even if much smaller. |
+| [Parametric Visual Program Induction with Function Modularization (Duan et al., 2022)](https://proceedings.mlr.press/v162/duan22c.html) | Studies program induction with parametric primitive functions and more complex function correlations. | This is especially relevant because `ShapeCodeBench` also wants a parameterized DSL, even if much smaller. |
 | [LILO (Grand et al., 2024)](https://arxiv.org/abs/2310.19791) | A neurosymbolic system for synthesizing and compressing reusable programs across domains including graphics composition. | Not a benchmark paper, but highly relevant for baseline design and for understanding the symbolic synthesis literature around graphics tasks. |
 
 ### 2. Closest Benchmark Predecessor
@@ -88,26 +88,26 @@ Why TurtleBench matters so much:
 - It evaluates modern large multimodal models.
 - It reports that leading models still struggle badly, even on simple tasks.
 
-This means `ui-bench` cannot honestly claim to be the first benchmark in the broad "visual input to code output" area.
+This means `ShapeCodeBench` cannot honestly claim to be the first benchmark in the broad "visual input to code output" area.
 
-What still differentiates `ui-bench` from TurtleBench:
+What still differentiates `ShapeCodeBench` from TurtleBench:
 
-- `ui-bench` is currently centered on a tiny deterministic shape DSL, not turtle-geometry path programs.
-- `ui-bench` is organized around reconstructing a raster scene under a tiny shape-primitive DSL and scoring outputs by rendered equivalence.
-- `ui-bench` is explicitly framed around renewable evaluation via fresh seeds and generator control.
-- `ui-bench` is better positioned as a controlled inverse-graphics benchmark than as a geometry-teaching benchmark.
+- `ShapeCodeBench` is currently centered on a tiny deterministic shape DSL, not turtle-geometry path programs.
+- `ShapeCodeBench` is organized around reconstructing a raster scene under a tiny shape-primitive DSL and scoring outputs by rendered equivalence.
+- `ShapeCodeBench` is explicitly framed around renewable evaluation via fresh seeds and generator control.
+- `ShapeCodeBench` is better positioned as a controlled inverse-graphics benchmark than as a geometry-teaching benchmark.
 
-In other words, TurtleBench is the paper `ui-bench` most needs to cite and distinguish itself from.
+In other words, TurtleBench is the paper `ShapeCodeBench` most needs to cite and distinguish itself from.
 
 ### 3. Benchmark-Design Neighbors
 
-These works are not the same task, but they are important for how `ui-bench` should be designed.
+These works are not the same task, but they are important for how `ShapeCodeBench` should be designed.
 
 | Work | Relevance |
 | --- | --- |
-| [CLEVR (Johnson et al., 2017)](https://arxiv.org/abs/1612.06890) | The classic example of a synthetic diagnostic benchmark that mattered because it reduced spurious shortcuts and exposed reasoning failure modes. `ui-bench` can aim for that style of controlled evaluation, but for perception-to-program reconstruction rather than question answering. |
+| [CLEVR (Johnson et al., 2017)](https://arxiv.org/abs/1612.06890) | The classic example of a synthetic diagnostic benchmark that mattered because it reduced spurious shortcuts and exposed reasoning failure modes. `ShapeCodeBench` can aim for that style of controlled evaluation, but for perception-to-program reconstruction rather than question answering. |
 | [CLOSURE (Bahdanau et al., 2019)](https://arxiv.org/abs/1912.05783) | Important reminder that a synthetic benchmark is only valuable if it truly tests systematic generalization rather than letting models exploit superficial regularities. |
-| [Image2Struct (Roberts et al., 2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/d0718553fd6b227a353c6432cf893285-Paper-Datasets_and_Benchmarks_Track.pdf) | Extremely relevant methodologically. It uses round-trip evaluation: image -> structure -> rendered image -> similarity score. It also argues for renewable benchmarks using fresh data and avoids exact-string matching when multiple valid structures exist. This is one of the strongest external validations of `ui-bench`'s scoring philosophy. |
+| [Image2Struct (Roberts et al., 2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/d0718553fd6b227a353c6432cf893285-Paper-Datasets_and_Benchmarks_Track.pdf) | Extremely relevant methodologically. It uses round-trip evaluation: image -> structure -> rendered image -> similarity score. It also argues for renewable benchmarks using fresh data and avoids exact-string matching when multiple valid structures exist. This is one of the strongest external validations of `ShapeCodeBench`'s scoring philosophy. |
 | [LiveBench (White et al., 2024)](https://arxiv.org/abs/2406.19314) | Important for the contamination and refresh argument. It uses frequently updated, automatically scored questions to reduce test-set contamination and avoid relying on human or LLM judges for hard examples. |
 
 ### 4. Broader Image-To-Code Benchmarks
@@ -117,17 +117,17 @@ This broader area is moving quickly, which helps justify the overall direction.
 | Work | Domain | Why it matters |
 | --- | --- | --- |
 | [pix2code (Beltramelli, 2017)](https://arxiv.org/abs/1705.07962) | GUI screenshot -> code | Early proof that image-to-code became a real benchmark/problem family. |
-| [Design2Code (Si et al., 2024)](https://salt-nlp.github.io/Design2Code/) | Real webpage screenshot -> HTML/CSS | Shows modern VLM evaluation pressure in screenshot-to-code, but in a much noisier real-world domain than `ui-bench`. |
+| [Design2Code (Si et al., 2024)](https://salt-nlp.github.io/Design2Code/) | Real webpage screenshot -> HTML/CSS | Shows modern VLM evaluation pressure in screenshot-to-code, but in a much noisier real-world domain than `ShapeCodeBench`. |
 | [Image2Struct (Roberts et al., 2024)](https://proceedings.neurips.cc/paper_files/paper/2024/file/d0718553fd6b227a353c6432cf893285-Paper-Datasets_and_Benchmarks_Track.pdf) | Webpages / LaTeX / music score -> code | Demonstrates that round-trip visual evaluation is now a serious benchmark pattern. |
 | [VCode (Lin et al., 2025)](https://arxiv.org/abs/2511.02778) | Image -> SVG | Very relevant because it treats code as a symbolic visual representation rather than a purely textual output. |
 | [Omni-I2C (Zhou et al., 2026)](https://arxiv.org/abs/2603.17508) | Complex digital graphics -> executable code | Shows the image-to-code frontier is broadening into a general multimodal coding capability benchmark. |
 
-The lesson from this group is not that `ui-bench` is redundant. The lesson is that the field now has a real appetite for evaluating visual understanding through executable structured outputs.
+The lesson from this group is not that `ShapeCodeBench` is redundant. The lesson is that the field now has a real appetite for evaluating visual understanding through executable structured outputs.
 
 ### 5. Verifiable Feedback And Training Environments
 
 These works are not benchmark predecessors, but they clarify what can and cannot
-be claimed about using `ui-bench` as a training signal.
+be claimed about using `ShapeCodeBench` as a training signal.
 
 | Work | Why it matters |
 | --- | --- |
@@ -136,17 +136,17 @@ be claimed about using `ui-bench` as a training signal.
 | [DeepSeek-R1 (Guo et al., 2025)](https://arxiv.org/abs/2501.12948) | Popularized large-scale reasoning training with rule-based/verifiable rewards for domains such as math and code. |
 | [RLVE (Zeng et al., 2025)](https://arxiv.org/abs/2511.07317) | Directly supports the idea of procedurally generated, adaptively leveled environments with algorithmically verifiable rewards. |
 
-The conservative claim for `ui-bench` is that it could become a verifiable
+The conservative claim for `ShapeCodeBench` is that it could become a verifiable
 training environment: generated image/program pairs support supervised
 fine-tuning, and parse/render/compare feedback can define an RL-style reward.
 The current repository does not implement such training, and its evaluator is
 not a differentiable pretraining loss.
 
-## So Is `ui-bench` Useful?
+## So Is `ShapeCodeBench` Useful?
 
 ### Yes, But Only Under A Specific Framing
 
-`ui-bench` is useful if we present it as a **controlled, benchmark-first inverse-graphics testbed** with strong reproducibility and diagnostic structure.
+`ShapeCodeBench` is useful if we present it as a **controlled, benchmark-first inverse-graphics testbed** with strong reproducibility and diagnostic structure.
 
 It is less useful if we present it as:
 
@@ -157,7 +157,7 @@ It is less useful if we present it as:
 ### Why It Is Useful
 
 1. It isolates a clean capability.
-   `ui-bench` measures whether a model can infer an executable latent structure from vision, rather than merely describe an image in words.
+   `ShapeCodeBench` measures whether a model can infer an executable latent structure from vision, rather than merely describe an image in words.
 
 2. It avoids many evaluation ambiguities.
    Render-based comparison is better aligned to the task than exact source-string match because multiple programs can produce the same image.
@@ -182,11 +182,11 @@ It is less useful if we present it as:
 8. It fills a middle ground.
    Existing work often sits at one of two extremes:
    very specialized inverse-graphics methods, or broad messy real-world image-to-code tasks.
-   `ui-bench` can occupy the middle: simple enough to be controlled, rich enough to stress perception-plus-program synthesis.
+   `ShapeCodeBench` can occupy the middle: simple enough to be controlled, rich enough to stress perception-plus-program synthesis.
 
 ### Why It Could Still Fail To Matter
 
-`ui-bench` becomes much less valuable if:
+`ShapeCodeBench` becomes much less valuable if:
 
 1. The DSL stays too trivial for too long.
    A benchmark with only a handful of black-on-white primitives may become saturable quickly, especially for frontier models or simple search-based systems.
@@ -201,14 +201,14 @@ It is less useful if we present it as:
    Reviewers will ask whether a detector-plus-search baseline, or even brute-force over a small program space, already solves much of the benchmark.
 
 5. The benchmark over-claims novelty.
-   TurtleBench, CSGNet, scene-program papers, and Image2Struct make it clear that `ui-bench` belongs to an existing lineage.
+   TurtleBench, CSGNet, scene-program papers, and Image2Struct make it clear that `ShapeCodeBench` belongs to an existing lineage.
 
 6. The benchmark blurs evaluation with training.
-   `eval_v1` should remain a clean reporting split. If `ui-bench` is used for
+   `eval_v1` should remain a clean reporting split. If `ShapeCodeBench` is used for
    SFT or RL-style reward training, that training should use separate generated
    seeds and be evaluated on frozen or freshly minted held-out splits.
 
-## What Value `ui-bench` Adds If Built Well
+## What Value `ShapeCodeBench` Adds If Built Well
 
 If executed carefully, this repository can add several concrete research values.
 
@@ -223,7 +223,7 @@ Real webpage, SVG, or chart benchmarks are valuable, but they mix many factors a
 - external assets
 - uncontrolled real-world messiness
 
-`ui-bench` strips this down to a smaller latent space. That makes it easier to tell whether a model failed because it misunderstood the scene, failed to reason compositionally, or failed to serialize the right program.
+`ShapeCodeBench` strips this down to a smaller latent space. That makes it easier to tell whether a model failed because it misunderstood the scene, failed to reason compositionally, or failed to serialize the right program.
 
 ### 2. Stronger Control Over Difficulty
 
@@ -262,7 +262,7 @@ That bridge is scientifically useful even if the visual world is deliberately si
 
 ### 5. A Good Internal Research Harness
 
-Even if `ui-bench` were never published, it would still be useful internally for:
+Even if `ShapeCodeBench` were never published, it would still be useful internally for:
 
 - comparing multimodal models,
 - stress-testing prompting strategies,
@@ -287,7 +287,7 @@ That is a much stronger position because it is true to the literature.
 
 If this project becomes a paper, README, or talk, the positioning should emphasize these points:
 
-1. `ui-bench` is a **benchmark**, not mainly a method paper.
+1. `ShapeCodeBench` is a **benchmark**, not mainly a method paper.
 2. The benchmark targets **perception-to-program reconstruction** in a tiny but expressive DSL.
 3. The key contribution is **evaluation design**:
    renewable data, deterministic rendering, ambiguity-aware render scoring, and
@@ -341,7 +341,7 @@ If this project becomes a paper, README, or talk, the positioning should emphasi
 
 ## Bottom Line
 
-`ui-bench` is not useless. It is promising.
+`ShapeCodeBench` is not useless. It is promising.
 
 But its value does **not** come from being the first idea in the neighborhood. Its value comes from doing three things well at the same time:
 

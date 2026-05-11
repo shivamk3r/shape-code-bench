@@ -6,8 +6,8 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ui_bench.adapters.base import PredictionRequest, PredictionResult
-from ui_bench.normalization import normalize_prediction_text
+from shape_code_bench.adapters.base import PredictionRequest, PredictionResult
+from shape_code_bench.normalization import normalize_prediction_text
 
 DEFAULT_CLAUDE_MODEL = "claude-opus-4-7[1m]"
 DEFAULT_CLAUDE_EFFORT = "medium"

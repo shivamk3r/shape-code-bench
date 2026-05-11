@@ -1,14 +1,14 @@
 \section{Benchmark Design}
 \label{sec:benchmark}
 
-\textsc{ui-bench} is specified by four coupled components: the DSL and its
+\textsc{ShapeCodeBench} is specified by four coupled components: the DSL and its
 restricted parser, the scene generator, the deterministic renderer, and the
 render-based evaluator. We describe each in turn.
 
-\subsection{The ui-bench DSL}
+\subsection{The ShapeCodeBench DSL}
 \label{sec:dsl}
 
-A ui-bench program is a sequence of top-level function calls, one per line.
+A ShapeCodeBench program is a sequence of top-level function calls, one per line.
 There are exactly four primitive functions:
 
 \begin{lstlisting}
@@ -67,7 +67,7 @@ least one pairwise bounding-box overlap.
   Hard & $6$--$10$ & $[16, 128]$ & $[1, 10]$ & $1.00$ & $-$ & yes \\
   \bottomrule
   \end{tabular}
-  \caption{Difficulty tiers used to structure generation in \textsc{ui-bench}. ``Extent'' is the radius or size range;
+  \caption{Difficulty tiers used to structure generation in \textsc{ShapeCodeBench}. ``Extent'' is the radius or size range;
   a missing Max bbox IoU indicates no constraint.}
   \label{tab:difficulty-tiers}
 \end{table}

@@ -1,12 +1,12 @@
 # AGENTS.md
 
-This is the canonical operating guide for any AI agent working on `ui-bench`.
+This is the canonical operating guide for any AI agent working on `ShapeCodeBench`.
 Keep shared agent behavior here. Product-specific files should be thin adapters
 that point back to this file or to `.agents/`.
 
 ## Project Purpose
 
-`ui-bench` is a synthetic multimodal benchmark for testing whether a model can
+`ShapeCodeBench` is a synthetic multimodal benchmark for testing whether a model can
 look at an image and reconstruct the executable drawing program that generated
 it.
 
@@ -36,7 +36,7 @@ The main benchmark question is:
 
 ## Contamination Resistance
 
-One of the strongest advantages of `ui-bench` is contamination resistance at the
+One of the strongest advantages of `ShapeCodeBench` is contamination resistance at the
 instance level.
 
 If a released batch of examples becomes known or contaminated, the project can
@@ -58,7 +58,7 @@ Before making a substantial change, load context in this order:
    status.
 2. `docs/benchmark-spec.md` for normative DSL, rendering, generation,
    evaluation, adapter, and artifact semantics.
-3. The relevant implementation files under `src/ui_bench/`.
+3. The relevant implementation files under `src/shape_code_bench/`.
 4. The matching tests under `tests/`.
 5. This `AGENTS.md` for repository memory and shared agent behavior.
 
@@ -67,17 +67,17 @@ instructions unless the user explicitly invokes them.
 
 ## Important Paths
 
-- `src/ui_bench/dsl.py`: restricted parser and canonical serializer
-- `src/ui_bench/renderer.py`: deterministic Pillow renderer
-- `src/ui_bench/generator.py`: seeded scene generation and sample metadata
-- `src/ui_bench/evaluator.py`: render-based scoring
-- `src/ui_bench/prompts.py`: fixed zero-shot benchmark prompt
-- `src/ui_bench/normalization.py`: minimal model-output normalization
-- `src/ui_bench/runner.py`: dataset loading, model execution, aggregation, and
+- `src/shape_code_bench/dsl.py`: restricted parser and canonical serializer
+- `src/shape_code_bench/renderer.py`: deterministic Pillow renderer
+- `src/shape_code_bench/generator.py`: seeded scene generation and sample metadata
+- `src/shape_code_bench/evaluator.py`: render-based scoring
+- `src/shape_code_bench/prompts.py`: fixed zero-shot benchmark prompt
+- `src/shape_code_bench/normalization.py`: minimal model-output normalization
+- `src/shape_code_bench/runner.py`: dataset loading, model execution, aggregation, and
   run artifacts
-- `src/ui_bench/adapters/`: provider-agnostic adapters for OpenAI Responses API,
+- `src/shape_code_bench/adapters/`: provider-agnostic adapters for OpenAI Responses API,
   OpenAI Codex CLI, Claude Code CLI, and baselines
-- `src/ui_bench/cli.py`: `generate`, `render`, `eval`, and `run`
+- `src/shape_code_bench/cli.py`: `generate`, `render`, `eval`, and `run`
 - `tests/`: offline unit coverage plus opt-in live smoke tests
 - `docs/`: benchmark specification, reproducibility notes, and research context
 - `paper/`: arXiv paper source and build files
@@ -207,8 +207,8 @@ change touches shared behavior, scoring, adapters, or CLI workflows.
 
 Live smoke tests are skipped by default and must stay explicit:
 
-- `UI_BENCH_RUN_LIVE_OPENAI=1`
-- `UI_BENCH_RUN_LIVE_CODEX=1`
+- `SHAPE_CODE_BENCH_RUN_LIVE_OPENAI=1`
+- `SHAPE_CODE_BENCH_RUN_LIVE_CODEX=1`
 
 Do not run live API/CLI evaluation over more than 2 examples unless the user
 explicitly asks for a larger run.

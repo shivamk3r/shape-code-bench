@@ -6,9 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ui_bench.adapters import PredictionRequest, PredictionResult
-from ui_bench.cli import main
-from ui_bench.generator import write_generated_sample
+from shape_code_bench.adapters import PredictionRequest, PredictionResult
+from shape_code_bench.cli import main
+from shape_code_bench.generator import write_generated_sample
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -101,7 +101,7 @@ def test_cli_run_writes_summary_with_fake_adapter(tmp_path: Path, monkeypatch, c
         def to_config(self) -> dict[str, object]:
             return {"provider": self.provider, "model": self.model}
 
-    monkeypatch.setattr("ui_bench.cli._build_adapter_from_args", lambda args: FakeAdapter())
+    monkeypatch.setattr("shape_code_bench.cli._build_adapter_from_args", lambda args: FakeAdapter())
 
     exit_code = main(
         [
@@ -130,7 +130,7 @@ def _run_cli(args: list[str]) -> subprocess.CompletedProcess[str]:
     src_path = str(ROOT / "src")
     env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}:{existing_pythonpath}"
     return subprocess.run(
-        [sys.executable, "-m", "ui_bench.cli", *args],
+        [sys.executable, "-m", "shape_code_bench.cli", *args],
         cwd=ROOT,
         env=env,
         capture_output=True,

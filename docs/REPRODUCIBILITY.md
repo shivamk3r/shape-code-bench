@@ -1,7 +1,7 @@
-# Reproducing `ui-bench` Experiments
+# Reproducing `ShapeCodeBench` Experiments
 
 This guide reproduces the headline numbers, figures, and paper PDF from a clean
-checkout of `ui-bench`. Everything here is deterministic up to each CLI's
+checkout of `ShapeCodeBench`. Everything here is deterministic up to each CLI's
 per-call sampling; see [Limitations](#8-limitations-and-caveats) below.
 
 ## 1. Environment
@@ -89,8 +89,8 @@ Every line should read `OK`.
 Run the two non-LLM baselines first; they complete in under a second:
 
 ```bash
-uv run ui-bench run --dataset-dir data/eval_v1/eval --provider empty     --output-dir data/runs
-uv run ui-bench run --dataset-dir data/eval_v1/eval --provider heuristic --output-dir data/runs
+uv run shape-code-bench run --dataset-dir data/eval_v1/eval --provider empty     --output-dir data/runs
+uv run shape-code-bench run --dataset-dir data/eval_v1/eval --provider heuristic --output-dir data/runs
 ```
 
 Then run the four CLI-backed multimodal sweeps. This step dominates the
@@ -169,23 +169,23 @@ uv run pytest
 Live Codex smoke test (one easy + one medium sample through real Codex):
 
 ```bash
-UI_BENCH_RUN_LIVE_CODEX=1 uv run pytest tests/test_live_codex_smoke.py -v
+SHAPE_CODE_BENCH_RUN_LIVE_CODEX=1 uv run pytest tests/test_live_codex_smoke.py -v
 ```
 
 You may override the model used for the Codex smoke test by setting
-`UI_BENCH_CODEX_SMOKE_MODEL` (default: `gpt-5.5`).
+`SHAPE_CODE_BENCH_CODEX_SMOKE_MODEL` (default: `gpt-5.5`).
 
 Live OpenAI Responses API smoke test (requires `OPENAI_API_KEY`):
 
 ```bash
-UI_BENCH_RUN_LIVE_OPENAI=1 uv run pytest tests/test_live_openai_smoke.py -v
+SHAPE_CODE_BENCH_RUN_LIVE_OPENAI=1 uv run pytest tests/test_live_openai_smoke.py -v
 ```
 
 There is no live Claude Code smoke test today; validate the Claude path with
 a `--limit 2` run instead:
 
 ```bash
-uv run ui-bench run \
+uv run shape-code-bench run \
   --dataset-dir data/eval_v1/eval \
   --provider claude \
   --claude-model 'claude-opus-4-7[1m]' \
@@ -209,8 +209,8 @@ uv run ui-bench run \
   the run artifacts. To document your own environment, capture
   `codex --version` and `claude --version` alongside your run output. The
   adapter argv shape is documented in
-  `src/ui_bench/adapters/codex_adapter.py` and
-  `src/ui_bench/adapters/claude_code_adapter.py`.
+  `src/shape_code_bench/adapters/codex_adapter.py` and
+  `src/shape_code_bench/adapters/claude_code_adapter.py`.
 - **Subscription quotas.** Running the full four-config sweep consumes a
   meaningful portion of daily ChatGPT Pro usage (Codex track) and a meaningful
   portion of Claude subscription budget (Claude track). If a sweep stalls on

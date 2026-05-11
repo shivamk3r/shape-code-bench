@@ -13,7 +13,7 @@ def normalize_prediction_text(raw_text: str) -> str:
 
     Strategy (first match wins):
     1. If the output contains a fenced code block anywhere, return its body.
-    2. Otherwise, keep only the lines that match a ui-bench primitive signature.
+    2. Otherwise, keep only the lines that match a ShapeCodeBench primitive signature.
     3. If nothing matches, return the trimmed raw text so that parse errors
        surface honestly in ``error_type_counts`` rather than being papered over.
     """
