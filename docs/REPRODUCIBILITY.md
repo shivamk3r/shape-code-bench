@@ -158,7 +158,20 @@ does not run BibTeX):
 cd paper && make arxiv
 ```
 
-## 7. Tests
+## 7. Release Artifacts
+
+The public release preserves the checked-in `eval_v1` dataset and the benchmark
+run artifacts used for the paper. Some run artifacts were produced before the
+project was renamed to ShapeCodeBench and may contain historical `ui-bench`
+prompt labels. Treat those strings as immutable run metadata; they refer to the
+same benchmark DSL now named ShapeCodeBench.
+
+The archived release DOI is <https://doi.org/10.5281/zenodo.20132286>.
+
+The code is MIT licensed. Paper sources, documentation, generated datasets,
+figures, tables, and run artifacts are CC BY 4.0 unless otherwise noted.
+
+## 8. Tests
 
 Offline tests (no Codex, Claude Code, or OpenAI API calls):
 
@@ -193,7 +206,7 @@ uv run shape-code-bench run \
   --limit 2
 ```
 
-## 8. Limitations and caveats
+## 9. Limitations and caveats
 
 - **Model-inference variability.** Dataset regeneration and metric computation
   are deterministic: re-running `scripts/freeze_eval_v1.py` from the same seeds
@@ -224,7 +237,7 @@ uv run shape-code-bench run \
   `eval_v1`. If you revise generator behavior, bump to `eval_v2` and record the
   generator commit SHA in the new manifest.
 
-## 9. Questions?
+## 10. Questions?
 
 Open an issue on the project repository with the relevant `run_config.json`
 and the tail of `summary.json` attached, plus the output of

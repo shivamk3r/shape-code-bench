@@ -8,7 +8,7 @@
     "sandbox": "read-only",
     "timeout_seconds": 240
   },
-  "dataset_dir": "/Users/shivamkumar/projects/personal/ui-bench/data/eval_v1/eval",
+  "dataset_dir": "data/eval_v1/eval",
   "limit": null,
   "model": "gpt-5.4",
   "prompt": {

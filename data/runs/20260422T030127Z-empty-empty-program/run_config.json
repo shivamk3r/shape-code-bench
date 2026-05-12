@@ -3,7 +3,7 @@
     "model": "empty-program",
     "provider": "empty"
   },
-  "dataset_dir": "/Users/shivamkumar/projects/personal/ui-bench/data/eval_v1/eval",
+  "dataset_dir": "data/eval_v1/eval",
   "limit": null,
   "model": "empty-program",
   "prompt": {

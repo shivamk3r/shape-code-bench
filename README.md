@@ -237,6 +237,24 @@ training seeds separate from frozen or newly minted held-out evaluation splits.
 - [docs/research-landscape.md](docs/research-landscape.md): framework choice, related work, and positioning
 - [AGENTS.md](AGENTS.md): repository guidance and project memory for coding agents
 
+## Citation And Licensing
+
+If you use ShapeCodeBench, cite the arXiv paper and the archived release. The
+repository includes [CITATION.cff](CITATION.cff) for citation metadata and
+[.zenodo.json](.zenodo.json) for Zenodo release metadata.
+
+Archived release DOI: <https://doi.org/10.5281/zenodo.20132286>.
+
+Source code is licensed under the MIT License in [LICENSE](LICENSE). Paper
+source, documentation, generated benchmark datasets, figures, tables, and
+benchmark run artifacts are licensed under CC BY 4.0 as described in
+[LICENSE-ARTIFACTS.md](LICENSE-ARTIFACTS.md).
+
+Some preserved run artifacts were produced before the public project rename and
+may contain historical `ui-bench` prompt text. Those strings refer to the same
+benchmark DSL now named ShapeCodeBench and are kept only to preserve the exact
+recorded run configuration.
+
 ## Agent Context
 
 `AGENTS.md` is the root operating guide and canonical source of shared

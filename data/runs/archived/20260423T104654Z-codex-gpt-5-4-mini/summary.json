@@ -48,7 +48,7 @@
       "parse_success_rate": 0.98
     }
   },
-  "dataset_dir": "/Users/shivamair/projects/personal/ui-bench/data/eval_v1/eval",
+  "dataset_dir": "data/eval_v1/eval",
   "error_type_counts": {
     "empty_program": 7,
     "none": 130,

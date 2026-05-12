@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use ShapeCodeBench, please cite the arXiv paper and the archived software release."
+title: "ShapeCodeBench: A Renewable Benchmark for Perception-to-Program Reconstruction of Synthetic Shape Scenes"
+authors:
+  - family-names: Kumar
+    given-names: Shivam
+    orcid: "https://orcid.org/0009-0008-3043-4658"
+version: "v0.1.0-arxiv-v1"
+date-released: "2026-05-12"
+doi: "10.5281/zenodo.20132286"
+repository-code: "https://github.com/shivamk3r/shape-code-bench"
+url: "https://github.com/shivamk3r/shape-code-bench"
+license: "MIT"
+abstract: "ShapeCodeBench is a synthetic benchmark for perception-to-program reconstruction from rendered shape scenes to executable drawing programs."

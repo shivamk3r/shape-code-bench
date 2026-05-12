@@ -1,0 +1,33 @@
+{
+  "title": "ShapeCodeBench: A Renewable Benchmark for Perception-to-Program Reconstruction of Synthetic Shape Scenes",
+  "version": "v0.1.0-arxiv-v1",
+  "publication_date": "2026-05-12",
+  "doi": "10.5281/zenodo.20132286",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "mit",
+  "creators": [
+    {
+      "name": "Kumar, Shivam",
+      "orcid": "0009-0008-3043-4658",
+      "affiliation": "Independent Researcher"
+    }
+  ],
+  "description": "ShapeCodeBench is a synthetic benchmark for testing whether multimodal models can reconstruct executable drawing programs from rendered geometric shape scenes.",
+  "keywords": [
+    "computer vision",
+    "benchmark",
+    "multimodal models",
+    "program synthesis",
+    "inverse graphics",
+    "synthetic data"
+  ],
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/shivamk3r/shape-code-bench",
+      "relation": "isSupplementedBy",
+      "resource_type": "software"
+    }
+  ]
+}
