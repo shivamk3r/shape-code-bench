@@ -28,6 +28,11 @@
       "identifier": "https://github.com/shivamk3r/shape-code-bench",
       "relation": "isSupplementedBy",
       "resource_type": "software"
+    },
+    {
+      "identifier": "https://arxiv.org/abs/2605.11680",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-preprint"
     }
   ]
 }

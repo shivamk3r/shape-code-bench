@@ -12,3 +12,25 @@ repository-code: "https://github.com/shivamk3r/shape-code-bench"
 url: "https://github.com/shivamk3r/shape-code-bench"
 license: "MIT"
 abstract: "ShapeCodeBench is a synthetic benchmark for perception-to-program reconstruction from rendered shape scenes to executable drawing programs."
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20132286"
+    description: "Zenodo archived software release"
+  - type: url
+    value: "https://arxiv.org/abs/2605.11680"
+    description: "arXiv abstract page"
+preferred-citation:
+  type: article
+  title: "ShapeCodeBench: A Renewable Benchmark for Perception-to-Program Reconstruction of Synthetic Shape Scenes"
+  authors:
+    - family-names: Kumar
+      given-names: Shivam
+      orcid: "https://orcid.org/0009-0008-3043-4658"
+  year: 2026
+  month: 5
+  date-published: "2026-05-12"
+  url: "https://arxiv.org/abs/2605.11680"
+  identifiers:
+    - type: other
+      value: "arXiv:2605.11680"
+      description: "arXiv identifier"

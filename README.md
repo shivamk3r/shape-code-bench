@@ -243,7 +243,20 @@ If you use ShapeCodeBench, cite the arXiv paper and the archived release. The
 repository includes [CITATION.cff](CITATION.cff) for citation metadata and
 [.zenodo.json](.zenodo.json) for Zenodo release metadata.
 
+Paper: <https://arxiv.org/abs/2605.11680> (`arXiv:2605.11680`).
 Archived release DOI: <https://doi.org/10.5281/zenodo.20132286>.
+
+```bibtex
+@misc{kumar2026shapecodebench,
+  title = {ShapeCodeBench: A Renewable Benchmark for Perception-to-Program Reconstruction of Synthetic Shape Scenes},
+  author = {Kumar, Shivam},
+  year = {2026},
+  eprint = {2605.11680},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  url = {https://arxiv.org/abs/2605.11680}
+}
+```
 
 Source code is licensed under the MIT License in [LICENSE](LICENSE). Paper
 source, documentation, generated benchmark datasets, figures, tables, and
@@ -271,7 +284,7 @@ that symlink to those shared assets; Codex-only environment setup belongs under
 The V1 benchmark core, three LLM provider adapters (OpenAI Responses API, OpenAI
 Codex CLI, Claude Code CLI) plus two non-LLM baselines (empty-program floor,
 classical-CV heuristic), the frozen `eval_v1` evaluation split, the analysis
-and figure scripts, and the arXiv paper draft are all in place. The paper's
+and figure scripts, and the arXiv v1 paper are all in place. The paper's
 canonical four-config baseline -- Claude Opus 4.7 (1M context) at `high` /
 `max` effort and GPT-5.5 at `medium` / `extra_high` reasoning effort -- is
 reproduced by `scripts/run_paper_sweep.sh`. See [paper/main.tex](paper/main.tex)

@@ -168,6 +168,14 @@ same benchmark DSL now named ShapeCodeBench.
 
 The archived release DOI is <https://doi.org/10.5281/zenodo.20132286>.
 
+Public artifact locations:
+
+- arXiv abstract: <https://arxiv.org/abs/2605.11680>
+- arXiv PDF: <https://arxiv.org/pdf/2605.11680>
+- arXiv source package: <https://arxiv.org/src/2605.11680>
+- GitHub release: <https://github.com/shivamk3r/shape-code-bench/releases/tag/v0.1.0-arxiv-v1>
+- Zenodo archived release: <https://doi.org/10.5281/zenodo.20132286>
+
 The code is MIT licensed. Paper sources, documentation, generated datasets,
 figures, tables, and run artifacts are CC BY 4.0 unless otherwise noted.
 
@@ -242,3 +250,6 @@ uv run shape-code-bench run \
 Open an issue on the project repository with the relevant `run_config.json`
 and the tail of `summary.json` attached, plus the output of
 `codex --version`, `claude --version`, and `uv --version`.
+
+For the paper record, cite `arXiv:2605.11680` and include the archived release
+DOI above when referring to the exact v1 code and artifact snapshot.
