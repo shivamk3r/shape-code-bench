@@ -175,6 +175,15 @@ Public artifact locations:
 - arXiv source package: <https://arxiv.org/src/2605.11680>
 - GitHub release: <https://github.com/shivamk3r/shape-code-bench/releases/tag/v0.1.0-arxiv-v1>
 - Zenodo archived release: <https://doi.org/10.5281/zenodo.20132286>
+- Hugging Face `eval_v1` dataset mirror: <https://huggingface.co/datasets/shivamk3r/shape-code-bench-eval-v1>
+
+The Hugging Face mirror can be loaded with:
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("shivamk3r/shape-code-bench-eval-v1")
+```
 
 The code is MIT licensed. Paper sources, documentation, generated datasets,
 figures, tables, and run artifacts are CC BY 4.0 unless otherwise noted.

@@ -87,6 +87,8 @@ instructions unless the user explicitly invokes them.
 
 Generated samples go under `data/generated/<split>/<difficulty>/`.
 Benchmark run outputs go under `data/runs/<run_id>/`.
+The public Hugging Face mirror for the frozen `eval_v1` dataset is
+<https://huggingface.co/datasets/shivamk3r/shape-code-bench-eval-v1>.
 
 ## Current V1 Decisions
 

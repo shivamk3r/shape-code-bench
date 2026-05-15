@@ -245,6 +245,14 @@ repository includes [CITATION.cff](CITATION.cff) for citation metadata and
 
 Paper: <https://arxiv.org/abs/2605.11680> (`arXiv:2605.11680`).
 Archived release DOI: <https://doi.org/10.5281/zenodo.20132286>.
+Hugging Face `eval_v1` dataset mirror:
+<https://huggingface.co/datasets/shivamk3r/shape-code-bench-eval-v1>.
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset("shivamk3r/shape-code-bench-eval-v1")
+```
 
 ```bibtex
 @misc{kumar2026shapecodebench,
