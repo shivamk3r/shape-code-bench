@@ -343,6 +343,10 @@ end-to-end reproduction workflow.
 The [research website](https://shivamk3r.github.io/shape-code-bench/) presents the
 task, an interactive scene and scoring demonstration, the paper's historical
 results, and the GPT-6.1 Sol maximum-effort follow-up on all 150 `eval_v1` scenes.
+All reported configurations share one results table, difficulty and source
+filters, confidence controls, and headline cards that follow the selection.
+Source badges link to evaluation protocols and downloads; the combined CSV
+retains each result's provenance and the original source files remain available.
 Its source is in `website/`; `scripts/build_website.py` derives demo scenes and
 scores from the benchmark implementation, historical results from the paper
 CSV, and follow-up results from `results/gpt-6.1-sol-max-eval-v1/`.

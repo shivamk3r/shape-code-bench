@@ -9,6 +9,7 @@ import json
 import re
 import shutil
 from dataclasses import replace
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -51,8 +52,11 @@ def load_results(path: Path = PAPER_RESULTS) -> list[dict[str, str | float | int
 def display_model(row: dict) -> tuple[str, str]:
     if row["provider"] == "codex":
         effort = row["model"].split("(")[-1].rstrip(")")
+        if row.get("evaluation_id") == "paper-v1":
+            effort = f"recorded {effort}"
         name = {"gpt-5.5": "GPT-5.5", "gpt-6.1-sol": "GPT-6.1 Sol"}.get(
-            row["model_id"], str(row["model_id"]),
+            row["model_id"],
+            str(row["model_id"]),
         )
         return name, f"{effort} effort · Codex CLI"
     if row["provider"] == "claude":
@@ -65,18 +69,121 @@ def display_model(row: dict) -> tuple[str, str]:
     return str(row["model"]), str(row["provider"])
 
 
-def result_rows(results: list[dict], difficulty: str | None = "all") -> str:
-    tier_order = {"all": 0, "easy": 1, "medium": 2, "hard": 3}
+def load_evaluations() -> tuple[list[dict], dict[str, dict]]:
+    paper_results = load_results(PAPER_RESULTS)
+    sol_results = load_results(SOL_RESULTS / "main_results.csv")
+    protocol = json.loads((SOL_RESULTS / "protocol.json").read_text())
+    if (
+        {row["difficulty"]: row["n"] for row in sol_results}
+        != {"all": 150, "easy": 50, "medium": 50, "hard": 50}
+        or len(sol_results) != 4
+        or any(
+            row["model_id"] != "gpt-6.1-sol" or row["provider"] != "codex" for row in sol_results
+        )
+        or protocol["adapter"]["effective_reasoning_effort"] != "max"
+        or protocol["adapter"]["timeout_seconds"] != 3600
+        or protocol["dataset_version"] != "eval_v1"
+        or protocol["invocations"][-1]["workers"] != 8
+        or protocol["invocations"][-1]["selected_samples"] != 150
+    ):
+        raise ValueError("GPT-6.1 Sol results must match the complete eval_v1 max-effort protocol.")
+    evaluations = {
+        "paper-v1": {
+            "label": "Paper v1",
+            "kind": "paper",
+            "dataset_version": "eval_v1",
+            "protocol_id": "paper-results-title",
+            "description": (
+                "Historical paper v1 results: four multimodal configurations and two baselines "
+                "on the same 150 frozen eval_v1 scenes, with the fixed zero-shot DSL prompt. "
+                "The recorded per-sample timeout budgets were 30 minutes for high/medium and "
+                "40 minutes for max/extra_high. GPT-5.5 effort labels are preserved as recorded; "
+                "the older Codex adapter used a reasoning_effort override, and its effective "
+                "effort was not independently verified. These scores retain the paper's "
+                "original execution protocol."
+            ),
+            "downloads": [
+                {"label": "Paper results CSV", "href": "data/main_results.csv", "download": True},
+                {"label": "Paper and protocol", "href": "https://arxiv.org/abs/2605.11680"},
+                {
+                    "label": "Reproduction guide",
+                    "href": "https://github.com/shivamk3r/shape-code-bench/blob/main/"
+                    "docs/REPRODUCIBILITY.md#4-run-all-sweeps",
+                },
+            ],
+        },
+        "gpt-6.1-sol-max-eval-v1": {
+            "label": f"Follow-up · {date.fromisoformat(protocol['evaluation_date']):%b %Y}",
+            "kind": "follow-up",
+            "dataset_version": protocol["dataset_version"],
+            "evaluation_date": protocol["evaluation_date"],
+            "protocol_id": "sol-results",
+            "description": (
+                f"GPT-6.1 Sol was evaluated on {protocol['evaluation_date']} on all 150 frozen "
+                "eval_v1 scenes with the same zero-shot prompt and scoring. Codex CLI explicitly "
+                "passes model_reasoning_effort=max, with a one-hour total budget per sample "
+                "including retries and eight concurrent workers. Personal CLI configuration "
+                "is disabled; each request receives only a copied target PNG in a temporary "
+                "working directory. The full evaluation reuses two verified pilot predictions. "
+                "This execution protocol differs from the historical paper runs."
+            ),
+            "downloads": [
+                {
+                    "label": label,
+                    "href": f"data/gpt-6.1-sol-max-{filename}",
+                    "download": True,
+                }
+                for label, filename in (
+                    ("Follow-up results CSV", "main_results.csv"),
+                    ("Evaluation protocol", "protocol.json"),
+                    ("Per-sample scores", "sample_metrics.csv"),
+                    ("Run summary", "summary.json"),
+                )
+            ],
+        },
+    }
+    results = []
+    for evaluation_id, source_rows in (
+        ("paper-v1", paper_results),
+        ("gpt-6.1-sol-max-eval-v1", sol_results),
+    ):
+        evaluation = evaluations[evaluation_id]
+        if not source_rows:
+            raise ValueError("Every evaluation must include complete eval_v1 configurations.")
+        for row in source_rows:
+            name, configuration = display_model({**row, "evaluation_id": evaluation_id})
+            results.append(
+                {
+                    **row,
+                    "evaluation_id": evaluation_id,
+                    "evaluation_label": evaluation["label"],
+                    "dataset_version": evaluation["dataset_version"],
+                    "display_name": name,
+                    "configuration": configuration,
+                }
+            )
+    expected_counts = {"all": 150, "easy": 50, "medium": 50, "hard": 50}
+    configurations = {(row["evaluation_id"], row["model"]) for row in results}
+    for evaluation_id, model in configurations:
+        slices = [
+            row
+            for row in results
+            if row["evaluation_id"] == evaluation_id and row["model"] == model
+        ]
+        if len(slices) != 4 or {row["difficulty"]: row["n"] for row in slices} != expected_counts:
+            raise ValueError("Every configuration must cover all 150 eval_v1 scenes and each tier.")
+    return results, evaluations
+
+
+def result_rows(results: list[dict], evaluations: dict[str, dict], difficulty: str = "all") -> str:
     rows = sorted(
-        (row for row in results if difficulty is None or row["difficulty"] == difficulty),
-        key=lambda row: tier_order[row["difficulty"]] if difficulty is None else -row["mean_foreground_iou"],
+        (row for row in results if row["difficulty"] == difficulty),
+        key=lambda row: -row["mean_foreground_iou"],
     )
     markup = []
     for row in rows:
-        name, description = display_model(row)
-        if difficulty is None:
-            name = "All tiers" if row["difficulty"] == "all" else str(row["difficulty"]).title()
-            description = f"{row['n']} samples"
+        name, description = row["display_name"], row["configuration"]
+        evaluation = evaluations[row["evaluation_id"]]
         cells = []
         for metric in (
             "exact_match_rate",
@@ -95,12 +202,36 @@ def result_rows(results: list[dict], difficulty: str | None = "all") -> str:
                 f'<span class="confidence">[{low:.1f}, {high:.1f}]</span></td>'
             )
         markup.append(
-            f'<tr><th scope="row">{html.escape(name)}'
-            f'<span class="model-detail">{html.escape(description)}</span></th>'
+            f'<tr><th scope="row"><span class="model-name">{html.escape(name)}</span>'
+            f'<span class="model-detail">{html.escape(description)}</span>'
+            f'<a class="evaluation-badge" href="#{evaluation["protocol_id"]}" '
+            f'data-evaluation-protocol="{evaluation["protocol_id"]}" '
+            f'aria-label="{html.escape(name + " · " + description + ": " + evaluation["label"])}'
+            f', protocol and downloads">{html.escape(evaluation["label"])}</a></th>'
             + "".join(cells)
             + "</tr>"
         )
     return "\n".join(markup)
+
+
+def protocol_sections(evaluations: dict[str, dict]) -> str:
+    sections = []
+    for evaluation in evaluations.values():
+        links = []
+        for link in evaluation["downloads"]:
+            download = " download" if link.get("download") else ""
+            links.append(
+                f'<a href="{html.escape(link["href"])}"{download}>{html.escape(link["label"])}</a>'
+            )
+        sections.append(
+            f'<details id="{evaluation["protocol_id"]}" class="metric-details evaluation-protocol">'
+            f"<summary><span>{html.escape(evaluation['label'])} · "
+            f"{html.escape(evaluation['dataset_version'])} · protocol and downloads</span>"
+            '<span aria-hidden="true">+</span></summary>'
+            f"<p>{html.escape(evaluation['description'])}</p>"
+            '<div class="protocol-downloads">' + "".join(links) + "</div></details>"
+        )
+    return "\n".join(sections)
 
 
 def build_examples(output: Path) -> dict:
@@ -185,24 +316,8 @@ def build_website(output: Path) -> None:
     for name in ("styles.css", "app.js"):
         shutil.copyfile(SOURCE / name, output / name)
     examples = build_examples(output)
-    results = load_results()
-    sol_results = load_results(SOL_RESULTS / "main_results.csv")
-    sol_protocol = json.loads((SOL_RESULTS / "protocol.json").read_text())
-    if (
-        {row["difficulty"]: row["n"] for row in sol_results}
-        != {"all": 150, "easy": 50, "medium": 50, "hard": 50}
-        or len(sol_results) != 4
-        or any(row["model_id"] != "gpt-6.1-sol" or row["provider"] != "codex" for row in sol_results)
-        or sol_protocol["adapter"]["effective_reasoning_effort"] != "max"
-        or sol_protocol["adapter"]["timeout_seconds"] != 3600
-        or sol_protocol["dataset_version"] != "eval_v1"
-        or sol_protocol["invocations"][-1]["workers"] != 8
-        or sol_protocol["invocations"][-1]["selected_samples"] != 150
-    ):
-        raise ValueError("GPT-6.1 Sol results must match the complete eval_v1 max-effort protocol.")
+    results, evaluations = load_evaluations()
     overall = [row for row in results if row["difficulty"] == "all"]
-    if not overall or len({row["n"] for row in overall}) != 1:
-        raise ValueError("Paper results must use a consistent evaluation sample count.")
     multimodal = [row for row in overall if row["provider"] in {"codex", "claude", "openai"}]
     best_iou = max(multimodal, key=lambda row: row["mean_foreground_iou"])
     best_exact = max(multimodal, key=lambda row: row["exact_match_rate"])
@@ -215,19 +330,19 @@ def build_website(output: Path) -> None:
         raise ValueError("README.md must include the public BibTeX citation.")
     citation = citation_match.group(1) + "\n"
     (output / "citation.bib").write_text(citation, encoding="utf-8")
-    data = {"examples": examples, "results": results, "sol_results": sol_results}
+    data = {"examples": examples, "results": results, "evaluations": evaluations}
     serialized = json.dumps(data, sort_keys=True, separators=(",", ":")).replace("<", "\\u003c")
     replacements = {
         "@@BENCHMARK_DATA@@": serialized,
-        "@@RESULT_ROWS@@": result_rows(results),
-        "@@SOL_RESULT_ROWS@@": result_rows(sol_results, difficulty=None),
-        "@@SOL_EVAL_DATE@@": html.escape(sol_protocol["evaluation_date"]),
+        "@@RESULT_ROWS@@": result_rows(results, evaluations),
+        "@@EVALUATION_PROTOCOLS@@": protocol_sections(evaluations),
         "@@HERO_PROGRAM@@": html.escape(HERO_PROGRAM.rstrip()),
         "@@INITIAL_PROGRAM@@": html.escape(examples["easy"]["variants"][0]["program"].rstrip()),
         "@@CANVAS_SIZE@@": str(CANVAS_SIZE),
         "@@PRIMITIVE_COUNT@@": str(len(FUNCTION_NAMES)),
         "@@TIER_COUNT@@": str(len(DIFFICULTY_SETTINGS)),
         "@@EVAL_COUNT@@": str(overall[0]["n"]),
+        "@@CONFIGURATION_COUNT@@": str(len(overall)),
         "@@BEST_LLM_IOU@@": f"{best_iou['mean_foreground_iou'] * 100:.1f}",
         "@@BEST_LLM_EXACT@@": f"{best_exact['exact_match_rate'] * 100:.1f}",
         "@@BEST_IOU_NAME@@": html.escape(" · ".join(display_model(best_iou))),
@@ -245,6 +360,10 @@ def build_website(output: Path) -> None:
     data_dir = output / "data"
     data_dir.mkdir(exist_ok=True)
     (data_dir / "benchmark.json").write_text(serialized + "\n", encoding="utf-8")
+    with (data_dir / "combined_results.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(results[0]))
+        writer.writeheader()
+        writer.writerows(results)
     shutil.copyfile(PAPER_RESULTS, data_dir / "main_results.csv")
     for filename in ("main_results.csv", "protocol.json", "summary.json", "sample_metrics.csv"):
         shutil.copyfile(SOL_RESULTS / filename, data_dir / f"gpt-6.1-sol-max-{filename}")

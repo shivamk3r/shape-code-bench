@@ -7,7 +7,7 @@
     <title>ShapeCodeBench — Seeing shapes, recovering programs</title>
     <meta
       name="description"
-      content="A renewable research benchmark for perception-to-program reconstruction. Explore synthetic shape scenes, GPT-6.1 Sol maximum-effort evaluation, and the ShapeCodeBench v1 paper results."
+      content="A renewable research benchmark for perception-to-program reconstruction. Explore synthetic shape scenes and compare model configurations on the frozen ShapeCodeBench evaluation split."
     />
     <link
       rel="canonical"
@@ -480,79 +480,32 @@
         aria-labelledby="results-title"
       >
         <div class="container">
-          <div class="section-heading" id="sol-results">
-            <p class="section-index mono">04 / NEW EVALUATION</p>
+          <div class="section-heading">
+            <p class="section-index mono">04 / RESULTS</p>
             <div>
-              <h2 id="results-title">GPT-6.1 Sol<br />at maximum reasoning effort.</h2>
-              <p class="section-intro">
-                Evaluated @@SOL_EVAL_DATE@@ on all 150 frozen <code>eval_v1</code>
-                scenes with the fixed zero-shot DSL prompt. Codex CLI uses
-                <code>max</code> reasoning effort, a one-hour budget per sample
-                including retries, and eight concurrent workers. Two verified
-                pilot predictions are reused in the full evaluation.
-              </p>
-            </div>
-          </div>
-          <div class="table-wrapper show-ci" role="region" tabindex="0"
-            aria-label="GPT-6.1 Sol overall and difficulty results">
-            <table>
-              <caption>GPT-6.1 Sol · max effort · eval_v1 · overall and by difficulty</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Difficulty / samples</th>
-                  <th scope="col">Exact match</th>
-                  <th scope="col">Pixel accuracy</th>
-                  <th scope="col">Foreground IoU</th>
-                  <th scope="col">Parse success</th>
-                </tr>
-              </thead>
-              <tbody id="sol-results-body">@@SOL_RESULT_ROWS@@</tbody>
-            </table>
-          </div>
-          <div class="table-footnote">
-            <p>
-              This follow-up evaluation uses the same frozen images and scoring
-              as the historical paper results below. The Codex reasoning setting
-              is now passed explicitly as <code>model_reasoning_effort=max</code>;
-              personal CLI configuration is disabled and each request receives
-              only a copied target PNG in a temporary working directory.
-              Historical run settings are preserved as recorded; their effective
-              Codex effort was not independently verified. Brackets show 95%
-              bootstrap intervals from 1,000 resamples.
-            </p>
-            <a class="inline-link" href="data/gpt-6.1-sol-max-main_results.csv" download
-              >Download new results <span aria-hidden="true">↓</span></a>
-          </div>
-          <p class="results-source">
-            <a href="data/gpt-6.1-sol-max-protocol.json" download>Evaluation protocol</a>
-            · <a href="data/gpt-6.1-sol-max-sample_metrics.csv" download>Per-sample scores</a>
-            · <a href="data/gpt-6.1-sol-max-summary.json" download>Run summary</a>.
-            Raw predictions remain in local run artifacts. Dataset and scoring
-            are deterministic; fresh model predictions can vary.
-          </p>
-          <div class="section-heading historical-results-heading">
-            <p class="section-index mono">HISTORICAL / PAPER V1</p>
-            <div>
-              <h2 id="paper-results-title">
-                Visual resemblance is high.<br />Exact recovery is rare.
+              <h2 id="results-title">
+                Reconstruction results.<br />Across models and difficulty.
               </h2>
               <p class="section-intro">
-                Four multimodal configurations and two baselines on the frozen
-                <code>eval_v1</code> split. These are the paper’s v1
-                experiments, with a shared zero-shot prompt.
+                Compare every reported configuration on the same @@EVAL_COUNT@@ frozen
+                <code>eval_v1</code> scenes. Multimodal runs share the fixed zero-shot
+                DSL prompt. Source badges preserve the paper and follow-up provenance;
+                each evaluation’s settings and downloads are available below.
               </p>
             </div>
           </div>
           <div class="finding-grid">
             <article>
-              <span class="mono">PAPER V1 BEST MULTIMODAL EXACT MATCH</span
-              ><strong>@@BEST_LLM_EXACT@@<span>%</span></strong>
-              <p>@@BEST_EXACT_NAME@@<br />Across all @@EVAL_COUNT@@ scenes</p>
+              <span class="mono">BEST REPORTED MULTIMODAL EXACT MATCH</span
+              ><strong id="best-exact-score">@@BEST_LLM_EXACT@@<span>%</span></strong>
+              <p><span id="best-exact-name">@@BEST_EXACT_NAME@@</span><br />
+                <span id="best-exact-scope">All tiers · @@EVAL_COUNT@@ scenes · All evaluations</span></p>
             </article>
             <article>
-              <span class="mono">PAPER V1 BEST MULTIMODAL FOREGROUND IoU</span
-              ><strong>@@BEST_LLM_IOU@@<span>%</span></strong>
-              <p>@@BEST_IOU_NAME@@<br />Across all @@EVAL_COUNT@@ scenes</p>
+              <span class="mono">BEST REPORTED MULTIMODAL FOREGROUND IoU</span
+              ><strong id="best-iou-score">@@BEST_LLM_IOU@@<span>%</span></strong>
+              <p><span id="best-iou-name">@@BEST_IOU_NAME@@</span><br />
+                <span id="best-iou-scope">All tiers · @@EVAL_COUNT@@ scenes · All evaluations</span></p>
             </article>
             <article class="finding-text">
               <span class="finding-symbol" aria-hidden="true"
@@ -566,6 +519,13 @@
             </article>
           </div>
           <div class="results-toolbar">
+            <label class="source-control" for="results-source">Evaluations
+              <select id="results-source">
+                <option value="all">All evaluations</option>
+                <option value="paper">Paper v1 only</option>
+                <option value="follow-up">Follow-ups only</option>
+              </select>
+            </label>
             <div
               class="segmented-control"
               role="group"
@@ -598,6 +558,7 @@
               intervals</label
             >
           </div>
+          <p id="results-status" class="sr-only" role="status"></p>
           <div
             id="results-table-wrapper"
             class="table-wrapper"
@@ -607,7 +568,8 @@
           >
             <table>
               <caption id="results-caption">
-                All tiers · @@EVAL_COUNT@@ samples per system · sorted by
+                All tiers · @@CONFIGURATION_COUNT@@ configurations · @@EVAL_COUNT@@ samples each ·
+                All evaluations · sorted by
                 foreground IoU
               </caption>
               <thead>
@@ -630,8 +592,8 @@
               confidence intervals (1,000 resamples). Failed parsing or
               rendering receives zero similarity scores.
             </p>
-            <a class="inline-link" href="data/main_results.csv" download
-              >Download source CSV <span aria-hidden="true">↓</span></a
+            <a class="inline-link" href="data/combined_results.csv" download
+              >Download all results <span aria-hidden="true">↓</span></a
             >
           </div>
           <details class="metric-details">
@@ -661,17 +623,18 @@
               </p>
             </div>
           </details>
+          <p class="results-protocol-note">
+            All rows use the same <code>eval_v1</code> images and scoring. Run settings
+            and compute budgets differ; scores describe the recorded configurations.
+            Historical GPT-5.5 effort labels are recorded settings; effective effort
+            was not independently verified.
+            Source badges open the corresponding protocol and downloads.
+          </p>
+          @@EVALUATION_PROTOCOLS@@
           <p class="results-source">
-            Source:
-            <a
-              href="https://github.com/shivamk3r/shape-code-bench/blob/main/paper/tables/main_results.csv"
-              >paper/tables/main_results.csv</a
-            >
-            ·
-            <a href="https://arxiv.org/abs/2605.11680"
-              >Paper and experimental protocol</a
-            >. Deterministic images and scoring; model inference can vary
-            between runs.
+            Original source CSVs retain their recorded labels and scores. Raw model
+            predictions remain in local run artifacts. Images and scoring are
+            deterministic; fresh model predictions can vary.
           </p>
         </div>
       </section>

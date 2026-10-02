@@ -39,8 +39,10 @@ Pilot validation checked transport and DSL validity; no prompt or scoring
 tuning was performed. The current adapter fixes the Codex configuration key
 and normalizes the legacy `extra_high` spelling to `xhigh`. Historical paper
 results keep their original recorded effort labels; their effective Codex
-effort was not independently verified, and this follow-up is presented
-separately from the paper tables.
+effort was not independently verified. This follow-up's artifacts are retained
+separately from the paper tables. The project website compares both sources in
+one results view, with shared filters and source badges linking to their distinct
+protocols and original downloads.
 
 ## Saved results
 

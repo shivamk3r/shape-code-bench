@@ -197,6 +197,15 @@ Codex artifacts used a `reasoning_effort` override and do not independently
 verify the effective effort. Do not silently relabel or overwrite them.
 Use `scripts/report_run.py` to validate and export complete new evaluations.
 
+Present all reported configurations in the website's unified Results table.
+Shared difficulty/source filters and confidence controls apply to every row;
+best-reported multimodal cards follow the displayed selection. Keep evaluation
+identity, dataset version, and recorded configuration in the unified data and
+combined CSV, with source badges linking to protocol details and original
+downloads. Every displayed configuration must cover all 150 `eval_v1` scenes
+and each 50-scene tier. Add future evaluations to the build's source registry
+and validation, preserving the shared presentation and original artifacts.
+
 Build and verify relevant website changes with:
 
 ```bash

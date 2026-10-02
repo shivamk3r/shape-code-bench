@@ -326,6 +326,14 @@ source/input/artifact hashes and deterministic bootstrap settings while keeping
 raw responses in local run artifacts. The GPT-6.1 Sol follow-up is stored under
 `results/gpt-6.1-sol-max-eval-v1/`, independently of the historical paper tables.
 
+The public website combines historical and follow-up results in one view with
+shared difficulty/source filters and confidence controls. Rows and the combined
+CSV retain evaluation identity, dataset version, and recorded configuration;
+source badges expose the distinct protocols and original downloads. Headline
+cards report the best multimodal scores in the current selection. All displayed
+configurations must cover the same complete `eval_v1` split and difficulty tiers.
+This presentation does not change benchmark scoring or the historical artifacts.
+
 ## 11. Evaluation Hygiene And Training Use
 
 `eval_v1` is a frozen reporting split. It should not be used to tune prompts,

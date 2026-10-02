@@ -845,11 +845,6 @@ h1 {
   background: #eaece4;
   border-block: 1px solid var(--line);
 }
-.historical-results-heading {
-  margin-top: 64px;
-  padding-top: 40px;
-  border-top: 1px solid var(--line);
-}
 .finding-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1.08fr;
@@ -907,6 +902,22 @@ h1 {
 }
 .results-toolbar {
   margin-bottom: 19px;
+  flex-wrap: wrap;
+}
+.source-control {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.source-control select {
+  background: #f8f9f3;
+  color: var(--ink);
+  border: 1px solid #cbd0c3;
+  border-radius: 5px;
+  padding: 9px;
+  font: inherit;
 }
 .ci-control {
   display: flex;
@@ -932,6 +943,7 @@ table {
   width: 100%;
   text-align: left;
   font-size: 12px;
+  min-width: 760px;
 }
 caption {
   text-align: left;
@@ -977,6 +989,26 @@ td {
   font-size: 9px;
   font-weight: 400;
   margin-top: 4px;
+  white-space: normal;
+}
+.model-name {
+  display: block;
+}
+.evaluation-badge {
+  display: inline-block;
+  margin-top: 9px;
+  padding: 2px 7px;
+  border: 1px solid #cbd0c3;
+  border-radius: 4px;
+  background: #eef0e8;
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.evaluation-badge:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .score-value {
   position: relative;
@@ -1047,10 +1079,10 @@ td {
 .metric-details summary::-webkit-details-marker {
   display: none;
 }
-.metric-details summary span {
+.metric-details summary [aria-hidden="true"] {
   font-size: 18px;
 }
-.metric-details[open] summary span {
+.metric-details[open] summary [aria-hidden="true"] {
   transform: rotate(45deg);
 }
 .metric-grid {
@@ -1058,6 +1090,33 @@ td {
   grid-template-columns: repeat(2, 1fr);
   gap: 20px 45px;
   padding-top: 24px;
+}
+.results-protocol-note {
+  margin: 25px 0 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.evaluation-protocol {
+  scroll-margin-top: 100px;
+}
+.evaluation-protocol + .evaluation-protocol {
+  border-top: 0;
+}
+.evaluation-protocol summary {
+  gap: 20px;
+}
+.evaluation-protocol p {
+  max-width: 900px;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.protocol-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 25px;
+  margin-top: 16px;
+  font-size: 11px;
 }
 .metric-grid p {
   font-size: 12px;

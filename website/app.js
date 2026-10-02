@@ -4,6 +4,7 @@ document.documentElement.classList.add("js");
 
 const data = JSON.parse(document.getElementById("benchmark-data").textContent);
 const state = { tier: "easy", shift: 0, difference: false };
+const resultsState = { tier: "all", source: "all" };
 const descriptions = {
   easy: "Large primitives, minimal bounding-box overlap, and no clipping.",
   medium: "More primitives, moderate overlap, and limited clipping.",
@@ -104,24 +105,12 @@ document.getElementById("difference-toggle").addEventListener("click", () => {
   updateExample();
 });
 
-function modelLabel(row) {
-  const effort = row.model.match(/\(([^)]+)\)$/)?.[1];
-  if (row.provider === "codex")
-    return [
-      { "gpt-5.5": "GPT-5.5", "gpt-6.1-sol": "GPT-6.1 Sol" }[row.model_id] || row.model_id,
-      `${effort} effort · Codex CLI`,
-    ];
-  if (row.provider === "claude")
-    return ["Claude Opus 4.7", `${effort} effort · 1M context · Claude Code`];
-  if (row.provider === "heuristic")
-    return ["Heuristic-CV", "Classical computer vision"];
-  if (row.provider === "empty") return ["Empty-Program", "Parse-failure floor"];
-  return [row.model, row.provider];
-}
-
-function updateResults(tier) {
+function updateResults(announce = true) {
+  const { tier, source } = resultsState;
   const rows = data.results
-    .filter((row) => row.difficulty === tier)
+    .filter((row) => row.difficulty === tier && (
+      source === "all" || data.evaluations[row.evaluation_id].kind === source
+    ))
     .sort((a, b) => b.mean_foreground_iou - a.mean_foreground_iou);
   const body = document.getElementById("results-body");
   body.replaceChildren();
@@ -129,12 +118,23 @@ function updateResults(tier) {
     const tr = document.createElement("tr");
     const th = document.createElement("th");
     th.scope = "row";
-    const [name, description] = modelLabel(row);
-    th.append(document.createTextNode(name));
+    const name = document.createElement("span");
+    name.className = "model-name";
+    name.textContent = row.display_name;
+    th.append(name);
     const detail = document.createElement("span");
     detail.className = "model-detail";
-    detail.textContent = description;
+    detail.textContent = row.configuration;
     th.append(detail);
+    const evaluation = data.evaluations[row.evaluation_id];
+    const badge = document.createElement("a");
+    badge.className = "evaluation-badge";
+    badge.href = `#${evaluation.protocol_id}`;
+    badge.dataset.evaluationProtocol = evaluation.protocol_id;
+    badge.textContent = evaluation.label;
+    badge.setAttribute("aria-label",
+      `${row.display_name} · ${row.configuration}: ${evaluation.label}, protocol and downloads`);
+    th.append(badge);
     tr.append(th);
     [
       "exact_match_rate",
@@ -167,14 +167,38 @@ function updateResults(tier) {
     );
   });
   const label = tier === "all" ? "All tiers" : titleCase(tier);
-  document.getElementById("results-caption").textContent =
-    `${label} · ${rows[0].n} samples per system · sorted by foreground IoU`;
+  const sourceLabel = document.getElementById("results-source").selectedOptions[0].textContent;
+  const caption = `${label} · ${rows.length} configurations · ${rows[0]?.n ?? 0} samples each · ${sourceLabel} · sorted by foreground IoU`;
+  document.getElementById("results-caption").textContent = caption;
+  if (announce) document.getElementById("results-status").textContent = caption;
+  const multimodal = rows.filter((row) => ["codex", "claude", "openai"].includes(row.provider));
+  for (const [id, metric] of [["exact", "exact_match_rate"], ["iou", "mean_foreground_iou"]]) {
+    const best = multimodal.reduce((winner, row) =>
+      !winner || row[metric] > winner[metric] ? row : winner, null);
+    const score = document.getElementById(`best-${id}-score`);
+    score.replaceChildren(document.createTextNode(best ? (best[metric] * 100).toFixed(1) : "—"));
+    if (best) {
+      const unit = document.createElement("span");
+      unit.textContent = "%";
+      score.append(unit);
+    }
+    document.getElementById(`best-${id}-name`).textContent = best
+      ? `${best.display_name} · ${best.configuration}` : "No multimodal results in this selection";
+    document.getElementById(`best-${id}-scope`).textContent =
+      `${label} · ${best?.n ?? 0} scenes · ${sourceLabel}`;
+  }
 }
 
 document.querySelectorAll("[data-results-tier]").forEach((button) => {
-  button.addEventListener("click", () =>
-    updateResults(button.dataset.resultsTier),
-  );
+  button.addEventListener("click", () => {
+    resultsState.tier = button.dataset.resultsTier;
+    updateResults();
+  });
+});
+
+document.getElementById("results-source").addEventListener("change", (event) => {
+  resultsState.source = event.target.value;
+  updateResults();
 });
 document
   .getElementById("show-confidence")
@@ -183,6 +207,18 @@ document
       .getElementById("results-table-wrapper")
       .classList.toggle("show-ci", event.target.checked);
   });
+
+document.addEventListener("click", (event) => {
+  const badge = event.target.closest("[data-evaluation-protocol]");
+  if (badge) document.getElementById(badge.dataset.evaluationProtocol).open = true;
+});
+function openLinkedProtocol() {
+  const panel = document.getElementById(window.location.hash.slice(1));
+  if (panel?.matches(".evaluation-protocol")) panel.open = true;
+}
+window.addEventListener("hashchange", openLinkedProtocol);
+openLinkedProtocol();
+updateResults(false);
 
 async function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
