@@ -385,6 +385,17 @@ shape-code-bench/
   docs/
     benchmark-spec.md
     research-landscape.md
+    WEBSITE.md
+  website/
+    index.html
+    styles.css
+    app.js
+    assets/
+  scripts/
+    build_website.py
+  .github/
+    workflows/
+      website.yml
   data/
     generated/
     runs/
@@ -402,3 +413,19 @@ The benchmark core and first live runner now exist. The next recommended steps a
 2. Characterize the current baseline on small pilot runs before expanding scope.
 3. Add additional providers or prompt regimes only after the current zero-shot OpenAI baseline is stable.
 4. Explore training-signal variants only after preserving a clean separation between generated training seeds and held-out evaluation splits.
+
+## 15. Public Research Website
+
+The project website at <https://shivamk3r.github.io/shape-code-bench/> presents
+the benchmark and the paper's frozen `eval_v1` experiments. It is a static
+presentation layer and does not change the benchmark protocol or execute model
+requests. The coordinate-shift explorer uses precomputed scenes and scores from
+the same generator, restricted DSL, renderer, and evaluator as the benchmark.
+
+`scripts/build_website.py` builds `website/` into `dist/website/`, using
+`paper/tables/main_results.csv` for results and the README's BibTeX block for
+citations. `.github/workflows/website.yml` validates builds on pull requests
+and deploys pushes to `main` through GitHub Pages. Only the built public site
+is uploaded. Website explanations, metadata, and resource links must be
+reviewed alongside major benchmark or publication changes; see
+[WEBSITE.md](WEBSITE.md) for the maintenance workflow.

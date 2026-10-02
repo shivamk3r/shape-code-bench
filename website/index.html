@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f5f0" />
+    <title>ShapeCodeBench — Seeing shapes, recovering programs</title>
+    <meta
+      name="description"
+      content="A renewable research benchmark for perception-to-program reconstruction. Explore synthetic shape scenes, render-based evaluation, and the ShapeCodeBench v1 results."
+    />
+    <link
+      rel="canonical"
+      href="https://shivamk3r.github.io/shape-code-bench/"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="ShapeCodeBench — Seeing shapes, recovering programs"
+    />
+    <meta
+      property="og:description"
+      content="Can a multimodal model recover the program behind an image? A renewable benchmark with four primitives, three difficulty tiers, and deterministic scoring."
+    />
+    <meta
+      property="og:url"
+      content="https://shivamk3r.github.io/shape-code-bench/"
+    />
+    <meta
+      property="og:image"
+      content="https://shivamk3r.github.io/shape-code-bench/assets/social-card.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="ShapeCodeBench: a renewable benchmark for perception-to-program reconstruction, illustrated with four geometric primitives."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link
+      rel="preload"
+      href="assets/fonts/Manrope.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ScholarlyArticle",
+        "name": "ShapeCodeBench: A Renewable Benchmark for Perception-to-Program Reconstruction of Synthetic Shape Scenes",
+        "author": {
+          "@type": "Person",
+          "name": "Shivam Kumar",
+          "url": "https://orcid.org/0009-0008-3043-4658"
+        },
+        "datePublished": "2026-05-12",
+        "url": "https://arxiv.org/abs/2605.11680",
+        "sameAs": "https://doi.org/10.5281/zenodo.20132286",
+        "about": [
+          "Multimodal evaluation",
+          "Visual reasoning",
+          "Program reconstruction"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="#" aria-label="ShapeCodeBench home">
+          <img src="assets/favicon.svg" width="34" height="34" alt="" />
+          <span>ShapeCodeBench<span class="brand-period">.</span></span>
+        </a>
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-controls="primary-nav"
+          aria-expanded="false"
+        >
+          Menu <span aria-hidden="true">+</span>
+        </button>
+        <nav id="primary-nav" aria-label="Main navigation">
+          <a href="#overview">Overview</a>
+          <a href="#explore">Explore</a>
+          <a href="#results">Results</a>
+          <a href="#get-started">Get started</a>
+          <a
+            class="nav-repo"
+            href="https://github.com/shivamk3r/shape-code-bench"
+            >GitHub <span aria-hidden="true">↗</span></a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero container" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span> A renewable
+            vision-to-code benchmark
+          </p>
+          <h1 id="hero-title">
+            <span class="sr-only">ShapeCodeBench: </span>Seeing shapes.<br />Recovering<br /><span
+              class="accent-word"
+              >programs.</span
+            >
+          </h1>
+          <p class="hero-description">
+            An image is the output of a program.<br />Can a multimodal model
+            work backwards?
+          </p>
+          <p class="hero-detail">
+            ShapeCodeBench measures visual understanding through executable
+            drawing code, with fresh synthetic scenes and deterministic
+            evaluation.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="button button-primary"
+              href="https://arxiv.org/abs/2605.11680"
+              >Read the paper <span aria-hidden="true">↗</span></a
+            >
+            <a
+              class="button button-outline"
+              href="https://github.com/shivamk3r/shape-code-bench"
+              >Explore the code <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <p class="author-line">
+            <a href="https://orcid.org/0009-0008-3043-4658">Shivam Kumar</a
+            ><span aria-hidden="true"> / </span
+            ><span>arXiv:2605.11680 · May 2026</span>
+          </p>
+        </div>
+        <div class="hero-visual">
+          <div class="visual-header">
+            <span class="mono">FIG. 01 / THE RECONSTRUCTION TASK</span
+            ><span class="version-tag">V1</span>
+          </div>
+          <div class="hero-canvas">
+            <span
+              class="canvas-coordinate coordinate-top mono"
+              aria-hidden="true"
+              >(0, 0)</span
+            >
+            <img
+              src="assets/hero-scene.png"
+              width="512"
+              height="512"
+              alt="A filled circle and an outlined square above a filled square and an outlined circle, rendered in black on white."
+            />
+            <span
+              class="canvas-coordinate coordinate-bottom mono"
+              aria-hidden="true"
+              >(@@CANVAS_SIZE@@, @@CANVAS_SIZE@@)</span
+            >
+            <span class="canvas-label mono">TARGET IMAGE</span>
+          </div>
+          <div class="flow-label">
+            <span class="flow-line" aria-hidden="true"></span
+            ><span
+              >Perceive <span aria-hidden="true">→</span> reconstruct
+              <span aria-hidden="true">→</span> render</span
+            ><span class="flow-line" aria-hidden="true"></span>
+          </div>
+          <div class="hero-code">
+            <div class="code-header">
+              <span class="mono">DRAWING PROGRAM</span
+              ><span class="code-status"
+                ><span aria-hidden="true">●</span> Executable DSL</span
+              >
+            </div>
+            <pre
+              tabindex="0"
+              aria-label="Illustrative drawing program"
+            ><code>@@HERO_PROGRAM@@</code></pre>
+          </div>
+          <div class="visual-footer">
+            <span>Four primitives. One visual language.</span
+            ><span aria-hidden="true">↳</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="container stats-strip" aria-label="Benchmark at a glance">
+        <div>
+          <strong>@@PRIMITIVE_COUNT@@</strong><span>drawing primitives</span>
+        </div>
+        <div>
+          <strong
+            >@@CANVAS_SIZE@@<span class="times"> × </span
+            >@@CANVAS_SIZE@@</strong
+          ><span>deterministic canvas</span>
+        </div>
+        <div><strong>@@TIER_COUNT@@</strong><span>difficulty tiers</span></div>
+        <div>
+          <strong>@@EVAL_COUNT@@</strong><span>frozen evaluation scenes</span>
+        </div>
+      </div>
+
+      <section
+        id="overview"
+        class="section container"
+        aria-labelledby="overview-title"
+      >
+        <div class="section-heading">
+          <p class="section-index mono">01 / THE IDEA</p>
+          <div>
+            <h2 id="overview-title">
+              Simple shapes.<br />A demanding visual test.
+            </h2>
+            <p class="section-intro">
+              Recognizing a circle is a start. Recovering its position, radius,
+              stroke, and relationship to other shapes asks much more.
+            </p>
+          </div>
+        </div>
+        <div class="idea-grid">
+          <article class="idea-card">
+            <div class="card-art art-perception" aria-hidden="true">
+              <span></span><span></span><i></i>
+            </div>
+            <p class="mono card-number">01</p>
+            <h3>Perception meets code</h3>
+            <p>
+              Models infer shape types and integer parameters from pixels, then
+              express them in a small, shared drawing language.
+            </p>
+          </article>
+          <article class="idea-card">
+            <div class="card-art art-scoring" aria-hidden="true">
+              <span></span><span></span><i></i>
+            </div>
+            <p class="mono card-number">02</p>
+            <h3>Compare the renders</h3>
+            <p>
+              A restricted parser and deterministic renderer turn each
+              prediction into an image. Visual equivalence matters more than
+              code-string equality.
+            </p>
+          </article>
+          <article class="idea-card">
+            <div class="card-art art-renewable" aria-hidden="true">
+              <span></span><span></span><i></i>
+            </div>
+            <p class="mono card-number">03</p>
+            <h3>Refresh the evaluation</h3>
+            <p>
+              Fresh seeds create new held-out instances without manual
+              annotation. Renewability reduces memorization of exact examples.
+            </p>
+          </article>
+        </div>
+        <p class="context-note">
+          Fresh instances reduce exact-example contamination. Models can still
+          learn the generator distribution; held-out seeds and careful split
+          separation remain essential.
+        </p>
+      </section>
+
+      <section class="method-section" aria-labelledby="method-title">
+        <div class="container">
+          <div class="method-heading">
+            <p class="section-index mono">02 / THE PROTOCOL</p>
+            <h2 id="method-title">
+              Image in.<br />Executable understanding out.
+            </h2>
+            <p>
+              The same compact language spans every difficulty tier. Complexity
+              comes from the scene.
+            </p>
+          </div>
+          <ol class="protocol-grid">
+            <li>
+              <span class="step-number mono"
+                >01 <span aria-hidden="true">→</span></span
+              >
+              <h3>Generate a scene</h3>
+              <p>
+                A seeded generator samples circles and squares, with filled or
+                outlined variants, on a black-on-white canvas.
+              </p>
+              <span class="step-tag mono">IMAGE + CANONICAL PROGRAM</span>
+            </li>
+            <li>
+              <span class="step-number mono"
+                >02 <span aria-hidden="true">→</span></span
+              >
+              <h3>Recover the program</h3>
+              <p>
+                The model receives the image and a fixed zero-shot DSL
+                description, then emits drawing calls with integer parameters.
+              </p>
+              <span class="step-tag mono">MULTIMODAL MODEL → DSL</span>
+            </li>
+            <li>
+              <span class="step-number mono"
+                >03 <span aria-hidden="true">↳</span></span
+              >
+              <h3>Render and measure</h3>
+              <p>
+                The evaluator validates approved calls, renders the prediction,
+                and measures exact match, pixel accuracy, and foreground IoU.
+              </p>
+              <span class="step-tag mono">RENDER → COMPARE → SCORE</span>
+            </li>
+          </ol>
+          <div class="primitive-list" aria-label="The four DSL primitives">
+            <span class="mono">THE V1 VOCABULARY</span><code>filled_circle</code
+            ><code>circle</code><code>filled_square</code><code>square</code>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="explore"
+        class="section container"
+        aria-labelledby="explore-title"
+      >
+        <div class="section-heading">
+          <p class="section-index mono">03 / EXPLORE THE TASK</p>
+          <div>
+            <h2 id="explore-title">A few pixels can<br />change the answer.</h2>
+            <p class="section-intro">
+              Explore a scene from each tier. Shift the first shape’s horizontal
+              coordinate to see how visual similarity and exact recovery differ.
+            </p>
+          </div>
+        </div>
+        <div class="explorer">
+          <div class="explorer-toolbar">
+            <div
+              class="segmented-control"
+              role="group"
+              aria-label="Example difficulty"
+            >
+              <button
+                type="button"
+                data-example-tier="easy"
+                aria-pressed="true"
+              >
+                Easy</button
+              ><button
+                type="button"
+                data-example-tier="medium"
+                aria-pressed="false"
+              >
+                Medium</button
+              ><button
+                type="button"
+                data-example-tier="hard"
+                aria-pressed="false"
+              >
+                Hard
+              </button>
+            </div>
+            <p id="scene-metadata" class="mono">SEED 101 / 3 SHAPES</p>
+          </div>
+          <div class="explorer-images">
+            <figure>
+              <figcaption>
+                <span class="mono">01 / TARGET</span
+                ><span>Generated scene</span>
+              </figcaption>
+              <div class="scene-frame">
+                <img
+                  id="target-image"
+                  src="assets/scenes/easy-target.png"
+                  width="512"
+                  height="512"
+                  loading="lazy"
+                  alt="Easy benchmark target, generated from seed 101: an outlined circle and two outlined squares."
+                />
+              </div>
+            </figure>
+            <div class="comparison-arrow" aria-hidden="true">→</div>
+            <figure>
+              <figcaption>
+                <span id="prediction-label" class="mono"
+                  >02 / RECONSTRUCTION</span
+                ><button
+                  id="difference-toggle"
+                  class="text-button"
+                  type="button"
+                  aria-pressed="false"
+                >
+                  Show differences
+                </button>
+              </figcaption>
+              <div class="scene-frame">
+                <img
+                  id="prediction-image"
+                  src="assets/scenes/easy-0.png"
+                  width="512"
+                  height="512"
+                  loading="lazy"
+                  alt="Reconstruction with the first shape shifted by 0 pixels: an exact match."
+                />
+              </div>
+            </figure>
+          </div>
+          <div class="explorer-controls">
+            <div class="shift-control">
+              <label for="coordinate-shift"
+                >Shift first shape
+                <output id="shift-value" for="coordinate-shift"
+                  >0 px</output
+                ></label
+              ><input
+                id="coordinate-shift"
+                type="range"
+                min="0"
+                max="12"
+                value="0"
+                step="1"
+                aria-describedby="shift-description"
+              />
+              <p id="shift-description">
+                Horizontal coordinate <code>cx</code> · 0–12 pixels
+              </p>
+            </div>
+            <div class="demo-scores" aria-live="polite" aria-atomic="true">
+              <div>
+                <span>Exact match</span><strong id="demo-exact">Yes</strong>
+              </div>
+              <div>
+                <span>Pixel accuracy</span
+                ><strong id="demo-pixel">100.00%</strong>
+              </div>
+              <div>
+                <span>Foreground IoU</span
+                ><strong id="demo-iou">100.00%</strong>
+              </div>
+            </div>
+          </div>
+          <div class="program-panel">
+            <div class="code-header">
+              <span class="mono">RECONSTRUCTION PROGRAM</span
+              ><button
+                class="copy-button"
+                type="button"
+                data-copy="example-program"
+              >
+                Copy code <span aria-hidden="true">⧉</span>
+              </button>
+            </div>
+            <pre
+              tabindex="0"
+              aria-label="Reconstruction drawing code"
+            ><code id="example-program">@@INITIAL_PROGRAM@@</code></pre>
+          </div>
+        </div>
+        <div class="tier-notes">
+          <p id="tier-description">
+            <strong>Easy · 1–3 shapes.</strong> Large primitives, minimal
+            bounding-box overlap, and no clipping.
+          </p>
+          <p>
+            Scenes and scores use the repository’s generator, renderer, and
+            evaluator. This is a controlled coordinate-shift illustration.
+          </p>
+        </div>
+        <noscript
+          ><p class="context-note">
+            The easy scene and paper results are shown below. Enable JavaScript
+            to switch tiers and explore coordinate shifts.
+          </p></noscript
+        >
+      </section>
+
+      <section
+        id="results"
+        class="results-section section"
+        aria-labelledby="results-title"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <p class="section-index mono">04 / PAPER RESULTS</p>
+            <div>
+              <h2 id="results-title">
+                Visual resemblance is high.<br />Exact recovery is rare.
+              </h2>
+              <p class="section-intro">
+                Four multimodal configurations and two baselines on the frozen
+                <code>eval_v1</code> split. These are the paper’s v1
+                experiments, with a shared zero-shot prompt.
+              </p>
+            </div>
+          </div>
+          <div class="finding-grid">
+            <article>
+              <span class="mono">BEST MULTIMODAL EXACT MATCH</span
+              ><strong>@@BEST_LLM_EXACT@@<span>%</span></strong>
+              <p>@@BEST_EXACT_NAME@@<br />Across all @@EVAL_COUNT@@ scenes</p>
+            </article>
+            <article>
+              <span class="mono">BEST MULTIMODAL FOREGROUND IoU</span
+              ><strong>@@BEST_LLM_IOU@@<span>%</span></strong>
+              <p>@@BEST_IOU_NAME@@<br />Across all @@EVAL_COUNT@@ scenes</p>
+            </article>
+            <article class="finding-text">
+              <span class="finding-symbol" aria-hidden="true"
+                >≈ <span>≠</span> =</span
+              >
+              <h3>The gap is the signal.</h3>
+              <p>
+                Small parameter errors can preserve much of the foreground while
+                preventing a pixel-exact match.
+              </p>
+            </article>
+          </div>
+          <div class="results-toolbar">
+            <div
+              class="segmented-control"
+              role="group"
+              aria-label="Results difficulty"
+            >
+              <button type="button" data-results-tier="all" aria-pressed="true">
+                All tiers</button
+              ><button
+                type="button"
+                data-results-tier="easy"
+                aria-pressed="false"
+              >
+                Easy</button
+              ><button
+                type="button"
+                data-results-tier="medium"
+                aria-pressed="false"
+              >
+                Medium</button
+              ><button
+                type="button"
+                data-results-tier="hard"
+                aria-pressed="false"
+              >
+                Hard
+              </button>
+            </div>
+            <label class="ci-control"
+              ><input id="show-confidence" type="checkbox" /> 95% confidence
+              intervals</label
+            >
+          </div>
+          <div
+            id="results-table-wrapper"
+            class="table-wrapper"
+            role="region"
+            aria-label="Benchmark results table"
+            tabindex="0"
+          >
+            <table>
+              <caption id="results-caption">
+                All tiers · @@EVAL_COUNT@@ samples per system · sorted by
+                foreground IoU
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">System / configuration</th>
+                  <th scope="col">Exact match</th>
+                  <th scope="col">Pixel accuracy</th>
+                  <th scope="col">Foreground IoU</th>
+                  <th scope="col">Parse success</th>
+                </tr>
+              </thead>
+              <tbody id="results-body">
+                @@RESULT_ROWS@@
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footnote">
+            <p>
+              Higher is better for every metric. Intervals are 95% bootstrap
+              confidence intervals (1,000 resamples). Failed parsing or
+              rendering receives zero similarity scores.
+            </p>
+            <a class="inline-link" href="data/main_results.csv" download
+              >Download source CSV <span aria-hidden="true">↓</span></a
+            >
+          </div>
+          <details class="metric-details">
+            <summary>
+              What do the scores measure? <span aria-hidden="true">+</span>
+            </summary>
+            <div class="metric-grid">
+              <p>
+                <strong>Exact match</strong> requires every rendered pixel to
+                match. Different programs can earn the same score if their
+                renders are identical.
+              </p>
+              <p>
+                <strong>Pixel accuracy</strong> is the fraction of all matching
+                pixels. A large white background can make this score look high
+                despite shape errors.
+              </p>
+              <p>
+                <strong>Foreground IoU</strong> measures the intersection over
+                union of black pixels. It isolates how well the actual shape
+                structure is recovered.
+              </p>
+              <p>
+                <strong>Parse success</strong> tracks valid DSL output. It
+                measures structural validity; a valid program may still
+                reconstruct the wrong scene.
+              </p>
+            </div>
+          </details>
+          <p class="results-source">
+            Source:
+            <a
+              href="https://github.com/shivamk3r/shape-code-bench/blob/main/paper/tables/main_results.csv"
+              >paper/tables/main_results.csv</a
+            >
+            ·
+            <a href="https://arxiv.org/abs/2605.11680"
+              >Paper and experimental protocol</a
+            >. Deterministic images and scoring; model inference can vary
+            between runs.
+          </p>
+        </div>
+      </section>
+
+      <section
+        id="get-started"
+        class="section container"
+        aria-labelledby="start-title"
+      >
+        <div class="section-heading">
+          <p class="section-index mono">05 / BUILD ON IT</p>
+          <div>
+            <h2 id="start-title">Reproduce it.<br />Refresh it. Extend it.</h2>
+            <p class="section-intro">
+              Start locally with the benchmark core. Generate a separate
+              development split, or load the frozen dataset for held-out
+              reporting.
+            </p>
+          </div>
+        </div>
+        <div class="getting-started-grid">
+          <article class="start-card">
+            <div class="start-card-heading">
+              <span class="mono">01 / RUN LOCALLY</span
+              ><button
+                class="copy-button"
+                type="button"
+                data-copy="quickstart-code"
+              >
+                Copy <span aria-hidden="true">⧉</span>
+              </button>
+            </div>
+            <p>Python 3.12 and <a href="https://docs.astral.sh/uv/">uv</a></p>
+            <pre
+              tabindex="0"
+              aria-label="Local setup commands"
+            ><code id="quickstart-code">git clone https://github.com/shivamk3r/shape-code-bench.git
+cd shape-code-bench
+uv sync --dev
+uv run shape-code-bench generate \
+  --split dev --difficulty easy \
+  --count 6 --seed 101</code></pre>
+            <a
+              class="inline-link"
+              href="https://github.com/shivamk3r/shape-code-bench#quickstart"
+              >Full quickstart <span aria-hidden="true">↗</span></a
+            >
+          </article>
+          <article class="start-card">
+            <div class="start-card-heading">
+              <span class="mono">02 / LOAD THE DATASET</span
+              ><button
+                class="copy-button"
+                type="button"
+                data-copy="dataset-code"
+              >
+                Copy <span aria-hidden="true">⧉</span>
+              </button>
+            </div>
+            <p><code>eval_v1</code> · 50 scenes per difficulty tier</p>
+            <pre
+              tabindex="0"
+              aria-label="Dataset loading code"
+            ><code id="dataset-code">from datasets import load_dataset
+
+dataset = load_dataset(
+  "shivamk3r/shape-code-bench-eval-v1"
+)</code></pre>
+            <a
+              class="inline-link"
+              href="https://huggingface.co/datasets/shivamk3r/shape-code-bench-eval-v1"
+              >Explore on Hugging Face <span aria-hidden="true">↗</span></a
+            >
+          </article>
+        </div>
+        <p class="context-note">
+          Keep development seeds separate from held-out reporting splits. Use
+          <code>eval_v1</code> for evaluation, and generate fresh train/dev
+          scenes for tuning.
+        </p>
+        <div class="resource-links">
+          <a href="https://arxiv.org/pdf/2605.11680"
+            ><span class="mono">PAPER</span
+            ><strong
+              >Read the full study <span aria-hidden="true">↗</span></strong
+            ><span>Task, experiments, analysis, and limitations</span></a
+          ><a
+            href="https://github.com/shivamk3r/shape-code-bench/blob/main/docs/REPRODUCIBILITY.md"
+            ><span class="mono">REPRODUCIBILITY</span
+            ><strong
+              >Rebuild the experiments <span aria-hidden="true">↗</span></strong
+            ><span>Environment, frozen dataset, sweeps, and figures</span></a
+          ><a href="https://doi.org/10.5281/zenodo.20132286"
+            ><span class="mono">ARCHIVED RELEASE</span
+            ><strong
+              >Get the v1 snapshot <span aria-hidden="true">↗</span></strong
+            ><span>Code and artifacts · DOI 10.5281/zenodo.20132286</span></a
+          >
+        </div>
+      </section>
+
+      <section
+        id="citation"
+        class="citation-section"
+        aria-labelledby="citation-title"
+      >
+        <div class="container citation-grid">
+          <div>
+            <p class="section-index mono">06 / CITE THE WORK</p>
+            <h2 id="citation-title">
+              A small benchmark.<br />A shared starting point.
+            </h2>
+            <p>
+              If you use ShapeCodeBench, cite the paper and the
+              <a href="https://doi.org/10.5281/zenodo.20132286"
+                >archived release</a
+              >.
+            </p>
+            <a class="inline-link" href="citation.bib" download
+              >Download BibTeX <span aria-hidden="true">↓</span></a
+            >
+          </div>
+          <div class="citation-code">
+            <div class="code-header">
+              <span class="mono">BIBTEX</span
+              ><button
+                class="copy-button"
+                type="button"
+                data-copy="citation-code"
+              >
+                Copy citation <span aria-hidden="true">⧉</span>
+              </button>
+            </div>
+            <pre><code id="citation-code">@@CITATION@@</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <div>
+        <a class="brand" href="#"
+          ><img src="assets/favicon.svg" width="28" height="28" alt="" /><span
+            >ShapeCodeBench<span class="brand-period">.</span></span
+          ></a
+        >
+        <p>A renewable benchmark for executable visual understanding.</p>
+      </div>
+      <div class="footer-links">
+        <a
+          href="https://github.com/shivamk3r/shape-code-bench/blob/main/LICENSE"
+          >Code · MIT</a
+        ><a
+          href="https://github.com/shivamk3r/shape-code-bench/blob/main/LICENSE-ARTIFACTS.md"
+          >Artifacts · CC BY 4.0</a
+        ><a href="#main">Back to top <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
+    <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+    <script id="benchmark-data" type="application/json">
+      @@BENCHMARK_DATA@@
+    </script>
+  </body>
+</html>

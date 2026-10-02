@@ -2,6 +2,10 @@
 
 `ShapeCodeBench` is a synthetic benchmark for testing whether a multimodal model can look at an image and reconstruct the executable drawing program that generated it.
 
+**[Project website](https://shivamk3r.github.io/shape-code-bench/)** ·
+[Paper](https://arxiv.org/abs/2605.11680) ·
+[Dataset](https://huggingface.co/datasets/shivamk3r/shape-code-bench-eval-v1)
+
 The core loop is:
 
 1. Sample a scene made of simple geometric primitives.
@@ -235,6 +239,7 @@ training seeds separate from frozen or newly minted held-out evaluation splits.
 - [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md): end-to-end reproduction of the paper numbers
 - [docs/benchmark-spec.md](docs/benchmark-spec.md): deeper implementation and benchmark spec
 - [docs/research-landscape.md](docs/research-landscape.md): framework choice, related work, and positioning
+- [docs/WEBSITE.md](docs/WEBSITE.md): research website build, preview, synchronization, and GitHub Pages deployment
 - [AGENTS.md](AGENTS.md): repository guidance and project memory for coding agents
 
 ## Citation And Licensing
@@ -298,3 +303,9 @@ canonical four-config baseline -- Claude Opus 4.7 (1M context) at `high` /
 reproduced by `scripts/run_paper_sweep.sh`. See [paper/main.tex](paper/main.tex)
 for the writeup and [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the
 end-to-end reproduction workflow.
+
+The [research website](https://shivamk3r.github.io/shape-code-bench/) presents the
+task, an interactive scene and scoring demonstration, and the paper's results.
+Its source is in `website/`; `scripts/build_website.py` derives demo scenes and
+scores from the benchmark implementation and results from the paper CSV.
+GitHub Actions validates and publishes the website on every push to `main`.

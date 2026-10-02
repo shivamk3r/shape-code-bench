@@ -83,6 +83,12 @@ instructions unless the user explicitly invokes them.
 - `paper/`: arXiv paper source and build files
 - `scripts/`: analysis, determinism, figure, evaluation-freezing, and paper
   sweep helpers
+- `website/`: public research website source, styles, browser interactions, and
+  licensed local fonts
+- `scripts/build_website.py`: deterministic website build from benchmark scenes,
+  evaluator scores, paper result CSV, and README citation
+- `.github/workflows/website.yml`: website validation and GitHub Pages deployment
+- `docs/WEBSITE.md`: website preview, synchronization, and publishing guide
 - `publish_docs/`: git-ignored private publishing drafts, notes, and prep work
 
 Generated samples go under `data/generated/<split>/<difficulty>/`.
@@ -129,6 +135,9 @@ Keep these documents aligned:
 - `README.md` for the public project overview and implementation snapshot
 - `docs/benchmark-spec.md` for deeper benchmark and implementation semantics
 - `AGENTS.md` for repository-wide agent instructions and project memory
+- `website/` for the public research presentation at
+  <https://shivamk3r.github.io/shape-code-bench/>, with maintenance details in
+  `docs/WEBSITE.md`
 
 When source and docs disagree, prefer executable code and tests for current
 behavior, then update the docs if the behavior is intentional. For policy,
@@ -150,6 +159,42 @@ Before finishing a substantial change, do a freshness check:
 - Does `README.md` still describe the project accurately?
 - Does `docs/benchmark-spec.md` still match the implementation?
 - Should `AGENTS.md` be updated so future agents inherit the latest decisions?
+- Does the project website still match the repository's major behavior,
+  publications, public resources, and reported results?
+
+## Project Website Maintenance
+
+Keep <https://shivamk3r.github.io/shape-code-bench/> aligned with the repository.
+For every major change to the benchmark task, DSL, renderer, generator,
+difficulty tiers, metrics, providers, results, dataset releases, paper,
+citations, licensing, or public setup instructions, update the affected website
+copy, examples, links, and metadata in the same change before declaring the work
+complete. Review `website/index.html` even when derived assets update
+automatically; generation cannot keep explanatory prose accurate on its own.
+
+The website build uses the benchmark implementation for its demo images and
+scores, `paper/tables/main_results.csv` for reported results, and the README's
+BibTeX block for citations. Preserve that source relationship instead of
+manually duplicating scores or using simulated demo metrics. Label historical
+paper results with their evaluation version and protocol.
+
+Build and verify relevant website changes with:
+
+```bash
+uv run python scripts/build_website.py
+uv run pytest tests/test_website.py
+node --check website/app.js
+```
+
+For layout and interaction changes, preview `dist/website/` on desktop and mobile
+and exercise the scene explorer, result filters, and clipboard controls. Read
+`docs/WEBSITE.md` for the full workflow. The site deploys automatically through
+`.github/workflows/website.yml` after pushes to `main`; when publishing is
+authorized, confirm the workflow succeeds and the deployed URL works.
+
+Publish only `dist/website/`. Never upload the repository root, raw model run
+artifacts, `.env`, authentication state, `publish_docs/`, or protected
+project-management directories as website content.
 
 ## Privacy And Sensitivity
 
