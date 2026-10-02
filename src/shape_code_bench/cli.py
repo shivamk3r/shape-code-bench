@@ -26,6 +26,7 @@ from shape_code_bench.adapters import (
     ModelAdapter,
     OpenAIResponsesAdapter,
 )
+from shape_code_bench.adapters.codex_adapter import CODEX_REASONING_EFFORTS
 from shape_code_bench.baselines import EmptyProgramAdapter, HeuristicCVAdapter
 from shape_code_bench.dsl import DSLValidationError, parse_program, serialize_scene
 from shape_code_bench.evaluator import evaluate_program
@@ -78,6 +79,11 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--provider", choices=PROVIDER_CHOICES, required=True)
     run_parser.add_argument("--limit", type=int)
     run_parser.add_argument("--output-dir", default="data/runs")
+    run_parser.add_argument("--workers", "--parallelism", type=int, default=1,
+                            help="Maximum concurrent samples (default: 1).")
+    run_parser.add_argument("--resume-from", help="Extend/resume an existing compatible run directory.")
+    run_parser.add_argument("--sample-id", action="append", dest="sample_ids",
+                            help="Select a sample ID; repeat to select multiple samples.")
 
     # OpenAI-specific flags
     run_parser.add_argument("--model", default=DEFAULT_OPENAI_MODEL)
@@ -105,9 +111,11 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--codex-max-retries", type=int, default=DEFAULT_CODEX_MAX_RETRIES)
     run_parser.add_argument(
         "--codex-reasoning-effort",
-        choices=("low", "medium", "high", "extra_high"),
+        choices=CODEX_REASONING_EFFORTS,
         default=None,
     )
+    run_parser.add_argument("--codex-ignore-user-config", action="store_true",
+                            help="Ignore personal Codex config while retaining the CLI login.")
 
     # Claude-specific flags
     run_parser.add_argument("--claude-model", default=DEFAULT_CLAUDE_MODEL)
@@ -191,6 +199,13 @@ def _handle_run(args: argparse.Namespace) -> int:
         adapter=adapter,
         limit=args.limit,
         output_dir=args.output_dir,
+        workers=args.workers,
+        resume_from=args.resume_from,
+        sample_ids=args.sample_ids,
+        progress_callback=lambda completed, total, sample_id, reused: print(
+            f"[{completed}/{total}] {sample_id} ({'reused' if reused else 'evaluated'})",
+            file=sys.stderr, flush=True,
+        ),
     )
     payload = {
         "run_id": result.run_id,
@@ -219,6 +234,7 @@ def _build_adapter_from_args(args: argparse.Namespace) -> ModelAdapter:
             codex_binary=args.codex_binary,
             max_retries=args.codex_max_retries,
             reasoning_effort=args.codex_reasoning_effort,
+            extra_args=("--ignore-user-config",) if args.codex_ignore_user_config else (),
         )
     if args.provider == "claude":
         return ClaudeCodeAdapter(

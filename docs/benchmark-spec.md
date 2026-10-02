@@ -227,8 +227,18 @@ Local development loads `OPENAI_API_KEY` from process env, with `.env` auto-load
 - default sandbox: `read-only`
 - default timeout: `180s` per sample
 - default retries: `2` with exponential backoff
-- `reasoning_effort`: unset by default; when set, threaded as `-c reasoning_effort=<value>`
+- timeout is a total sample budget shared by all attempts and backoff
+- `reasoning_effort`: unset by default; when set, passed as
+  `-c model_reasoning_effort=<value>`; allowed values are
+  `low|medium|high|xhigh|extra_high|max|ultra`, with model-dependent support and
+  `extra_high` normalized to the Codex spelling `xhigh`
+- target image is copied to `input.png` in an ephemeral temporary working
+  directory; the subprocess also runs from that directory
+- optional `--codex-ignore-user-config` isolates inference from personal CLI
+  configuration while retaining authentication
 - output captured via `--output-last-message`
+- JSON events supply thread ID and token usage; tool logs and reasoning traces
+  are not persisted; the CLI version is recorded in the run environment
 - authenticates against the user's ChatGPT login; no API tokens consumed
 
 ### Claude Code CLI Adapter
@@ -287,8 +297,34 @@ Run artifacts are written under `data/runs/<run_id>/`:
 - `run_config.json`
 - `summary.json`
 - `samples/<sample_id>.json`
+- `progress.json`
 
 Each per-sample file includes image path, metadata path, raw prediction, normalized prediction, metrics, and adapter metadata.
+
+`--workers N` (alias `--parallelism N`) sets the maximum simultaneous sample
+requests and defaults to `1`. Adapters must support concurrent `predict` calls
+when multiple workers are requested. Each CLI sample has its own temporary
+directory. Artifacts are written atomically after each completed prediction;
+returned results and aggregate metrics follow stable dataset order.
+
+`--sample-id ID` may be repeated for an explicit pilot selection.
+`--resume-from <run-directory>` resumes or extends that run. Compatibility
+requires the same dataset directory, prompt, adapter configuration, scoring
+source hashes, and Python/Pillow/NumPy/CLI versions. Sample PNG and metadata
+hashes, prediction hashes, and response normalization are checked before reuse.
+Saved responses are scored again by the evaluator. Model parse/render failures
+are valid scored outcomes and are reused rather than sampled again. Transport
+failures and missing/corrupt artifacts are requested again. Changed inputs or
+protocols reject resumption. Schema-v2 run configurations retain every
+invocation, worker count, selected/requested/reused IDs, and timing. A resumed
+run removes the previous complete summary until the new selection finishes.
+
+`scripts/report_run.py` validates a complete dataset evaluation, recomputes
+every score, checks aggregates, and exports public overall/per-difficulty CSV,
+per-sample metrics, a sanitized summary, and protocol provenance. It retains
+source/input/artifact hashes and deterministic bootstrap settings while keeping
+raw responses in local run artifacts. The GPT-6.1 Sol follow-up is stored under
+`results/gpt-6.1-sol-max-eval-v1/`, independently of the historical paper tables.
 
 ## 11. Evaluation Hygiene And Training Use
 
@@ -382,6 +418,8 @@ shape-code-bench/
     test_normalization.py
     test_renderer.py
     test_runner.py
+    test_reporting.py
+    test_website.py
   docs/
     benchmark-spec.md
     research-landscape.md
@@ -393,6 +431,9 @@ shape-code-bench/
     assets/
   scripts/
     build_website.py
+    report_run.py
+  results/
+    gpt-6.1-sol-max-eval-v1/
   .github/
     workflows/
       website.yml
@@ -423,8 +464,10 @@ requests. The coordinate-shift explorer uses precomputed scenes and scores from
 the same generator, restricted DSL, renderer, and evaluator as the benchmark.
 
 `scripts/build_website.py` builds `website/` into `dist/website/`, using
-`paper/tables/main_results.csv` for results and the README's BibTeX block for
-citations. `.github/workflows/website.yml` validates builds on pull requests
+`paper/tables/main_results.csv` for historical paper results,
+`results/gpt-6.1-sol-max-eval-v1/` for the full GPT-6.1 Sol maximum-effort
+evaluation, and the README's BibTeX block for citations.
+`.github/workflows/website.yml` validates builds on pull requests
 and deploys pushes to `main` through GitHub Pages. Only the built public site
 is uploaded. Website explanations, metadata, and resource links must be
 reviewed alongside major benchmark or publication changes; see

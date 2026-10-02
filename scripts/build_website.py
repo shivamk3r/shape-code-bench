@@ -23,6 +23,7 @@ from shape_code_bench.types import CANVAS_SIZE, FUNCTION_NAMES, Scene
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "website"
 PAPER_RESULTS = ROOT / "paper/tables/main_results.csv"
+SOL_RESULTS = ROOT / "results/gpt-6.1-sol-max-eval-v1"
 SITE_URL = "https://shivamk3r.github.io/shape-code-bench/"
 EXAMPLE_SEEDS = {"easy": 101, "medium": 202, "hard": 303}
 HERO_PROGRAM = """filled_circle(cx=128, cy=128, radius=64)
@@ -32,8 +33,8 @@ circle(cx=370, cy=370, radius=64, stroke=6)
 """
 
 
-def load_results() -> list[dict[str, str | float | int]]:
-    with PAPER_RESULTS.open(newline="", encoding="utf-8") as handle:
+def load_results(path: Path = PAPER_RESULTS) -> list[dict[str, str | float | int]]:
+    with path.open(newline="", encoding="utf-8") as handle:
         return [
             {
                 key: value
@@ -50,7 +51,10 @@ def load_results() -> list[dict[str, str | float | int]]:
 def display_model(row: dict) -> tuple[str, str]:
     if row["provider"] == "codex":
         effort = row["model"].split("(")[-1].rstrip(")")
-        return "GPT-5.5", f"{effort} effort · Codex CLI"
+        name = {"gpt-5.5": "GPT-5.5", "gpt-6.1-sol": "GPT-6.1 Sol"}.get(
+            row["model_id"], str(row["model_id"]),
+        )
+        return name, f"{effort} effort · Codex CLI"
     if row["provider"] == "claude":
         effort = row["model"].split("(")[-1].rstrip(")")
         return "Claude Opus 4.7", f"{effort} effort · 1M context · Claude Code"
@@ -61,15 +65,18 @@ def display_model(row: dict) -> tuple[str, str]:
     return str(row["model"]), str(row["provider"])
 
 
-def result_rows(results: list[dict], difficulty: str = "all") -> str:
+def result_rows(results: list[dict], difficulty: str | None = "all") -> str:
+    tier_order = {"all": 0, "easy": 1, "medium": 2, "hard": 3}
     rows = sorted(
-        (row for row in results if row["difficulty"] == difficulty),
-        key=lambda row: row["mean_foreground_iou"],
-        reverse=True,
+        (row for row in results if difficulty is None or row["difficulty"] == difficulty),
+        key=lambda row: tier_order[row["difficulty"]] if difficulty is None else -row["mean_foreground_iou"],
     )
     markup = []
     for row in rows:
         name, description = display_model(row)
+        if difficulty is None:
+            name = "All tiers" if row["difficulty"] == "all" else str(row["difficulty"]).title()
+            description = f"{row['n']} samples"
         cells = []
         for metric in (
             "exact_match_rate",
@@ -179,6 +186,20 @@ def build_website(output: Path) -> None:
         shutil.copyfile(SOURCE / name, output / name)
     examples = build_examples(output)
     results = load_results()
+    sol_results = load_results(SOL_RESULTS / "main_results.csv")
+    sol_protocol = json.loads((SOL_RESULTS / "protocol.json").read_text())
+    if (
+        {row["difficulty"]: row["n"] for row in sol_results}
+        != {"all": 150, "easy": 50, "medium": 50, "hard": 50}
+        or len(sol_results) != 4
+        or any(row["model_id"] != "gpt-6.1-sol" or row["provider"] != "codex" for row in sol_results)
+        or sol_protocol["adapter"]["effective_reasoning_effort"] != "max"
+        or sol_protocol["adapter"]["timeout_seconds"] != 3600
+        or sol_protocol["dataset_version"] != "eval_v1"
+        or sol_protocol["invocations"][-1]["workers"] != 8
+        or sol_protocol["invocations"][-1]["selected_samples"] != 150
+    ):
+        raise ValueError("GPT-6.1 Sol results must match the complete eval_v1 max-effort protocol.")
     overall = [row for row in results if row["difficulty"] == "all"]
     if not overall or len({row["n"] for row in overall}) != 1:
         raise ValueError("Paper results must use a consistent evaluation sample count.")
@@ -194,11 +215,13 @@ def build_website(output: Path) -> None:
         raise ValueError("README.md must include the public BibTeX citation.")
     citation = citation_match.group(1) + "\n"
     (output / "citation.bib").write_text(citation, encoding="utf-8")
-    data = {"examples": examples, "results": results}
+    data = {"examples": examples, "results": results, "sol_results": sol_results}
     serialized = json.dumps(data, sort_keys=True, separators=(",", ":")).replace("<", "\\u003c")
     replacements = {
         "@@BENCHMARK_DATA@@": serialized,
         "@@RESULT_ROWS@@": result_rows(results),
+        "@@SOL_RESULT_ROWS@@": result_rows(sol_results, difficulty=None),
+        "@@SOL_EVAL_DATE@@": html.escape(sol_protocol["evaluation_date"]),
         "@@HERO_PROGRAM@@": html.escape(HERO_PROGRAM.rstrip()),
         "@@INITIAL_PROGRAM@@": html.escape(examples["easy"]["variants"][0]["program"].rstrip()),
         "@@CANVAS_SIZE@@": str(CANVAS_SIZE),
@@ -223,6 +246,8 @@ def build_website(output: Path) -> None:
     data_dir.mkdir(exist_ok=True)
     (data_dir / "benchmark.json").write_text(serialized + "\n", encoding="utf-8")
     shutil.copyfile(PAPER_RESULTS, data_dir / "main_results.csv")
+    for filename in ("main_results.csv", "protocol.json", "summary.json", "sample_metrics.csv"):
+        shutil.copyfile(SOL_RESULTS / filename, data_dir / f"gpt-6.1-sol-max-{filename}")
     (output / ".nojekyll").touch()
     (output / "robots.txt").write_text(
         f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n",

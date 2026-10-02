@@ -112,6 +112,15 @@ def test_cli_run_writes_summary_with_fake_adapter(tmp_path: Path, monkeypatch, c
             "openai",
             "--limit",
             "1",
+            "--workers",
+            "8",
+            "--codex-model",
+            "gpt-6.1-sol",
+            "--codex-reasoning-effort",
+            "max",
+            "--codex-timeout-seconds",
+            "3600",
+            "--codex-ignore-user-config",
             "--output-dir",
             str(tmp_path / "runs"),
         ]
@@ -122,6 +131,24 @@ def test_cli_run_writes_summary_with_fake_adapter(tmp_path: Path, monkeypatch, c
     assert payload["summary"]["total_samples"] == 1
     assert Path(payload["summary_path"]).exists()
     assert Path(payload["run_config_path"]).exists()
+    config = json.loads(Path(payload["run_config_path"]).read_text())
+    assert config["workers"] == 8
+
+
+def test_cli_builds_max_effort_codex_adapter() -> None:
+    from shape_code_bench.cli import _build_adapter_from_args, _build_parser
+
+    args = _build_parser().parse_args([
+        "run", "--dataset-dir", "data/eval_v1/eval", "--provider", "codex",
+        "--codex-model", "gpt-6.1-sol", "--codex-reasoning-effort", "max",
+        "--codex-timeout-seconds", "3600", "--parallelism", "8", "--codex-ignore-user-config",
+    ])
+    config = _build_adapter_from_args(args).to_config()
+    assert config["model"] == "gpt-6.1-sol"
+    assert config["effective_reasoning_effort"] == "max"
+    assert config["timeout_seconds"] == 3600
+    assert config["extra_args"] == ["--ignore-user-config"]
+    assert args.workers == 8
 
 
 def _run_cli(args: list[str]) -> subprocess.CompletedProcess[str]:

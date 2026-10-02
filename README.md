@@ -110,6 +110,18 @@ uv run shape-code-bench run \
   --codex-timeout-seconds 240 \
   --limit 2
 
+# GPT-6.1 Sol at maximum reasoning effort (explicit full 150-sample run)
+# First verify two samples, then resume their run directory as described below.
+uv run shape-code-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider codex \
+  --codex-model gpt-6.1-sol \
+  --codex-reasoning-effort max \
+  --codex-timeout-seconds 3600 \
+  --codex-ignore-user-config \
+  --workers 8 \
+  --resume-from <verified-pilot-run-directory>
+
 # Via the Claude Code CLI (uses the Claude subscription, no API tokens)
 uv run shape-code-bench run \
   --dataset-dir data/eval_v1/eval \
@@ -144,8 +156,16 @@ Adapter defaults are kept conservative on cost.
 - sandbox: `read-only`
 - timeout: `180` seconds per sample
 - retries: `2` with exponential backoff
-- `--codex-reasoning-effort {low,medium,high,extra_high}`: unset by default;
-  when set, threaded as `-c reasoning_effort=<value>` to `codex exec`
+- `--codex-reasoning-effort {low,medium,high,xhigh,extra_high,max,ultra}`:
+  unset by default; passed as `-c model_reasoning_effort=<value>` to `codex exec`.
+  `extra_high` is a compatibility alias for `xhigh`; supported efforts depend
+  on the model. GPT-6.1 Sol's maximum setting for this evaluation is `max`.
+- the timeout is a total per-sample budget, including retries and backoff
+- each request uses an ephemeral temporary directory containing a copied PNG,
+  with no adjacent dataset metadata or repository working directory
+- `--codex-ignore-user-config` disables personal CLI configuration while keeping
+  the authenticated login (requires a CLI that supports this flag)
+- CLI thread ID, token usage, and binary version are recorded when available
 - uses the ChatGPT login (no API tokens consumed)
 
 **Claude Code CLI** (`--provider claude`):
@@ -188,6 +208,7 @@ The evaluator accepts only a restricted subset of Python syntax:
 - `src/shape_code_bench/normalization.py`: minimal response normalization
 - `src/shape_code_bench/runner.py`: dataset loader, model runner, aggregation, and artifact writing
 - `src/shape_code_bench/cli.py`: `generate`, `render`, `eval`, and `run` commands
+- `scripts/report_run.py`: complete-run validation, reproducible tables, and public protocol export
 - `tests/`: offline unit coverage plus opt-in live smoke tests for the OpenAI Responses API and the Codex CLI
 
 Generated benchmark samples are written under `data/generated/<split>/<difficulty>/`.
@@ -197,6 +218,21 @@ Benchmark runs are written under `data/runs/<run_id>/` with:
 - `run_config.json`
 - `summary.json`
 - `samples/<sample_id>.json`
+- `progress.json`
+
+Runs default to one worker. `--workers N` (alias `--parallelism N`) bounds the
+number of concurrent sample requests. Results are saved as they finish and
+aggregated in stable dataset order. `--sample-id ID` may be repeated to select
+pilot samples. `--resume-from <run-directory>` extends or resumes a run using
+the same model, prompt, adapter, dataset, scoring sources, and environment.
+Valid saved responses are re-scored and reused, including model syntax
+failures; missing/corrupt artifacts and transport failures are requested again.
+Input and prediction hashes prevent stale results from being silently reused.
+
+The GPT-6.1 Sol evaluation reuses an easy and a medium pilot prediction in the
+full 150-sample, eight-worker run. See
+[the evaluation report](results/gpt-6.1-sol-max-eval-v1/README.md) for overall and
+per-difficulty performance, and [reproduction instructions](docs/REPRODUCIBILITY.md#11-gpt-61-sol-follow-up-evaluation).
 
 ## Cost-Safe Smoke Testing
 
@@ -305,7 +341,9 @@ for the writeup and [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) for the
 end-to-end reproduction workflow.
 
 The [research website](https://shivamk3r.github.io/shape-code-bench/) presents the
-task, an interactive scene and scoring demonstration, and the paper's results.
+task, an interactive scene and scoring demonstration, the paper's historical
+results, and the GPT-6.1 Sol maximum-effort follow-up on all 150 `eval_v1` scenes.
 Its source is in `website/`; `scripts/build_website.py` derives demo scenes and
-scores from the benchmark implementation and results from the paper CSV.
+scores from the benchmark implementation, historical results from the paper
+CSV, and follow-up results from `results/gpt-6.1-sol-max-eval-v1/`.
 GitHub Actions validates and publishes the website on every push to `main`.

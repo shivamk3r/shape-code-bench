@@ -30,9 +30,15 @@ The build script uses these authoritative inputs:
   renderer, and evaluator create all example images and coordinate-shift scores.
   Demo seeds `101`, `202`, and `303` are illustrative scenes outside the frozen
   evaluation seeds `0..49`; the demo makes no model calls.
-- `paper/tables/main_results.csv` supplies every published result, confidence
-  interval, evaluation count, and headline performance statistic. The complete
+- `paper/tables/main_results.csv` supplies historical paper results, confidence
+  intervals, evaluation counts, and the paper headline statistics. Its complete
   CSV is offered as a download; results retain the paper's named configurations.
+- `results/gpt-6.1-sol-max-eval-v1/` supplies the new GPT-6.1 Sol maximum-effort
+  evaluation, with four CSV rows (overall and each difficulty), per-sample
+  metrics, a sanitized summary, and protocol metadata. Export these files from
+  a complete run using `scripts/report_run.py`; it verifies all input hashes,
+  raw prediction integrity, recomputed scores, and aggregate metrics before
+  publishing scores. Raw responses remain in the git-ignored local run directory.
 - The BibTeX block in `README.md` supplies the displayed and downloadable citation.
 - `website/index.html` supplies the research narrative, publication links,
   metadata, protocol description, and quickstart snippets.
@@ -45,7 +51,9 @@ generation, difficulty tiers, metrics, providers, results, dataset release,
 paper, citation, licensing, or public quickstart changes. Automatic generation
 keeps numbers and scenes aligned, but explanatory prose still needs review.
 Keep historical paper results clearly labeled, and do not describe them as a
-current model leaderboard.
+current model leaderboard. The follow-up explicitly passes Codex's
+`model_reasoning_effort=max` and disables personal CLI config; older Codex
+artifacts retain their recorded labels and do not verify the effective effort.
 
 The website publishes no raw model responses, credentials, local configuration,
 private publishing drafts, or protected project-management content. The Pages
@@ -61,8 +69,9 @@ uv run python scripts/build_website.py
 ```
 
 The website tests check deterministic builds, internal links and anchor IDs,
-every demo raster and score against the benchmark implementation, and every
-published result against the paper CSV. For layout or interaction changes,
+every demo raster and score against the benchmark implementation, historical
+results against the paper CSV, and follow-up scores/protocol against the public
+evaluation exports. For layout or interaction changes,
 also inspect desktop and mobile views in a browser; exercise tier filters,
 coordinate shifts, difference images, confidence intervals, navigation, and
 clipboard controls. Check keyboard focus, horizontal overflow, and contrast.

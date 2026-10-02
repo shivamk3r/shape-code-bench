@@ -33,9 +33,13 @@ class FakeRunner:
         self.stderr = stderr
         self.exception = exception
         self.calls: list[list[str]] = []
+        self.options: list[dict[str, Any]] = []
+        self.image_bytes: list[bytes] = []
 
     def __call__(self, argv: list[str], **kwargs: Any) -> FakeCompleted:
         self.calls.append(list(argv))
+        self.options.append(kwargs)
+        self.image_bytes.append(Path(argv[argv.index("-i") + 1]).read_bytes())
         if self.exception is not None:
             raise self.exception
 
@@ -69,7 +73,10 @@ def test_codex_adapter_builds_expected_argv_and_returns_normalized(tmp_path: Pat
     assert "--ephemeral" in argv
     assert argv[argv.index("-s") + 1] == "read-only"
     assert argv[argv.index("-m") + 1] == "gpt-5.5"
-    assert argv[argv.index("-i") + 1] == str(request.image_path)
+    assert Path(argv[argv.index("-i") + 1]).name == "input.png"
+    assert runner.image_bytes == [request.image_path.read_bytes()]
+    assert runner.options[0]["cwd"] == argv[argv.index("-C") + 1]
+    assert "--json" in argv
     assert argv[-1] == f"{request.system_instruction}\n\n{request.prompt_text}"
 
 
@@ -178,6 +185,10 @@ def test_codex_adapter_to_config_is_serializable() -> None:
         "codex_binary": "codex",
         "max_retries": 1,
         "reasoning_effort": None,
+        "effective_reasoning_effort": None,
+        "reasoning_effort_config_key": "model_reasoning_effort",
+        "timeout_scope": "sample_including_retries",
+        "image_isolation": "temporary_png_copy",
         "extra_args": ["--foo", "bar"],
     }
 
@@ -195,12 +206,13 @@ def test_codex_adapter_threads_reasoning_effort_into_argv(tmp_path: Path) -> Non
 
     argv = runner.calls[0]
     config_idx = argv.index("-c")
-    assert argv[config_idx + 1] == "reasoning_effort=extra_high"
+    assert argv[config_idx + 1] == "model_reasoning_effort=xhigh"
     # Effort flag must appear before the trailing prompt argument and after the model spec.
     assert config_idx > argv.index("-m")
     assert config_idx < len(argv) - 1
     # to_config also surfaces the new field.
     assert adapter.to_config()["reasoning_effort"] == "extra_high"
+    assert adapter.to_config()["effective_reasoning_effort"] == "xhigh"
 
 
 def test_codex_adapter_omits_reasoning_effort_when_unset(tmp_path: Path) -> None:
@@ -218,6 +230,68 @@ def test_codex_adapter_omits_reasoning_effort_when_unset(tmp_path: Path) -> None
 def test_codex_adapter_rejects_invalid_timeout() -> None:
     with pytest.raises(ValueError):
         CodexAdapter(timeout_seconds=0)
+
+
+def test_codex_adapter_max_effort_and_usage(tmp_path: Path) -> None:
+    class EventRunner(FakeRunner):
+        def __call__(self, argv: list[str], **kwargs: Any) -> FakeCompleted:
+            result = super().__call__(argv, **kwargs)
+            result.stdout = (
+                '{"type":"thread.started","thread_id":"thread-123"}\n'
+                '{"type":"turn.completed","usage":{"input_tokens":100,"output_tokens":20}}\n'
+            )
+            return result
+
+    runner = EventRunner()
+    adapter = CodexAdapter(model="gpt-6.1-sol", reasoning_effort="max",
+                           timeout_seconds=3600, subprocess_run=runner)
+    result = adapter.predict(_build_request(tmp_path))
+    assert "model_reasoning_effort=max" in runner.calls[0]
+    assert 3590 < runner.options[0]["timeout"] <= 3600
+    assert result.request_id == "thread-123"
+    assert result.usage == {"input_tokens": 100, "output_tokens": 20}
+
+
+def test_codex_timeout_budget_covers_retries(tmp_path: Path, monkeypatch) -> None:
+    clock = [0.0]
+    monkeypatch.setattr("shape_code_bench.adapters.codex_adapter.time.perf_counter", lambda: clock[0])
+    calls = []
+
+    def timeout_runner(argv, **kwargs):
+        calls.append(kwargs["timeout"])
+        clock[0] += kwargs["timeout"]
+        raise subprocess.TimeoutExpired(cmd="codex", timeout=kwargs["timeout"])
+
+    adapter = CodexAdapter(timeout_seconds=3600, max_retries=2, subprocess_run=timeout_runner)
+    result = adapter.predict(_build_request(tmp_path))
+    assert result.error_type == "timeout"
+    assert calls == [3600]
+    assert result.latency_ms == 3600000
+
+
+def test_codex_copies_relative_image_without_metadata(tmp_path: Path, monkeypatch) -> None:
+    from dataclasses import replace
+
+    request = _build_request(tmp_path)
+    monkeypatch.chdir(tmp_path)
+
+    class IsolatedRunner(FakeRunner):
+        def __call__(self, argv: list[str], **kwargs: Any) -> FakeCompleted:
+            assert {path.name for path in Path(kwargs["cwd"]).iterdir()} == {"input.png"}
+            assert str(tmp_path) not in argv[argv.index("-i") + 1]
+            return super().__call__(argv, **kwargs)
+
+    runner = IsolatedRunner()
+    result = CodexAdapter(subprocess_run=runner).predict(
+        replace(request, image_path=request.image_path.relative_to(tmp_path)),
+    )
+    assert result.error_type is None
+
+
+def test_codex_classifies_error_after_long_startup_log(tmp_path: Path) -> None:
+    runner = FakeRunner(returncode=1, stderr="startup\n" * 100 + "Error: 429 rate limit")
+    result = CodexAdapter(subprocess_run=runner, max_retries=0).predict(_build_request(tmp_path))
+    assert result.error_type == "rate_limit_error"
 
 
 def _build_request(tmp_path: Path) -> PredictionRequest:

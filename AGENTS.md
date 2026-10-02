@@ -83,6 +83,8 @@ instructions unless the user explicitly invokes them.
 - `paper/`: arXiv paper source and build files
 - `scripts/`: analysis, determinism, figure, evaluation-freezing, and paper
   sweep helpers
+- `results/`: public follow-up evaluation aggregates, per-sample scores,
+  reproducibility reports, and sanitized experimental protocol metadata
 - `website/`: public research website source, styles, browser interactions, and
   licensed local fonts
 - `scripts/build_website.py`: deterministic website build from benchmark scenes,
@@ -120,8 +122,21 @@ Unless explicitly updated in the source-of-truth documents, assume:
   `reasoning_effort="low"`, image `detail="low"`, `max_output_tokens=256`, and
   no retry.
 - Default Codex CLI settings are `gpt-5.5` with sandbox `read-only`, timeout
-  `180s`, and `2` retries; effort is unset by default and threaded via
-  `--codex-reasoning-effort`.
+  `180s` total per sample including retries, and `2` retries; effort is unset
+  by default. `--codex-reasoning-effort` passes `model_reasoning_effort`;
+  `extra_high` is a compatibility alias for `xhigh`. Supported effort values
+  are model-dependent. Requests use copied PNGs in temporary working directories.
+- Runner parallelism defaults to `1`; `--workers` / `--parallelism` bounds
+  concurrent samples. `--sample-id` selects pilot examples, and `--resume-from`
+  extends a compatible run using verified cached responses and fresh scoring.
+  Preserve model parse failures; retry only transport failures or unusable
+  artifacts. Run configs record source/input hashes, environment versions,
+  and all invocations. Artifacts are saved atomically as samples finish.
+- The GPT-6.1 Sol follow-up uses `gpt-6.1-sol`, explicit `max` reasoning effort,
+  `3600s` total per sample, disabled personal CLI config, and `8` workers on
+  all 150 frozen `eval_v1` samples, reusing two verified pilot responses.
+  Public aggregates/provenance live in `results/gpt-6.1-sol-max-eval-v1/`;
+  raw predictions remain under git-ignored `data/runs/`.
 - Default Claude Code CLI settings are `claude-opus-4-7[1m]` with effort
   `medium`, timeout `240s`, and `2` retries; effort is one of
   `low|medium|high|xhigh|max`.
@@ -173,10 +188,14 @@ complete. Review `website/index.html` even when derived assets update
 automatically; generation cannot keep explanatory prose accurate on its own.
 
 The website build uses the benchmark implementation for its demo images and
-scores, `paper/tables/main_results.csv` for reported results, and the README's
-BibTeX block for citations. Preserve that source relationship instead of
+scores, `paper/tables/main_results.csv` for historical paper results,
+`results/gpt-6.1-sol-max-eval-v1/` for the GPT-6.1 Sol follow-up, and the README's
+BibTeX block for citations. Preserve those source relationships instead of
 manually duplicating scores or using simulated demo metrics. Label historical
-paper results with their evaluation version and protocol.
+paper results with their evaluation version and recorded protocol; earlier
+Codex artifacts used a `reasoning_effort` override and do not independently
+verify the effective effort. Do not silently relabel or overwrite them.
+Use `scripts/report_run.py` to validate and export complete new evaluations.
 
 Build and verify relevant website changes with:
 

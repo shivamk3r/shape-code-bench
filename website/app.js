@@ -107,7 +107,10 @@ document.getElementById("difference-toggle").addEventListener("click", () => {
 function modelLabel(row) {
   const effort = row.model.match(/\(([^)]+)\)$/)?.[1];
   if (row.provider === "codex")
-    return ["GPT-5.5", `${effort} effort · Codex CLI`];
+    return [
+      { "gpt-5.5": "GPT-5.5", "gpt-6.1-sol": "GPT-6.1 Sol" }[row.model_id] || row.model_id,
+      `${effort} effort · Codex CLI`,
+    ];
   if (row.provider === "claude")
     return ["Claude Opus 4.7", `${effort} effort · 1M context · Claude Code`];
   if (row.provider === "heuristic")

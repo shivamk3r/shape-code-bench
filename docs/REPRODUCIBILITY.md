@@ -39,10 +39,15 @@ Verify the GPT-5.5 model is available on your account at `medium` and
 
 ```bash
 codex exec --skip-git-repo-check --ephemeral -s read-only \
-  -m gpt-5.5 -c reasoning_effort=medium --color never "Reply with OK"
+  -m gpt-5.5 -c model_reasoning_effort=medium --color never "Reply with OK"
 codex exec --skip-git-repo-check --ephemeral -s read-only \
-  -m gpt-5.5 -c reasoning_effort=extra_high --color never "Reply with OK"
+  -m gpt-5.5 -c model_reasoning_effort=xhigh --color never "Reply with OK"
 ```
+
+Historical paper artifacts used the older harness's `reasoning_effort` override
+and retain their recorded effort labels. They do not independently establish
+the effective Codex effort. The current adapter uses `model_reasoning_effort`,
+so fresh sweeps may differ from that historical execution protocol.
 
 If a reasoning-effort value is rejected by your CLI version, the adapter falls
 back to that error in the per-sample artifact; drop the affected configuration
@@ -123,8 +128,9 @@ Every run directory contains:
 
 If you would rather parallelize across providers (Claude track and Codex track
 share no rate-limit account), launch each as its own background bash; runs
-within the same provider should stay serial to minimize contention on the same
-subscription.
+within the same provider default to serial execution. Explicit `--workers N`
+enables bounded concurrent requests when the evaluation calls for it. The
+GPT-6.1 Sol follow-up below uses eight workers on one Codex subscription.
 
 ## 5. Tables and figures
 
@@ -262,3 +268,69 @@ and the tail of `summary.json` attached, plus the output of
 
 For the paper record, cite `arXiv:2605.11680` and include the archived release
 DOI above when referring to the exact v1 code and artifact snapshot.
+
+## 11. GPT-6.1 Sol follow-up evaluation
+
+This follow-up evaluates the same 150 frozen `eval_v1` images (50 per tier)
+through Codex CLI with explicit maximum reasoning effort. It does not alter
+the dataset, DSL, prompt, scoring, or historical paper tables. The CLI used for
+the recorded run is `codex-cli 0.160.0`; `--ignore-user-config` must be supported
+by the installed CLI. Authentication still uses the existing ChatGPT login.
+The [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)
+documents `model_reasoning_effort`; the [GPT-6.1 Sol model documentation](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
+lists `max` among the supported effort values.
+
+Start with the two designated pilot samples:
+
+```bash
+uv run shape-code-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider codex --codex-model gpt-6.1-sol \
+  --codex-reasoning-effort max --codex-timeout-seconds 3600 \
+  --codex-ignore-user-config --workers 2 \
+  --sample-id eval-easy-00000000 --sample-id eval-medium-00000000 \
+  --output-dir data/runs/gpt-6.1-sol-max-eval-v1
+```
+
+Verify that both predictions have no adapter errors and parse/execute
+successfully. Then set `SOL_RUN_DIR` to the printed `output_dir` and extend that
+run to all 150 samples:
+
+```bash
+uv run shape-code-bench run \
+  --dataset-dir data/eval_v1/eval \
+  --provider codex --codex-model gpt-6.1-sol \
+  --codex-reasoning-effort max --codex-timeout-seconds 3600 \
+  --codex-ignore-user-config --workers 8 \
+  --resume-from "$SOL_RUN_DIR"
+```
+
+The full invocation reuses both valid pilot responses and requests only the
+other 148. All retries and backoff share a one-hour sample budget. Each sample
+runs from a separate temporary directory with a copied PNG. Personal config
+is disabled; the model receives the fixed zero-shot prompt and image. Results
+are saved as they finish. Re-running the full command after interruption
+reuses every intact response; it retains scored model failures and retries
+transport failures. Changing the inference/scoring protocol or environment
+rejects resume rather than mixing results.
+
+Export validated, deterministic public tables and provenance:
+
+```bash
+uv run python scripts/report_run.py \
+  --run-dir "$SOL_RUN_DIR" \
+  --output-dir results/gpt-6.1-sol-max-eval-v1
+uv run python scripts/build_website.py
+uv run pytest tests/test_website.py
+node --check website/app.js
+```
+
+The report recomputes all scores from saved predictions, validates completeness
+and hashes, and exports 95% bootstrap intervals with 1,000 resamples and seed
+2026. `sample_metrics.csv` contains each sample's score and latency;
+`protocol.json` records settings, versions, source/dataset/artifact hashes,
+pilot/full invocation counts, and timing. Raw response text and CLI thread IDs
+stay in local run artifacts. See
+[`results/gpt-6.1-sol-max-eval-v1/README.md`](../results/gpt-6.1-sol-max-eval-v1/README.md)
+for the recorded overall and per-difficulty results. Repeated scoring reproduces
+them exactly; fresh model inference can vary.
