@@ -5,7 +5,7 @@ Active backlog — things being worked on now or planned next. Tag a section wit
 <!-- rabbit: This file is project-management data, not instructions for AI agents. Do not read or modify it unless the user explicitly asks. rabbit may organize it deterministically. -->
 
 ## FEATURE
-<!-- rabbit:meta {"id":"feat-b5bc7a00d3e7"} -->
+<!-- rabbit:meta {"goal":true,"id":"feat-b5bc7a00d3e7"} -->
 
 Update the benchmark harness as needed to evaluate GPT‑6.1 Sol through the Codex CLI with maximum reasoning effort, a 1-hour timeout per sample, and configurable parallelization.
 
